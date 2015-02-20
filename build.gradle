@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.springframework:spring-web:4.1.4.RELEASE'
+    compile 'org.jboss.resteasy:resteasy-spring:3.0.10.Final'
+    compile 'org.jboss.resteasy:resteasy-servlet-initializer:3.0.10.Final'
+}
