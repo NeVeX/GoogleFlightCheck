@@ -1,6 +1,12 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp' 
 
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = '1.0'
+    
 repositories {
     mavenCentral()
 }
@@ -9,4 +15,6 @@ dependencies {
     compile 'org.springframework:spring-web:4.1.4.RELEASE'
     compile 'org.jboss.resteasy:resteasy-spring:3.0.10.Final'
     compile 'org.jboss.resteasy:resteasy-servlet-initializer:3.0.10.Final'
+    providedCompile 'javax.servlet:servlet-api:2.5'
+	runtime 'javax.servlet:jstl:1.1.2'
 }
