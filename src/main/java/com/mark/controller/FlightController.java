@@ -16,7 +16,7 @@ public class FlightController {
 	@Path("/sanity")
 	public String testSanity()
 	{
-		return "Sanity Check Ok on "+LocalDateTime.now();
+		return "Sanity Check OK on "+LocalDateTime.now();
 	}
 	
 }
