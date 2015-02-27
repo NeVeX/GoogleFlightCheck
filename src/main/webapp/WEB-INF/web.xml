@@ -3,7 +3,25 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
                 http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
+	  
+   <servlet>
+        <servlet-name>spring-mvc-servlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath*:spring/**/spring-mvc.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>spring-mvc-servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 	
+	
+
+<!--  
 	<context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
         <param-value>/flight</param-value>
@@ -26,20 +44,14 @@
 	</servlet-mapping>
 	
 	
-    <servlet>
-        <servlet-name>spring-mvc-servlet</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:spring-mvc.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>spring-mvc-servlet</servlet-name>
-        <url-pattern>/mark/*</url-pattern>
-    </servlet-mapping>
+    
 	
+	<listener>
+		<listener-class>
+			org.jboss.resteasy.plugins.spring.SpringContextLoaderListener
+		</listener-class>
+	</listener>
+	
+	-->
 
 </web-app>
