@@ -16,7 +16,7 @@
 
     <servlet-mapping>
         <servlet-name>spring-mvc-servlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/flight/*</url-pattern>
     </servlet-mapping>
 	
 	

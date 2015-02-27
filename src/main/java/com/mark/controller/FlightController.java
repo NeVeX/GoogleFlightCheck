@@ -1,7 +1,6 @@
 package com.mark.controller;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,14 +19,14 @@ public class FlightController {
 	@RequestMapping(value="/sanity", method=RequestMethod.GET)
 	public @ResponseBody String testSanity()
 	{
-		return "Sanity Check OK\nTime: "+LocalDateTime.now();
+		return "Sanity Check OK\nTime: "+new Date();
 	}
 	
 
 	@RequestMapping("/hello")
 	public @ResponseBody String hello()
 	{
-		return "Computer says: "+flightService.sayHi()+"\nTime: "+LocalDateTime.now();
+		return "Computer says: "+flightService.sayHi()+"\nTime: "+new Date();
 	}
 	
 }
