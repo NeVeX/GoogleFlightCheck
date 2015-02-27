@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,11 +23,15 @@ public class FlightController {
 		return "Sanity Check OK\nTime: "+new Date();
 	}
 	
-
+	@RequestMapping("/hello/{name}")
+	public @ResponseBody String hello(@PathVariable("name") String name)
+	{
+		return flightService.sayHi(name)+"<br><br>Time: "+new Date();
+	}
+	
 	@RequestMapping("/hello")
 	public @ResponseBody String hello()
 	{
-		return "Computer says: "+flightService.sayHi()+"\nTime: "+new Date();
+		return "Hi!<br><br>Time: "+new Date();
 	}
-	
 }

@@ -8,8 +8,8 @@ import com.mark.service.IFlightService;
 public class FlightServiceImpl implements IFlightService {
 
 	@Override
-	public String sayHi() {
-		return "Hello!";
+	public String sayHi(String name) {
+		return "Hello "+name+"!";
 	}
 
 	

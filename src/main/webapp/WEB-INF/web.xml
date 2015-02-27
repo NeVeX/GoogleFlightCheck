@@ -13,10 +13,20 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+   <servlet>
+   	<description>Sample Servlet</description>
+   	<display-name>GoogleFlightCheckServlet</display-name>
+   	<servlet-name>GoogleFlightCheckServlet</servlet-name>
+   	<servlet-class>com.mark.GoogleFlightCheckServlet</servlet-class>
+   </servlet>
 
     <servlet-mapping>
         <servlet-name>spring-mvc-servlet</servlet-name>
         <url-pattern>/flight/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>GoogleFlightCheckServlet</servlet-name>
+    	<url-pattern>/googleflightcheck</url-pattern>
     </servlet-mapping>
 	
 	
