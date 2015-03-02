@@ -1,142 +1,86 @@
 package com.mark.model.google.request;
 
+import java.util.List;
+
 public class Slice
 {
-    private String alliance;
-
-    private String[] prohibitedCarrier;
-
-    private String maxStops;
-
-    private String origin;
-
-    private PermittedDepartureTime permittedDepartureTime;
-
-    private String preferredCabin;
-
-    private String maxConnectionDuration;
-
-    private String date;
-
-    private String kind;
-
-    private String[] permittedCarrier;
-
-    private String destination;
-
-    public String getAlliance ()
-    {
-        return alliance;
-    }
-
-    public void setAlliance (String alliance)
-    {
-        this.alliance = alliance;
-    }
-
-    public String[] getProhibitedCarrier ()
-    {
-        return prohibitedCarrier;
-    }
-
-    public void setProhibitedCarrier (String[] prohibitedCarrier)
-    {
-        this.prohibitedCarrier = prohibitedCarrier;
-    }
-
-    public String getMaxStops ()
-    {
-        return maxStops;
-    }
-
-    public void setMaxStops (String maxStops)
-    {
-        this.maxStops = maxStops;
-    }
-
-    public String getOrigin ()
-    {
-        return origin;
-    }
-
-    public void setOrigin (String origin)
-    {
-        this.origin = origin;
-    }
-
-    public PermittedDepartureTime getPermittedDepartureTime ()
-    {
-        return permittedDepartureTime;
-    }
-
-    public void setPermittedDepartureTime (PermittedDepartureTime permittedDepartureTime)
-    {
-        this.permittedDepartureTime = permittedDepartureTime;
-    }
-
-    public String getPreferredCabin ()
-    {
-        return preferredCabin;
-    }
-
-    public void setPreferredCabin (String preferredCabin)
-    {
-        this.preferredCabin = preferredCabin;
-    }
-
-    public String getMaxConnectionDuration ()
-    {
-        return maxConnectionDuration;
-    }
-
-    public void setMaxConnectionDuration (String maxConnectionDuration)
-    {
-        this.maxConnectionDuration = maxConnectionDuration;
-    }
-
-    public String getDate ()
-    {
-        return date;
-    }
-
-    public void setDate (String date)
-    {
-        this.date = date;
-    }
-
-    public String getKind ()
-    {
-        return kind;
-    }
-
-    public void setKind (String kind)
-    {
-        this.kind = kind;
-    }
-
-    public String[] getPermittedCarrier ()
-    {
-        return permittedCarrier;
-    }
-
-    public void setPermittedCarrier (String[] permittedCarrier)
-    {
-        this.permittedCarrier = permittedCarrier;
-    }
-
-    public String getDestination ()
-    {
-        return destination;
-    }
-
-    public void setDestination (String destination)
-    {
-        this.destination = destination;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [alliance = "+alliance+", prohibitedCarrier = "+prohibitedCarrier+", maxStops = "+maxStops+", origin = "+origin+", permittedDepartureTime = "+permittedDepartureTime+", preferredCabin = "+preferredCabin+", maxConnectionDuration = "+maxConnectionDuration+", date = "+date+", kind = "+kind+", permittedCarrier = "+permittedCarrier+", destination = "+destination+"]";
-    }
+	private String kind;
+	private String origin;
+	private String destination;
+	private String date;
+	private Integer maxStops;
+	private Integer maxConnectionDuration;
+	private String preferredCabin;
+	private DepartureTime permittedDepartureTime;
+	private List<String> permittedCarrier;
+	private String alliance;
+	private List<String> prohibitedCarrier;
+	
+	public String getKind() {
+		return kind;
+	}
+	public void setKind(String kind) {
+		this.kind = kind;
+	}
+	public String getOrigin() {
+		return origin;
+	}
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+	public String getDestination() {
+		return destination;
+	}
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+	public Integer getMaxStops() {
+		return maxStops;
+	}
+	public void setMaxStops(Integer maxStops) {
+		this.maxStops = maxStops;
+	}
+	public Integer getMaxConnectionDuration() {
+		return maxConnectionDuration;
+	}
+	public void setMaxConnectionDuration(Integer maxConnectionDuration) {
+		this.maxConnectionDuration = maxConnectionDuration;
+	}
+	public String getPreferredCabin() {
+		return preferredCabin;
+	}
+	public void setPreferredCabin(String preferredCabin) {
+		this.preferredCabin = preferredCabin;
+	}
+	public DepartureTime getPermittedDepartureTime() {
+		return permittedDepartureTime;
+	}
+	public void setPermittedDepartureTime(DepartureTime permittedDepartureTime) {
+		this.permittedDepartureTime = permittedDepartureTime;
+	}
+	public List<String> getPermittedCarrier() {
+		return permittedCarrier;
+	}
+	public void setPermittedCarrier(List<String> permittedCarrier) {
+		this.permittedCarrier = permittedCarrier;
+	}
+	public String getAlliance() {
+		return alliance;
+	}
+	public void setAlliance(String alliance) {
+		this.alliance = alliance;
+	}
+	public List<String> getProhibitedCarrier() {
+		return prohibitedCarrier;
+	}
+	public void setProhibitedCarrier(List<String> prohibitedCarrier) {
+		this.prohibitedCarrier = prohibitedCarrier;
+	}
+	
 }
