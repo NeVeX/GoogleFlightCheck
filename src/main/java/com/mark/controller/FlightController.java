@@ -1,19 +1,25 @@
 package com.mark.controller;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.IFlightService;
 
-@RestController
+@Controller
 public class FlightController {
 
 	@Autowired
@@ -41,5 +47,18 @@ public class FlightController {
 	public GoogleFlightResponse getFlightDetails(@PathVariable("flight") String flightInfo)
 	{
 		return flightService.getFlights(flightInfo);
+	}
+	
+	@RequestMapping(value="/main", method=RequestMethod.GET)
+	public String getMainPage(ModelMap model)
+	{
+		return "main";
+	}
+	
+	@RequestMapping(value="/main/inputs", method=RequestMethod.GET)
+	public String getFlightsFromMainPageInputs(@RequestParam MultiValueMap map)
+	{
+		//{date=[2015-03-10], fromText=[markMe], toText=[markTo]} --- data should read like this
+		return "main";
 	}
 }
