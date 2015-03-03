@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.google.appengine.repackaged.com.google.common.reflect.TypeToken;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.mark.model.google.request.GoogleFlightRequest;
+import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Slice;
 import com.mark.service.impl.FlightServiceImpl;
 

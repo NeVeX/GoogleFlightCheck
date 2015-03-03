@@ -6,6 +6,8 @@ public class TaxDetail {
 	private String chargeType;
 	private String code;
 	private String salePrice;
+	private String country;
+	
 	public String getKind() {
 		return kind;
 	}
@@ -35,6 +37,12 @@ public class TaxDetail {
 	}
 	public void setSalePrice(String salePrice) {
 		this.salePrice = salePrice;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
 	}
 	
 	

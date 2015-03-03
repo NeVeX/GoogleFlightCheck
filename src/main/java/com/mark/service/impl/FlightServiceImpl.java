@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.mark.exception.FlightException;
 import com.mark.model.google.request.DepartureTime;
 import com.mark.model.google.request.GoogleFlightRequest;
+import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Passengers;
 import com.mark.model.google.request.Slice;
 import com.mark.model.google.response.GoogleFlightResponse;
@@ -40,10 +41,10 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		// get the client we need to call Google
 		IGoogleFlightClient client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
-		String stringResponse = client.postForFlightInfo(createRequest());
-		if (stringResponse != null)
+		GoogleFlightResponse response = client.postForFlightInfo(FlightProperties.getProperty("google.flight.api.key"), createRequest());
+		if (response != null)
 		{
-			return JsonConverter.convertJsonToObject(stringResponse, GoogleFlightResponse.class);
+			return response;
 		}
 		throw new FlightException("Could not get flight information from google", null);
 	}
@@ -62,7 +63,8 @@ public class FlightServiceImpl implements IFlightService {
 	
 	public GoogleFlightRequest createRequest()
 	{
-		GoogleFlightRequest gfr = new GoogleFlightRequest();
+		GoogleFlightRequest request = new GoogleFlightRequest();
+		GoogleFlightRequestDetail gfr = new GoogleFlightRequestDetail();
 		Passengers p = new Passengers();
 		p.setAdultCount(1);
 		p.setChildCount(1);
@@ -78,7 +80,9 @@ public class FlightServiceImpl implements IFlightService {
 		s.setPermittedDepartureTime(dt);
 		slices.add(s);
 		gfr.setSlice(slices);
-		return gfr;
+		gfr.setSolutions(10);
+		request.setRequest(gfr);
+		return request;
 	}
 	
 //		  "request": {

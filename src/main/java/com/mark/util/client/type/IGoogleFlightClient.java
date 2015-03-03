@@ -4,19 +4,23 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
+import org.jboss.resteasy.annotations.Body;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.mark.model.google.request.GoogleFlightRequest;
+import com.mark.model.google.request.GoogleFlightRequestDetail;
+import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.util.FlightProperties;
 
 public interface IGoogleFlightClient extends IRestClient {
-
-	static final String key = FlightProperties.getProperty("google.flight.api.key");
 	
 	@POST
-	@Path("qpxExpress/v1/trips/search?key=AIzaSyBsuoWA1U29zDCg1th3Wp9lCv3Ah8caufs") //TODO : inject the key
+	@Path("/qpxExpress/v1/trips/search") //TODO : inject the key
 	@Produces("application/json")
 	@Consumes("application/json")
-	String postForFlightInfo(GoogleFlightRequest gRequest);
+	GoogleFlightResponse postForFlightInfo(@QueryParam("key") String key, @RequestBody GoogleFlightRequest gRequest);
+	
 }
+
