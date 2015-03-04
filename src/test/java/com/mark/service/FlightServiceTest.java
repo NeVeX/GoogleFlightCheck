@@ -15,14 +15,14 @@ public class FlightServiceTest {
 	@Test
 	public void testMockDataReturns()
 	{
-		GoogleFlightResponse gfr = this.flightService.getFlights("test");
+		GoogleFlightResponse gfr = this.flightService.getFlights("test", "test", "test");
 		assertNotNull(gfr);
 	}
 	
 	@Test
 	public void testCallRealGoogleAPI()
 	{
-		GoogleFlightResponse gfr = this.flightService.getFlights("MARK");
+		GoogleFlightResponse gfr = this.flightService.getFlights("MARK", "DUB", "2015-02-23");
 		assertNotNull(gfr);
 	}
 

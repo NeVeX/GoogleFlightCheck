@@ -27,7 +27,7 @@ public class UtilTest {
 	@Test
 	public void testRequestParams()
 	{
-		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest();
+		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest("mark", "dest", "date");
 		Gson gson = new Gson();
 		String s = gson.toJson(gfr);//, new TypeToken<List<Slice>>() {}.getType());
 		assertTrue(s != null && s.length() > 0);
