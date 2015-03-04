@@ -1,10 +1,7 @@
-//package com.mark.model.view;
+//package com.mark.model.dal;
 //
-//import java.io.Serializable;
-//
-//public class FlightInputInformation implements Serializable {
+//public class FlightSearch {
 //	
-//	private static final long serialVersionUID = 1L;
 //	private String origin;
 //	private String destination;
 //	private String date;
@@ -26,9 +23,6 @@
 //	public void setDate(String date) {
 //		this.date = date;
 //	}
-//	
-//	
-//	
 //	
 //	
 //

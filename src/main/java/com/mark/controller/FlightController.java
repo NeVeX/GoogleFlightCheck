@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.mark.model.FlightData;
 import com.mark.model.google.response.GoogleFlightResponse;
-import com.mark.model.view.FlightInputInformation;
 import com.mark.service.IFlightService;
 
 @Controller
@@ -52,29 +52,24 @@ public class FlightController {
 	@RequestMapping(value=BASE_URL, method=RequestMethod.GET)
 	public String getMainPage(ModelMap model)
 	{
-		if (!model.containsKey("flightInfo"))
+		if (!model.containsKey("flightData"))
 		{
-			model.addAttribute("flightInfo", new FlightInputInformation());
+			model.addAttribute("flightData", new FlightData());
 		}
 		return "main";
 	}
 	
 	@RequestMapping(value=BASE_URL+"/inputs", method=RequestMethod.POST)
-	public String getFlightsFromMainPageInputs(@RequestParam Map map, HttpServletRequest request, RedirectAttributes redirectAttributes)
+	public String getFlightsFromMainPageInputs(@ModelAttribute("flightData") FlightData fii, HttpServletRequest request, RedirectAttributes redirectAttributes)
 	{
 		//{date=[2015-03-10], fromText=[markMe], toText=[markTo]} --- data should read like this
-		if ( map != null)
+		if ( fii != null)
 		{
-			String from = (String) map.get("fromText");
-			String to = (String) map.get("toText");
-			String date = (String) map.get("date");
-			GoogleFlightResponse gfr = flightService.getFlights(from, to, date);
-			
-			FlightInputInformation fii = new FlightInputInformation();
-			fii.setDestination("DUB");
-			fii.setOrigin("SFO");
-			fii.setDate("2015-09-20");
-			redirectAttributes.addFlashAttribute("flightInfo", fii);	
+			String from = fii.getOrigin();
+			String to = fii.getDestination();
+			String date = fii.getDate();
+			FlightData fd = flightService.getFlights(from, to, date);
+			redirectAttributes.addFlashAttribute("flightData", fd);	
 		}
 		String re = request.getServletPath() ;
 		return "redirect:"+re+BASE_URL;

@@ -7,9 +7,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mark.dal.FlightDAL;
 import com.mark.exception.FlightException;
+import com.mark.model.FlightData;
+import com.mark.model.FlightData.FlightDataStatus;
 import com.mark.model.google.request.DepartureTime;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
@@ -26,6 +30,8 @@ import com.mark.util.client.type.IGoogleFlightClient;
 public class FlightServiceImpl implements IFlightService {
 
 	private String googleBaseUrl = FlightProperties.getProperty("google.flight.api.baseUrl");
+	@Autowired
+	private FlightDAL flightDAL;
 	private static boolean debugMode;
 	
 	static
@@ -40,19 +46,38 @@ public class FlightServiceImpl implements IFlightService {
 
 	// For now return the mock data from the google docs
 	@Override
-	public GoogleFlightResponse getFlights(String from, String to, String date) {
-		if ( debugMode)
+	public FlightData getFlights(String from, String to, String date) {
+		
+		FlightData fd = new FlightData();
+		fd.setDate(date);
+		fd.setDestination(to);
+		fd.setOrigin(from);
+		boolean foundData = flightDAL.search(from, to, date);
+		if ( !foundData )
 		{
-			return getTestResponse(); // for debugging, just return mock data instead of using api calls
+			fd.setDataStatus(FlightDataStatus.SAVED);
+			flightDAL.save(from, to, date);
+			if ( debugMode)
+			{
+//				fd.setGoogleResponse(getTestResponse()); // for debugging, just return mock data instead of using api calls
+				return fd;
+			}
+			// get the client we need to call Google
+			IGoogleFlightClient client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
+			GoogleFlightResponse response = client.postForFlightInfo(FlightProperties.getProperty("google.flight.api.key"), createRequest(from, to, date));
+			if (response != null)
+			{
+//				fd.setGoogleResponse(response);
+				return fd;
+			}
+			throw new FlightException("Could not get flight information from google api", null);
 		}
-		// get the client we need to call Google
-		IGoogleFlightClient client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
-		GoogleFlightResponse response = client.postForFlightInfo(FlightProperties.getProperty("google.flight.api.key"), createRequest(from, to, date));
-		if (response != null)
+		else
 		{
-			return response;
+			fd.setDataStatus(FlightDataStatus.ALREADY_EXISTS);
 		}
-		throw new FlightException("Could not get flight information from google", null);
+		return fd;
+
 	}
 	
 	private GoogleFlightResponse getTestResponse()

@@ -7,7 +7,7 @@
 <body >
 	<div style="width=:200px; height: 200px; margin:0 auto; display:inline; text-align: center;">
 		<h2>Details</h2>
-		<form method="post" action="main/inputs" th:object="${flightInfo}">
+		<form method="post" action="main/inputs" th:object="${flightData}">
 			<table style="margin: auto;">
 				<tr>
 					<td>From</td>
@@ -29,17 +29,23 @@
 		<table>
 			<tr>
 				<td>Origin</td>
-				<td th:text="${flightInfo.origin}"></td>
+				<td th:text="${flightData.origin}"></td>
 			</tr>
 			<tr>
 				<td>Destination</td>
-				<td th:text="${flightInfo.destination}"></td>
+				<td th:text="${flightData.destination}"></td>
 			</tr>
 			<tr>
 				<td>Date</td>
-				<td th:text="${flightInfo.date}"></td>
+				<td th:text="${flightData.date}"></td>
 			</tr>
 		</table>
+		
+		<div th:switch="${flightData.dataStatusString}"> 
+		  <p th:case="'SAVED'">This search has being saved and will run every day to track flight fares</p>
+		  <p th:case="'ALREADY_EXISTS'">This search already exists</p>
+		  <!-- <p th:case="*">You should never see this</p>    -->
+		</div>
 		
 	</div>
 	
