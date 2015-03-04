@@ -3,6 +3,8 @@ package com.mark.controller;
 import java.util.Date;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,11 +45,11 @@ public class FlightController {
 		return "Hi!<br><br>Time: "+new Date();
 	}
 	
-	@RequestMapping(value="/info/{flight}", /*headers="Accept=application/json",*/ produces = {"application/json"})
-	public GoogleFlightResponse getFlightDetails(@PathVariable("flight") String flightInfo)
-	{
-		return flightService.getFlights(flightInfo);
-	}
+//	@RequestMapping(value="/info/{flight}", /*headers="Accept=application/json",*/ produces = {"application/json"})
+//	public GoogleFlightResponse getFlightDetails(@PathVariable("flight") String flightInfo)
+//	{
+//		return flightService.getFlights(flightInfo);
+//	}
 	
 	@RequestMapping(value="/main", method=RequestMethod.GET)
 	public String getMainPage(ModelMap model)
@@ -55,10 +57,18 @@ public class FlightController {
 		return "main";
 	}
 	
-	@RequestMapping(value="/main/inputs", method=RequestMethod.GET)
-	public String getFlightsFromMainPageInputs(@RequestParam MultiValueMap map)
+	@RequestMapping(value="/main/inputs", method=RequestMethod.POST)
+	public String getFlightsFromMainPageInputs(@RequestParam Map map, HttpServletRequest request)
 	{
 		//{date=[2015-03-10], fromText=[markMe], toText=[markTo]} --- data should read like this
-		return "main";
+		if ( map != null)
+		{
+			String from = (String) map.get("fromText");
+			String to = (String) map.get("toText");
+			String date = (String) map.get("date");
+			GoogleFlightResponse gfr = flightService.getFlights(from, to, date);
+		}
+		String re = request.getServletPath() ;
+		return "redirect:"+re+ "/main";
 	}
 }
