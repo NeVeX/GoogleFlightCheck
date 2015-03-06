@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.impl.FlightServiceImpl;
@@ -16,15 +17,15 @@ public class FlightServiceTest {
 	@Test
 	public void testMockDataReturns()
 	{
-		FlightParsedData gfr = this.flightService.getFlights("test", "test", "test");
-		assertNotNull(gfr);
+		FlightData fd = this.flightService.getFlights("test", "test", "test");
+		assertNotNull(fd);
 	}
 	
 	@Test
 	public void testCallRealGoogleAPI()
 	{
-		FlightParsedData gfr = this.flightService.getFlights("MARK", "DUB", "2015-02-23");
-		assertNotNull(gfr);
+		FlightData fd = this.flightService.getFlights("MARK", "DUB", "2015-02-23");
+		assertNotNull(fd);
 	}
 	
 	@Test

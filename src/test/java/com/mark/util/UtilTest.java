@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.google.appengine.repackaged.com.google.common.reflect.TypeToken;
-import com.google.appengine.repackaged.com.google.gson.Gson;
+import com.google.gson.Gson;
+import com.mark.model.dal.FlightSavedSearch;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Slice;
@@ -27,7 +27,11 @@ public class UtilTest {
 	@Test
 	public void testRequestParams()
 	{
-		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest("mark", "dest", "date");
+		FlightSavedSearch fss = new FlightSavedSearch();
+		fss.setDate("date");
+		fss.setDestination("dest");
+		fss.setOrigin("origin");
+		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
 		Gson gson = new Gson();
 		String s = gson.toJson(gfr);//, new TypeToken<List<Slice>>() {}.getType());
 		assertTrue(s != null && s.length() > 0);

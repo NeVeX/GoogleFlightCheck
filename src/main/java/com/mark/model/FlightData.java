@@ -7,22 +7,23 @@ import com.mark.model.dal.FlightSavedSearch;
 public class FlightData extends FlightSavedSearch implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private float priceShortestTime;
-	private float priceLowestPrice;
-	
-	public float getPriceShortestTime() {
-		return priceShortestTime;
+	private float shortestTimePrice;
+	private float lowestPrice;
+	public float getShortestTimePrice() {
+		return shortestTimePrice;
 	}
-	public void setPriceShortestTime(float priceShortestTime) {
-		this.priceShortestTime = priceShortestTime;
+	public void setShortestTimePrice(float shortestTimePrice) {
+		this.shortestTimePrice = shortestTimePrice;
 	}
-	public float getPriceLowestPrice() {
-		return priceLowestPrice;
+	public float getLowestPrice() {
+		return lowestPrice;
 	}
-	public void setPriceLowestPrice(float priceLowestPrice) {
-		this.priceLowestPrice = priceLowestPrice;
+	public void setLowestPrice(float lowestPrice) {
+		this.lowestPrice = lowestPrice;
 	}
-	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	
 
 }

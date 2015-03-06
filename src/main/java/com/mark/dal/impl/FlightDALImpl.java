@@ -115,8 +115,9 @@ public class FlightDALImpl implements FlightDAL {
 		en.setProperty(DATE,fd.getDate());
 		en.setProperty(DESTINATION,fd.getDestination());
 		en.setProperty(ORIGIN,fd.getOrigin());
-		en.setProperty(LOWEST_PRICE,fd.getPriceLowestPrice());
-		en.setProperty(SHORTEST_TIME_PRICE,fd.getPriceShortestTime());
+		en.setProperty(LOWEST_PRICE,fd.getLowestPrice());
+		en.setProperty(SHORTEST_TIME_PRICE,fd.getShortestTimePrice());
+		en.setProperty(SAVED_SEARCH_KEY, fd.getKey());
 		Key key = datastore.put(en);
 		return true;
 	}
