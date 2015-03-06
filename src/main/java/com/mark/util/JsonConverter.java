@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
-import com.google.appengine.repackaged.com.google.gson.Gson; //TODO: Understand this warning
+import com.google.gson.Gson;
 import com.mark.exception.FlightException;
 import com.mark.model.google.response.GoogleFlightResponse;
 

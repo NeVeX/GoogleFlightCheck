@@ -1,6 +1,7 @@
 package com.mark.service;
 
 import com.mark.model.FlightData;
+import com.mark.model.FlightParsedData;
 import com.mark.model.google.response.GoogleFlightResponse;
 
 

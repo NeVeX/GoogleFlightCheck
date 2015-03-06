@@ -2,49 +2,25 @@ package com.mark.model;
 
 import java.io.Serializable;
 
-public class FlightData implements Serializable {
-	
-	public enum FlightDataStatus
-	{
-		SAVED, ALREADY_EXISTS
-	}
-	private FlightDataStatus dataStatus;
-	private String dataStatusString;
+import com.mark.model.dal.FlightSavedSearch;
+
+public class FlightData extends FlightSavedSearch implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private String origin;
-	private String destination;
-	private String date;
-	public String getOrigin() {
-		return origin;
+	private float priceShortestTime;
+	private float priceLowestPrice;
+	
+	public float getPriceShortestTime() {
+		return priceShortestTime;
 	}
-	public void setOrigin(String origin) {
-		this.origin = origin;
+	public void setPriceShortestTime(float priceShortestTime) {
+		this.priceShortestTime = priceShortestTime;
 	}
-	public String getDestination() {
-		return destination;
+	public float getPriceLowestPrice() {
+		return priceLowestPrice;
 	}
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
-	}
-	public FlightDataStatus getDataStatus() {
-		return dataStatus;
-	}
-	public void setDataStatus(FlightDataStatus dataStatus) {
-		this.dataStatus = dataStatus;
-		this.dataStatusString = dataStatus != null ? dataStatus.name() : "";
-	}
-	public String getDataStatusString() {
-		return dataStatusString;
-	}
-	public void setDataStatusString(String dataStatusString) {
-		this.dataStatusString = dataStatusString;
+	public void setPriceLowestPrice(float priceLowestPrice) {
+		this.priceLowestPrice = priceLowestPrice;
 	}
 	
 	

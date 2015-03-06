@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +14,21 @@ import org.springframework.stereotype.Service;
 import com.mark.dal.FlightDAL;
 import com.mark.exception.FlightException;
 import com.mark.model.FlightData;
-import com.mark.model.FlightData.FlightDataStatus;
+import com.mark.model.FlightParsedData;
+import com.mark.model.compare.FlightLowestPriceCompare;
+import com.mark.model.compare.FlightLowestPriceForShortestTimeCompare;
+import com.mark.model.dal.FlightSavedSearch;
 import com.mark.model.google.request.DepartureTime;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Passengers;
 import com.mark.model.google.request.Slice;
 import com.mark.model.google.response.GoogleFlightResponse;
+import com.mark.model.google.response.Leg;
+import com.mark.model.google.response.ResponseSlice;
+import com.mark.model.google.response.Segment;
+import com.mark.model.google.response.Trip;
+import com.mark.model.google.response.TripOption;
 import com.mark.service.IFlightService;
 import com.mark.util.FlightProperties;
 import com.mark.util.JsonConverter;
@@ -33,7 +42,7 @@ public class FlightServiceImpl implements IFlightService {
 	@Autowired
 	private FlightDAL flightDAL;
 	private static boolean debugMode;
-	
+	private static String apiKey = FlightProperties.getProperty("google.flight.api.key");
 	static
 	{
 		debugMode = Boolean.valueOf(FlightProperties.getProperty("debugMode"));
@@ -46,40 +55,95 @@ public class FlightServiceImpl implements IFlightService {
 
 	// For now return the mock data from the google docs
 	@Override
-	public FlightData getFlights(String from, String to, String date) {
-		
-		FlightData fd = new FlightData();
-		fd.setDate(date);
-		fd.setDestination(to);
-		fd.setOrigin(from);
-		boolean foundData = flightDAL.search(from, to, date);
-		if ( !foundData )
+	public FlightData getFlights(String from, String to, String date)
+	{	
+		FlightSavedSearch savedSearch = flightDAL.find(from, to, date);
+		if ( savedSearch == null )
 		{
-			fd.setDataStatus(FlightDataStatus.SAVED);
-			flightDAL.save(from, to, date);
-			if ( debugMode)
-			{
-//				fd.setGoogleResponse(getTestResponse()); // for debugging, just return mock data instead of using api calls
-				return fd;
-			}
-			// get the client we need to call Google
-			IGoogleFlightClient client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
-			GoogleFlightResponse response = client.postForFlightInfo(FlightProperties.getProperty("google.flight.api.key"), createRequest(from, to, date));
-			if (response != null)
-			{
-//				fd.setGoogleResponse(response);
-				return fd;
-			}
-			throw new FlightException("Could not get flight information from google api", null);
+			savedSearch = flightDAL.save(from, to, date);
+		}
+		// we have the saved search now. 
+		// Check if we have the data for this search
+		if ( savedSearch.isExistingSearch())
+		{
+			FlightParsedData fd = flightDAL.findFlightData(savedSearch);
+		}
+		GoogleFlightResponse response = null;
+		// if we are here, then we know that we need to call the API to get current data for today	
+		if ( debugMode)
+		{
+			response = getTestResponse(); // for debugging, just return mock data instead of using api calls
 		}
 		else
 		{
-			fd.setDataStatus(FlightDataStatus.ALREADY_EXISTS);
+			// get the client we need to call Google
+			IGoogleFlightClient client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
+			response = client.postForFlightInfo(apiKey, createRequest(savedSearch));
 		}
-		return fd;
-
+		
+		if (response != null)
+		{
+			// now for the fun part, parse the result
+			List<FlightParsedData> listOfFlights = this.parseGoogleResponseToFlightData(response, savedSearch);
+			// now get the prices we care about
+			FlightData fd = this.getFlightData(listOfFlights);
+			// need to save this!
+			flightDAL.saveFlightData(fd);
+			
+			return fd;
+		}
+		System.err.println("Response from google flights is null. Cannot do anything with that.");
+		return null;
 	}
 	
+	private FlightData getFlightData(List<FlightParsedData> listOfFlights) {
+		FlightData fd = new FlightData();
+		Collections.sort(listOfFlights, new FlightLowestPriceCompare());
+		FlightParsedData fpdCheap = listOfFlights.get(0);
+		fd.setDate(fpdCheap.getDate());
+		fd.setOrigin(fpdCheap.getOrigin());
+		fd.setDestination(fpdCheap.getDestination());
+		fd.setPriceLowestPrice(fpdCheap.getPrice());
+		Collections.sort(listOfFlights, new FlightLowestPriceForShortestTimeCompare());
+		FlightParsedData fpdShortest = listOfFlights.get(0);
+		fd.setPriceShortestTime(fpdShortest.getPrice());
+		return fd;
+	}
+
+	private List<FlightParsedData> parseGoogleResponseToFlightData(GoogleFlightResponse response, FlightSavedSearch fss) {
+		Trip trip = response.getTrips();
+		List<FlightParsedData> parsedData = new ArrayList<FlightParsedData>();
+		for (TripOption t : trip.getTripOption())
+		{
+			float price = Float.valueOf(t.getSaleTotal().substring(3, t.getSaleTotal().length()));
+			int stops = 0;
+			int tripLength = Integer.valueOf(0);
+			for (ResponseSlice rs : t.getSlice())
+			{
+				
+				for (Segment seg : rs.getSegment())
+				{
+					for(Leg leg : seg.getLeg())
+					{
+						stops++;
+						tripLength += leg.getDuration() != null ? leg.getDuration() : 0;
+					}
+				}
+			}
+			// create the FlightData object
+			FlightParsedData fd = new FlightParsedData();
+			fd.setPrice(price);
+			fd.setNumberOfStops(stops);
+			fd.setTripLength(tripLength);
+			fd.setDate(fss.getDate());
+			fd.setDestination(fss.getDestination());
+			fd.setOrigin(fss.getOrigin());
+			parsedData.add(fd);
+		}
+		
+		return parsedData;
+	}
+
 	private GoogleFlightResponse getTestResponse()
 	{
 		String testDataLocation = "data/example_flight_response.json";
@@ -92,7 +156,7 @@ public class FlightServiceImpl implements IFlightService {
 		}	
 	}
 	
-	public GoogleFlightRequest createRequest(String from, String to, String date)
+	public GoogleFlightRequest createRequest(FlightSavedSearch fss)
 	{
 		GoogleFlightRequest request = new GoogleFlightRequest();
 		GoogleFlightRequestDetail gfr = new GoogleFlightRequestDetail();
@@ -102,9 +166,9 @@ public class FlightServiceImpl implements IFlightService {
 		gfr.setPassengers(p);
 		List<Slice> slices = new ArrayList<>();
 		Slice s = new Slice();
-		s.setOrigin(from);
-		s.setDestination(to);
-		s.setDate(date);
+		s.setOrigin(fss.getOrigin());
+		s.setDestination(fss.getDestination());
+		s.setDate(fss.getDate());
 		DepartureTime dt = new DepartureTime();
 		dt.setEarliestTime("05:00");
 		dt.setLatestTime("23:00");
@@ -112,6 +176,7 @@ public class FlightServiceImpl implements IFlightService {
 		slices.add(s);
 		gfr.setSlice(slices);
 		gfr.setSolutions(10);
+		gfr.setSaleCountry("US");
 		request.setRequest(gfr);
 		return request;
 	}

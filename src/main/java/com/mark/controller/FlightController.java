@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mark.model.FlightData;
+import com.mark.model.FlightParsedData;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.IFlightService;
 
@@ -54,15 +55,14 @@ public class FlightController {
 	{
 		if (!model.containsKey("flightData"))
 		{
-			model.addAttribute("flightData", new FlightData());
+			model.addAttribute("flightData", new FlightParsedData());
 		}
 		return "main";
 	}
 	
 	@RequestMapping(value=BASE_URL+"/inputs", method=RequestMethod.POST)
-	public String getFlightsFromMainPageInputs(@ModelAttribute("flightData") FlightData fii, HttpServletRequest request, RedirectAttributes redirectAttributes)
+	public String getFlightsFromMainPageInputs(@ModelAttribute("flightData") FlightParsedData fii, HttpServletRequest request, RedirectAttributes redirectAttributes)
 	{
-		//{date=[2015-03-10], fromText=[markMe], toText=[markTo]} --- data should read like this
 		if ( fii != null)
 		{
 			String from = fii.getOrigin();
