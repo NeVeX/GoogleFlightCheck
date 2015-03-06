@@ -39,11 +39,19 @@
 				<td>Date</td>
 				<td th:text="${flightData.date}"></td>
 			</tr>
+			<tr>
+				<td>Lowest Price</td>
+				<td th:text="${flightData.lowestPrice}"></td>
+			</tr>
+			<tr>
+				<td>Shortest Time Price</td>
+				<td th:text="${flightData.shortestTimePrice}"></td>
+			</tr>
 		</table>
 		
-		<div th:switch="${flightData.dataStatusString}"> 
-		  <p th:case="'SAVED'">This search has being saved and will run every day to track flight fares</p>
-		  <p th:case="'ALREADY_EXISTS'">This search already exists</p>
+		<div th:switch="${flightData.existingSearch}"> 
+		  <p th:case="'false'">This search has now being saved and will run daily to track flight fares</p>
+		  <p th:case="'true'">This search already exists and is already tracking flight fares daily</p>
 		  <!-- <p th:case="*">You should never see this</p>    -->
 		</div>
 		

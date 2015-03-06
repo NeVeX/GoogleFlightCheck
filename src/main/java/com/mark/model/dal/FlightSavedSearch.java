@@ -12,17 +12,17 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private Key key;
-	private boolean existingSearch;
+	private Boolean existingSearch;
 	public Key getKey() {
 		return key;
 	}
 	public void setKey(Key key) {
 		this.key = key;
 	}
-	public boolean isExistingSearch() {
+	public Boolean isExistingSearch() {
 		return existingSearch;
 	}
-	public void setExistingSearch(boolean existingSearch) {
+	public void setExistingSearch(Boolean existingSearch) {
 		this.existingSearch = existingSearch;
 	}
 	public static long getSerialversionuid() {

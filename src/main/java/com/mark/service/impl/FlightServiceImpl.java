@@ -66,7 +66,7 @@ public class FlightServiceImpl implements IFlightService {
 		// Check if we have the data for this search
 		if ( savedSearch.isExistingSearch())
 		{
-			FlightParsedData fd = flightDAL.findFlightData(savedSearch);
+			FlightData fd = flightDAL.findFlightData(savedSearch);
 		}
 		GoogleFlightResponse response = null;
 		// if we are here, then we know that we need to call the API to get current data for today	
@@ -162,20 +162,20 @@ public class FlightServiceImpl implements IFlightService {
 		GoogleFlightRequestDetail gfr = new GoogleFlightRequestDetail();
 		Passengers p = new Passengers();
 		p.setAdultCount(1);
-		p.setChildCount(1);
+		p.setChildCount(0);
 		gfr.setPassengers(p);
 		List<Slice> slices = new ArrayList<>();
 		Slice s = new Slice();
 		s.setOrigin(fss.getOrigin());
 		s.setDestination(fss.getDestination());
 		s.setDate(fss.getDate());
-		DepartureTime dt = new DepartureTime();
-		dt.setEarliestTime("05:00");
-		dt.setLatestTime("23:00");
-		s.setPermittedDepartureTime(dt);
+//		DepartureTime dt = new DepartureTime();
+//		dt.setEarliestTime("05:00");
+//		dt.setLatestTime("23:00");
+//		s.setPermittedDepartureTime(dt);
 		slices.add(s);
 		gfr.setSlice(slices);
-		gfr.setSolutions(10);
+		gfr.setSolutions(20);
 		gfr.setSaleCountry("US");
 		request.setRequest(gfr);
 		return request;

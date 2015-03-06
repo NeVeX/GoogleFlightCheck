@@ -6,9 +6,16 @@ import java.io.InputStream;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 
 import com.mark.exception.FlightException;
 import com.mark.model.google.response.GoogleFlightResponse;
@@ -22,7 +29,11 @@ public class RestClient {
 	
 	static
 	{
-		client = new ResteasyClientBuilder().build();
+	//	client = new ResteasyClientBuilder().re.build();
+		ClientConnectionManager cm = new BasicClientConnectionManager();
+		HttpClient httpClient = new DefaultHttpClient(cm);
+		HttpEngineForGAE engine = new HttpEngineForGAE(httpClient);
+		client = new ResteasyClientBuilder().httpEngine(engine).build();
 		client.register(new RestClientFilter());
 	}
 	

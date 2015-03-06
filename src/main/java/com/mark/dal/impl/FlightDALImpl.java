@@ -17,7 +17,6 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.FlightDAL;
 import com.mark.model.FlightData;
-import com.mark.model.FlightParsedData;
 import com.mark.model.dal.FlightSavedSearch;
 
 @Repository
@@ -81,7 +80,7 @@ public class FlightDALImpl implements FlightDAL {
 	}
 
 	@Override
-	public FlightParsedData findFlightData(FlightSavedSearch savedSearch) {
+	public FlightData findFlightData(FlightSavedSearch savedSearch) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key key = savedSearch.getKey();
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY, FilterOperator.EQUAL, key.getId());
@@ -99,8 +98,8 @@ public class FlightDALImpl implements FlightDAL {
 
 	
 	
-	private FlightParsedData createFlightDataFromEntity(Entity entity, FlightSavedSearch fss) {
-		FlightParsedData fd = new FlightParsedData();
+	private FlightData createFlightDataFromEntity(Entity entity, FlightSavedSearch fss) {
+		FlightData fd = new FlightData();
 		fd.setDate(fss.getDate());
 		fd.setDestination(fss.getDestination());
 		fd.setOrigin(fss.getOrigin());
