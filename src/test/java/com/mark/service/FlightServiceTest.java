@@ -3,6 +3,7 @@ package com.mark.service;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mark.model.FlightData;
@@ -14,21 +15,24 @@ public class FlightServiceTest {
 	
 	IFlightService flightService = new FlightServiceImpl();
 	
-	@Test
+
+	@Ignore
 	public void testMockDataReturns()
 	{
 		FlightData fd = this.flightService.getFlights("test", "test", "test");
 		assertNotNull(fd);
 	}
 	
-	@Test
+
+	@Ignore
 	public void testCallRealGoogleAPI()
 	{
 		FlightData fd = this.flightService.getFlights("MARK", "DUB", "2015-02-23");
 		assertNotNull(fd);
 	}
 	
-	@Test
+
+	@Ignore
 	public void testSaleTotal()
 	{
 		String price = "USD133.34";

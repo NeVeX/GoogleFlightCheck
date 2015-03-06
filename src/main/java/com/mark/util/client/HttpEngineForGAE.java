@@ -124,7 +124,7 @@ public class HttpEngineForGAE implements ClientHttpEngine
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
+//   protected File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
 
 
    public HttpEngineForGAE()
@@ -199,12 +199,12 @@ public class HttpEngineForGAE implements ClientHttpEngine
 
    public File getFileUploadTempFileDir()
    {
-      return fileUploadTempFileDir;
+      return null;
    }
 
    public void setFileUploadTempFileDir(File fileUploadTempFileDir)
    {
-      this.fileUploadTempFileDir = fileUploadTempFileDir;
+      //this.nu = fileUploadTempFileDir;
    }
 
    public HttpClient getHttpClient()
@@ -559,9 +559,10 @@ public class HttpEngineForGAE implements ClientHttpEngine
     */
    private DeferredFileOutputStream writeRequestBodyToOutputStream(final ClientInvocation request) throws IOException
    {
-      DeferredFileOutputStream memoryManagedOutStream =
+//	   throw new IOException("MARK SAYS DON'T USE THIS METHOD!!!");
+      DeferredFileOutputStream memoryManagedOutStream = 
               new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
-                      getTempfilePrefix(), ".tmp", this.fileUploadTempFileDir);
+                      getTempfilePrefix(), ".tmp", null);
       request.getDelegatingOutputStream().setDelegate(memoryManagedOutStream);
       request.writeRequestBody(request.getEntityStream());
       memoryManagedOutStream.close();
