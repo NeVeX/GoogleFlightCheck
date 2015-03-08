@@ -17,40 +17,5 @@
         <servlet-name>spring-mvc-servlet</servlet-name>
         <url-pattern>/flight/*</url-pattern>
     </servlet-mapping>
-	
-	
-
-<!--  
-	<context-param>
-        <param-name>resteasy.servlet.mapping.prefix</param-name>
-        <param-value>/flight</param-value>
-    </context-param>
-	
-	<servlet>
-		<servlet-name>flight-servlet</servlet-name>
-		<servlet-class>
-			org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
-                </servlet-class>
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>com.mark.FlightApplication</param-value>
-		</init-param>
-	</servlet>
- 
-	<servlet-mapping>
-		<servlet-name>flight-servlet</servlet-name>
-		<url-pattern>/flight/*</url-pattern>
-	</servlet-mapping>
-	
-	
-    
-	
-	<listener>
-		<listener-class>
-			org.jboss.resteasy.plugins.spring.SpringContextLoaderListener
-		</listener-class>
-	</listener>
-	
-	-->
 
 </web-app>

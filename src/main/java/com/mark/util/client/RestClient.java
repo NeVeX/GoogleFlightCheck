@@ -29,7 +29,6 @@ public class RestClient {
 	
 	static
 	{
-	//	client = new ResteasyClientBuilder().re.build();
 		ClientConnectionManager cm = new BasicClientConnectionManager();
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		HttpEngineForGAE engine = new HttpEngineForGAE(httpClient);
@@ -48,7 +47,7 @@ public class RestClient {
 			throw new FlightException("Class to use for REST client creation cannot be null", null);
 		}
 		
-		System.out.println("Creating REST client");
+		System.out.println("Creating REST client for class ["+clazz+"]");
         ResteasyWebTarget target = client.target(baseUrl);
         T proxyClient = target.proxy(clazz);
 		System.out.println("REST client created for baseUrl ["+baseUrl+"] with class ["+clazz+"]");

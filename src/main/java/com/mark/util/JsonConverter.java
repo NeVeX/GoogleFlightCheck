@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 
 import com.google.gson.Gson;
 import com.mark.exception.FlightException;
-import com.mark.model.google.response.GoogleFlightResponse;
 
 public class JsonConverter {
 

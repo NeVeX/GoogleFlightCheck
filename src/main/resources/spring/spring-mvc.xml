@@ -12,17 +12,7 @@
     <context:component-scan base-package="com.mark"/>
     
     <mvc:annotation-driven />
-    
-    <!--<mvc:default-servlet-handler/>  server up html too - don't have the dispatcher treat everything like a servlet request -->
 
-  <!-- <import resource="classpath:springmvc-resteasy.xml" /> -->
-  
-  <!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"> -->
-    <!-- <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /> -->
-   <!--  <property name="prefix" value="/WEB-INF/views/" />
-    <property name="suffix" value=".html" />
-  </bean> -->
-  
   <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
 	  <property name="prefix" value="/WEB-INF/views/" />
 	  <property name="suffix" value=".html" />
@@ -34,9 +24,6 @@
 	</bean>
 	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
 	  <property name="templateEngine" ref="templateEngine" />
-	<!-- 	  <property name="order" value="1" />
-	  <property name="viewNames" value="*.html" />
-	 -->
 	</bean>
 	
 
