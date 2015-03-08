@@ -28,4 +28,11 @@ public class FlightSearch implements Serializable {
 	public void setDateString(String dateString) {
 		this.dateString = dateString;
 	}
+	@Override
+	public String toString() {
+		return "FlightSearch ["+super.toString()+" origin=" + origin + ", destination="
+				+ destination + ", dateString=" + dateString + "]";
+	}
+	
+	
 }

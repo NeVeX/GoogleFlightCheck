@@ -37,18 +37,19 @@ public class FlightDALImpl implements FlightDAL {
 	
 	@Override
 	public FlightSavedSearch save(String origin, String destination, DateTime date) {
+		FlightSavedSearch fss = new FlightSavedSearch();
+		fss.setDate(date);
+		fss.setDestination(destination);
+		fss.setOrigin(origin);
+		fss.setExistingSearch(false);
+		System.out.println("Saving flight search: "+fss.toString());
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity en = new Entity(FLIGHT_SEARCH_TABLE);
 		en.setProperty(DATE,DateConverter.convertToString(date));
 		en.setProperty(DESTINATION,destination);
 		en.setProperty(ORIGIN,origin);
 		Key key = datastore.put(en);
-		FlightSavedSearch fss = new FlightSavedSearch();
-		fss.setDate(date);
-		fss.setDestination(destination);
 		fss.setKey(key);
-		fss.setOrigin(origin);
-		fss.setExistingSearch(false);
 		return fss;
 	}
 
@@ -83,7 +84,6 @@ public class FlightDALImpl implements FlightDAL {
 
 	@Override
 	public FlightData findFlightData(FlightSavedSearch savedSearch) {
-		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key key = savedSearch.getKey();
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY, FilterOperator.EQUAL, key);
@@ -101,11 +101,19 @@ public class FlightDALImpl implements FlightDAL {
 	private FlightData createFlightDataFromEntity(Entity entity) {
 		FlightData fd = new FlightData();
 		fd.setDate(DateConverter.convertToDateTime((String)entity.getProperty(DATE)));
-		fd.setDestination((String)entity.getProperty(DATE));
-		fd.setOrigin((String)entity.getProperty(DATE));
+		fd.setDestination((String)entity.getProperty(DESTINATION));
+		fd.setOrigin((String)entity.getProperty(ORIGIN));
 		fd.setKey(entity.getKey());
-		fd.setLowestPrice((Float)entity.getProperty(DATE));
-		fd.setShortestTimePrice((Float)entity.getProperty(DATE));
+		Double lowestPrice = (Double) entity.getProperty(LOWEST_PRICE);
+		Double shortestPrice = (Double) entity.getProperty(SHORTEST_TIME_PRICE);
+		if ( lowestPrice != null )
+		{
+			fd.setLowestPrice(new Float(lowestPrice));
+		}
+		if ( shortestPrice != null)
+		{
+			fd.setShortestTimePrice(new Float(shortestPrice));
+		}
 		return fd;
 	}
 
@@ -113,6 +121,7 @@ public class FlightDALImpl implements FlightDAL {
 	public boolean saveFlightData(FlightData fd) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity en = new Entity(FLIGHT_DATA_TABLE);
+		
 		en.setProperty(DATE,DateConverter.convertToString(fd.getDate()));
 		en.setProperty(DESTINATION,fd.getDestination());
 		en.setProperty(ORIGIN,fd.getOrigin());
@@ -127,17 +136,17 @@ public class FlightDALImpl implements FlightDAL {
 		System.out.println("Getting all Flight saved searches");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query(FLIGHT_SEARCH_TABLE).addSort(DATE, SortDirection.DESCENDING);
-		Iterable<Entity> iter = datastore.prepare(q).asIterable();
-		List<FlightSavedSearch> allApplicationStates = new ArrayList<FlightSavedSearch>();
-		while (iter.iterator().hasNext())
+		List<FlightSavedSearch> allFlightSavedSearchs = new ArrayList<FlightSavedSearch>();
+		for(Entity en : datastore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
 		{
-			Entity en = iter.iterator().next();
 			if( en != null)
 			{
-				allApplicationStates.add(this.createFlightSavedSearchFromEntity(en));
+				FlightSavedSearch fss = this.createFlightDataFromEntity(en);
+				System.out.println("Found Flight Saved Search: "+fss.toString());
+				allFlightSavedSearchs.add(fss);;
 			}
 		}
-		return null;
+		return allFlightSavedSearchs;
 	}
 
 	@Override
@@ -145,16 +154,16 @@ public class FlightDALImpl implements FlightDAL {
 		System.out.println("Getting all saved Flight Data");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query(FLIGHT_DATA_TABLE).addSort(DATE, SortDirection.DESCENDING);
-		Iterable<Entity> iter = datastore.prepare(q).asIterable();
-		List<FlightData> allApplicationStates = new ArrayList<FlightData>();
-		while (iter.iterator().hasNext())
+		List<FlightData> allFlightData = new ArrayList<FlightData>();
+		for(Entity en : datastore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
 		{
-			Entity en = iter.iterator().next();
 			if( en != null)
 			{
-				allApplicationStates.add(this.createFlightDataFromEntity(en));
+				FlightData fd = this.createFlightDataFromEntity(en);
+				System.out.println("Found Flight Data: "+fd.toString());
+				allFlightData.add(fd);;
 			}
 		}
-		return null;
+		return allFlightData;
 	}
 }

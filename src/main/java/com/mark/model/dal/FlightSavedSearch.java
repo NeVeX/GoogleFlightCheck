@@ -37,11 +37,11 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	public void setDate(DateTime date) {
 		this.date = date;
 	}
-	
-	
-	
-	
-	
+	@Override
+	public String toString() {
+		return "FlightSavedSearch [key=" + key + ", existingSearch="
+				+ existingSearch + ", date=" + date + "]";
+	}
 
 }
 
