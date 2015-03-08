@@ -12,6 +12,9 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	private Float shortestTimePrice;
 	private Float lowestPrice;
 	private DateTime dateSearched;
+	private Long lowestPriceTripDuration;
+	private Long shortestTimePriceTripDuration;
+	
 	
 	public Float getShortestTimePrice() {
 		return shortestTimePrice;
@@ -39,6 +42,19 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 		return "FlightData ["+super.toString()+" shortestTimePrice=" + shortestTimePrice
 				+ ", lowestPrice=" + lowestPrice + ", dateSearched="
 				+ dateSearched + "]";
+	}
+	public Long getLowestPriceTripDuration() {
+		return lowestPriceTripDuration;
+	}
+	public void setLowestPriceTripDuration(Long lowestPriceTripDuration) {
+		this.lowestPriceTripDuration = lowestPriceTripDuration;
+	}
+	public Long getShortestTimePriceTripDuration() {
+		return shortestTimePriceTripDuration;
+	}
+	public void setShortestTimePriceTripDuration(
+			Long shortestTimePriceTripDuration) {
+		this.shortestTimePriceTripDuration = shortestTimePriceTripDuration;
 	}
 	
 	

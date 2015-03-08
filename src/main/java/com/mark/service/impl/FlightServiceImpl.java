@@ -150,9 +150,11 @@ public class FlightServiceImpl implements IFlightService {
 		fd.setOrigin(fpdCheap.getOrigin());
 		fd.setDestination(fpdCheap.getDestination());
 		fd.setLowestPrice(fpdCheap.getPrice());
+		fd.setLowestPriceTripDuration(new Long(fpdCheap.getTripLength()));
 		Collections.sort(listOfFlights, new FlightLowestPriceForShortestTimeCompare());
 		FlightParsedData fpdShortest = listOfFlights.get(0);
 		fd.setShortestTimePrice(fpdShortest.getPrice());
+		fd.setShortestTimePriceTripDuration(new Long(fpdShortest.getTripLength()));
 		return fd;
 	}
 

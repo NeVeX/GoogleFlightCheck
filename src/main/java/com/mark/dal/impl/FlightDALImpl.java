@@ -38,6 +38,10 @@ public class FlightDALImpl implements FlightDAL {
 	private static final String LOWEST_PRICE = "LOWEST_PRICE";
 	private static final String SHORTEST_TIME_PRICE = "SHORTEST_TIME";
 	private static final String SEARCH_DATE = "SEARCH_DATE";
+	private static final String SHORTEST_PRICE_DURATION = "SHORTEST_PRICE_DURATION";
+	private static final String LOWEST_PRICE_DURATION = "LOWEST_PRICE_DURATION";
+	
+	
 	private DatastoreService dataStore;
 	
 	@PostConstruct
@@ -118,6 +122,8 @@ public class FlightDALImpl implements FlightDAL {
 		fd.setOrigin((String)entity.getProperty(ORIGIN));
 		fd.setKey(entity.getKey());
 		fd.setDateSearched(DateConverter.convertToDateTime((String)entity.getProperty(SEARCH_DATE)));
+		fd.setLowestPriceTripDuration((Long) entity.getProperty(LOWEST_PRICE_DURATION));
+		fd.setShortestTimePriceTripDuration((Long) entity.getProperty(SHORTEST_PRICE_DURATION));
 		Double lowestPrice = (Double) entity.getProperty(LOWEST_PRICE);
 		Double shortestPrice = (Double) entity.getProperty(SHORTEST_TIME_PRICE);
 		if ( lowestPrice != null )
@@ -143,6 +149,8 @@ public class FlightDALImpl implements FlightDAL {
 		en.setProperty(SHORTEST_TIME_PRICE,fd.getShortestTimePrice());
 		en.setProperty(SAVED_SEARCH_KEY_ID, fd.getKey().getId());
 		en.setProperty(SEARCH_DATE, searchDate);
+		en.setProperty(LOWEST_PRICE_DURATION, fd.getLowestPriceTripDuration());
+		en.setProperty(SHORTEST_PRICE_DURATION, fd.getShortestTimePriceTripDuration());
 		return dataStore.put(en) != null ? true : false;
 	}
 

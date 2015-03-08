@@ -11,5 +11,9 @@ public class FlightException extends RuntimeException {
 	{
 		super(msg, e);
 	}
+
+	public FlightException(String msg) {
+		super(msg);
+	}
 	
 }

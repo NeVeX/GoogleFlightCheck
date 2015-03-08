@@ -17,11 +17,6 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	private Boolean existingSearch;
 	private DateTime date;
 	
-	public String getDateString()
-	{
-		return DateConverter.convertToString(date);
-	}
-	
 	public Key getKey() {
 		return key;
 	}
@@ -42,6 +37,7 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	}
 	public void setDate(DateTime date) {
 		this.date = date;
+		super.setDateString(DateConverter.convertToString(date));
 	}
 	@Override
 	public String toString() {

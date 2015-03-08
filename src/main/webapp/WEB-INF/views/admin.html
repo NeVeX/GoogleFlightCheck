@@ -2,64 +2,67 @@
 <html>
 <head>
 <meta charset="ISO-8859-1"></meta>
-<title>Mark's Flight History Page</title>
+<title>Flight Admin Page</title>
 </head>
 <body>
-	<div
-		style="width =: 600px; height: 600px; margin: 0 auto; display: inline; text-align: center;">
-		<h2>Application States</h2>
-		<table>
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Flight API Count</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="as : ${allApplicationStates}">
-					<td th:text="${as.date}">DATE</td>
-					<td th:text="${as.flightApiCount}">FLIGHT_API_COUNT</td>
-				</tr>
-			</tbody>
-		</table>
-		<h2 style="margin-top: 30px">Saved Flight Searches</h2>
-		<table>
-			<thead>
-				<tr>
-					<th>Origin</th>
-					<th>Destination</th>
-					<th>Date</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="ss : ${allSavedSearches}">
-					<td th:text="${ss.origin}">ORIGIN</td>
-					<td th:text="${ss.destination}">DESTINATION</td>
-					<td th:text="${ss.date}">DATE</td>
-				</tr>
-			</tbody>
-		</table>
+	<h2>Application States</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Flight API Count</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="as : ${allApplicationStates}">
+				<td th:text="${as.date}">DATE</td>
+				<td th:text="${as.flightApiCount}">FLIGHT_API_COUNT</td>
+			</tr>
+		</tbody>
+	</table>
+	<h2 style="margin-top: 30px">Saved Flight Searches</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Origin</th>
+				<th>Destination</th>
+				<th>Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ss : ${allSavedSearches}">
+				<td th:text="${ss.origin}">ORIGIN</td>
+				<td th:text="${ss.destination}">DESTINATION</td>
+				<td th:text="${ss.dateString}">DATE</td>
+			</tr>
+		</tbody>
+	</table>
 
-		<h2 style="margin-top: 30px">Flight Data</h2>
-		<table>
-			<thead>
-				<tr>
-					<th>Origin</th>
-					<th>Destination</th>
-					<th>Date</th>
+	<h2 style="margin-top: 30px">Flight Data</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Origin</th>
+				<th>Destination</th>
+				<th>Date</th>
+				<th>Lowest Price</th>
+				<th>Lowest Price Duration</th>
+				<th>Shortest Price</th>
+				<th>Shortest Price Duration</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="fd : ${allFlightData}">
+				<td th:text="${fd.origin}">ORIGIN</td>
+				<td th:text="${fd.destination}">DESTINATION</td>
+				<td th:text="${fd.dateString}">DATE</td>
+				<td th:text="${fd.lowestPrice}">LOWEST_PRICE</td>
+				<td th:text="${fd.lowestPriceTripDuration}">LOWEST_PRICE_TRIP_DURATION</td>
+				<td th:text="${fd.shortestTimePrice}">SHORTEST_TIME_PRICE</td>
+				<td th:text="${fd.shortestTimePriceTripDuration}">SHORTEST_PRICE_TRIP_DURATION</td>
+			</tr>
+		</tbody>
+	</table>
 
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="fd : ${allFlightData}">
-					<td th:text="${fd.origin}">ORIGIN</td>
-					<td th:text="${fd.destination}">DESTINATION</td>
-					<td th:text="${fd.date}">DATE</td>
-					<td th:text="${fd.lowestPrice}">LOWEST_PRICE</td>
-					<td th:text="${fd.shortestTimePrice}">SHORTEST_TIME_PRICE</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
 </body>
 </html>
