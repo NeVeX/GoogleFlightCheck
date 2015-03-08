@@ -47,7 +47,7 @@ public class FlightController {
 		if (!model.containsKey("flightData"))
 		{
 			FlightData fd = new FlightData();
-			fd.setDate(new DateTime());
+			fd.setDepartureDate(new DateTime());
 			fd.setDestination("DUB");
 			fd.setOrigin("SFO");
 			model.addAttribute("flightData", fd);
@@ -62,9 +62,10 @@ public class FlightController {
 		{
 			String from = fii.getOrigin();
 			String to = fii.getDestination();
-			String date = fii.getDateString();
-			checkInputs(from, to, date);
-			FlightData fd = flightService.getFlights(from, to, date);
+			String departureDate = fii.getDepartureDateString();
+			String returnDate = fii.getReturnDateString();
+			checkInputs(from, to, departureDate);
+			FlightData fd = flightService.getFlights(from, to, departureDate, returnDate);
 			redirectAttributes.addFlashAttribute("flightData", fd);	
 		}
 		String re = request.getServletPath();

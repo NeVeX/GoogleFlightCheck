@@ -28,7 +28,7 @@ public class DateConverter {
 				System.err.println("Could not convert DateTime ["+dt+"] to String with Format ["+DATE_FORMAT+"]");
 			}
 		}
-		return "";
+		return null;
 	}
 	
 	/**

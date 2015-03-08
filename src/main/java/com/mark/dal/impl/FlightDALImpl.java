@@ -30,7 +30,8 @@ import com.mark.util.converter.DateConverter;
 public class FlightDALImpl implements FlightDAL {
 
 	private static final String FLIGHT_SEARCH_TABLE = "FlightSavedSearch";
-	private static final String DATE = "DATE";
+	private static final String DEPARTURE_DATE = "DEPARTURE_DATE";
+	private static final String RETURN_DATE = "RETURN_DATE";
 	private static final String DESTINATION = "DESTINATION";
 	private static final String ORIGIN = "ORIGIN";
 	private static final String SAVED_SEARCH_KEY_ID = "SAVED_SEARCH_KEY_ID";
@@ -41,7 +42,6 @@ public class FlightDALImpl implements FlightDAL {
 	private static final String SHORTEST_PRICE_DURATION = "SHORTEST_PRICE_DURATION";
 	private static final String LOWEST_PRICE_DURATION = "LOWEST_PRICE_DURATION";
 	
-	
 	private DatastoreService dataStore;
 	
 	@PostConstruct
@@ -51,15 +51,17 @@ public class FlightDALImpl implements FlightDAL {
 	}
 	
 	@Override
-	public FlightSavedSearch save(String origin, String destination, DateTime date) {
+	public FlightSavedSearch save(String origin, String destination, DateTime departureDate, DateTime returnDate) {
 		FlightSavedSearch fss = new FlightSavedSearch();
-		fss.setDate(date);
+		fss.setDepartureDate(departureDate);
+		fss.setReturnDate(returnDate);
 		fss.setDestination(destination);
 		fss.setOrigin(origin);
 		fss.setExistingSearch(false);
 		System.out.println("Saving flight search: "+fss.toString());
 		Entity en = new Entity(FLIGHT_SEARCH_TABLE);
-		en.setProperty(DATE,DateConverter.convertToString(date));
+		en.setProperty(DEPARTURE_DATE, DateConverter.convertToString(departureDate));
+		en.setProperty(RETURN_DATE, DateConverter.convertToString(returnDate));
 		en.setProperty(DESTINATION,destination);
 		en.setProperty(ORIGIN,origin);
 		Key key = dataStore.put(en);
@@ -68,12 +70,13 @@ public class FlightDALImpl implements FlightDAL {
 	}
 
 	@Override
-	public FlightSavedSearch find(String origin, String destination, DateTime date) {
-		System.out.println("Searching for Saved Flight Search ["+origin+", "+destination+", "+date+"]");
+	public FlightSavedSearch find(String origin, String destination, DateTime departureDate, DateTime returnDate) {
+		System.out.println("Searching for Saved Flight Search ["+origin+", "+destination+", "+departureDate+", "+returnDate+"]");
 		Filter originCompare = new FilterPredicate(ORIGIN, FilterOperator.EQUAL, origin);
 		Filter destinationCompare = new FilterPredicate(DESTINATION, FilterOperator.EQUAL, destination);
-		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, DateConverter.convertToString(date));
-		Filter allCompares = CompositeFilterOperator.and(originCompare, destinationCompare, dateCompare);
+		Filter departureDateCompare = new FilterPredicate(DEPARTURE_DATE, FilterOperator.EQUAL, DateConverter.convertToString(departureDate));
+		Filter returnDateCompare = new FilterPredicate(RETURN_DATE, FilterOperator.EQUAL, DateConverter.convertToString(returnDate));
+		Filter allCompares = CompositeFilterOperator.and(originCompare, destinationCompare, departureDateCompare, returnDateCompare);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setFilter(allCompares);
 		System.out.println("Query: "+q.toString());
 		Entity entity = dataStore.prepare(q).asSingleEntity();
@@ -90,10 +93,10 @@ public class FlightDALImpl implements FlightDAL {
 
 	private FlightSavedSearch createFlightSavedSearchFromEntity(Entity entity) {
 		FlightSavedSearch fss = new FlightSavedSearch();
-		fss.setDate(DateConverter.convertToDateTime((String)entity.getProperty(DATE)));
+		fss.setDepartureDate(DateConverter.convertToDateTime((String)entity.getProperty(DEPARTURE_DATE)));
+		fss.setReturnDate(DateConverter.convertToDateTime((String)entity.getProperty(RETURN_DATE)));
 		fss.setDestination(((String)entity.getProperty(DESTINATION)));
 		fss.setOrigin(((String)entity.getProperty(ORIGIN)));
-		fss.setExistingSearch(true);
 		fss.setKey(entity.getKey());
 		return fss;	
 	}
@@ -111,7 +114,9 @@ public class FlightDALImpl implements FlightDAL {
 		if (entity != null)
 		{
 			System.out.println("Found a match for flight data search for key ["+key.getId()+"] and date ["+searchDate+"]");
-			return createFlightDataFromEntity(entity);
+			FlightData fd =createFlightDataFromEntity(entity);
+			fd.setExistingSearch(true);
+			return fd;
 		}
 		System.out.println("No match found for flight saved data for key ["+key.getId()+"]");	
 		return null;
@@ -119,7 +124,8 @@ public class FlightDALImpl implements FlightDAL {
 
 	private FlightData createFlightDataFromEntity(Entity entity) {
 		FlightData fd = new FlightData();
-		fd.setDate(DateConverter.convertToDateTime((String)entity.getProperty(DATE)));
+		fd.setDepartureDate(DateConverter.convertToDateTime((String)entity.getProperty(DEPARTURE_DATE)));
+		fd.setReturnDate(DateConverter.convertToDateTime((String)entity.getProperty(RETURN_DATE)));
 		fd.setDestination((String)entity.getProperty(DESTINATION));
 		fd.setOrigin((String)entity.getProperty(ORIGIN));
 		fd.setKey(entity.getKey());
@@ -144,7 +150,8 @@ public class FlightDALImpl implements FlightDAL {
 		System.out.println("Saving Flight Data: "+fd.toString());
 		String searchDate = DateConverter.convertToString(new DateTime());
 		Entity en = new Entity(FLIGHT_DATA_TABLE);
-		en.setProperty(DATE,DateConverter.convertToString(fd.getDate()));
+		en.setProperty(DEPARTURE_DATE,DateConverter.convertToString(fd.getDepartureDate()));
+		en.setProperty(RETURN_DATE,DateConverter.convertToString(fd.getReturnDate()));
 		en.setProperty(DESTINATION,fd.getDestination());
 		en.setProperty(ORIGIN,fd.getOrigin());
 		en.setProperty(LOWEST_PRICE,fd.getLowestPrice());
@@ -159,7 +166,7 @@ public class FlightDALImpl implements FlightDAL {
 	@Override
 	public List<FlightSavedSearch> getAllFlightSavedSearches() {
 		System.out.println("Getting all Flight saved searches");
-		Query q = new Query(FLIGHT_SEARCH_TABLE).addSort(DATE, SortDirection.DESCENDING);
+		Query q = new Query(FLIGHT_SEARCH_TABLE).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightSavedSearch> allFlightSavedSearchs = new ArrayList<FlightSavedSearch>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
@@ -177,7 +184,7 @@ public class FlightDALImpl implements FlightDAL {
 	@Override
 	public List<FlightData> getAllFlightData() {
 		System.out.println("Getting all saved Flight Data");
-		Query q = new Query(FLIGHT_DATA_TABLE).addSort(DATE, SortDirection.DESCENDING);
+		Query q = new Query(FLIGHT_DATA_TABLE).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightData> allFlightData = new ArrayList<FlightData>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))

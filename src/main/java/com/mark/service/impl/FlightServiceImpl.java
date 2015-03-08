@@ -94,13 +94,14 @@ public class FlightServiceImpl implements IFlightService {
 
 	// For now return the mock data from the google docs
 	@Override
-	public FlightData getFlights(String from, String to, String dateString)
+	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString)
 	{	
-		DateTime dt = DateConverter.convertToDateTime(dateString);
-		FlightSavedSearch savedSearch = flightDAL.find(from, to, dt);
+		DateTime departureDate = DateConverter.convertToDateTime(departureDateString);
+		DateTime returnDate = DateConverter.convertToDateTime(returnDateString);
+		FlightSavedSearch savedSearch = flightDAL.find(from, to, departureDate, returnDate);
 		if ( savedSearch == null )
 		{
-			savedSearch = flightDAL.save(from, to, dt);
+			savedSearch = flightDAL.save(from, to, departureDate, returnDate);
 		}
 		// we have the saved search now. 
 		// Check if we have the data for this search
@@ -146,7 +147,8 @@ public class FlightServiceImpl implements IFlightService {
 		FlightData fd = new FlightData();
 		Collections.sort(listOfFlights, new FlightLowestPriceCompare());
 		FlightParsedData fpdCheap = listOfFlights.get(0);
-		fd.setDate(fpdCheap.getDate());
+		fd.setDepartureDate(fpdCheap.getDepartureDate());
+		fd.setReturnDate(fpdCheap.getReturnDate());
 		fd.setOrigin(fpdCheap.getOrigin());
 		fd.setDestination(fpdCheap.getDestination());
 		fd.setLowestPrice(fpdCheap.getPrice());
@@ -183,9 +185,9 @@ public class FlightServiceImpl implements IFlightService {
 			fd.setPrice(price);
 			fd.setNumberOfStops(stops);
 			fd.setTripLength(tripLength);
-			fd.setDate(fss.getDate());
+			fd.setDepartureDate(fss.getDepartureDate());
+			fd.setReturnDate(fss.getReturnDate());
 			fd.setDestination(fss.getDestination());
-			
 			fd.setOrigin(fss.getOrigin());
 			parsedData.add(fd);
 		}
@@ -205,7 +207,7 @@ public class FlightServiceImpl implements IFlightService {
 		Slice s = new Slice();
 		s.setOrigin(fss.getOrigin());
 		s.setDestination(fss.getDestination());
-		s.setDate(DateConverter.convertToString(fss.getDate()));
+		s.setDate(DateConverter.convertToString(fss.getDepartureDate()));
 		slices.add(s);
 		gfr.setSlice(slices);
 		gfr.setSolutions(20);

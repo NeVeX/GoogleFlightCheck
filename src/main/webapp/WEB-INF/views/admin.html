@@ -28,14 +28,16 @@
 				<tr>
 					<th>Origin</th>
 					<th>Destination</th>
-					<th>Date</th>
+					<th>Departure Date</th>
+					<th>Return Date</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="ss : ${allSavedSearches}">
 					<td th:text="${ss.origin}">ORIGIN</td>
 					<td th:text="${ss.destination}">DESTINATION</td>
-					<td th:text="${ss.dateString}">DATE</td>
+					<td th:text="${ss.departureDateString}">DEPARTURE_DATE</td>
+					<td th:text="${ss.returnDateString}">RETURN_DATE</td>
 				</tr>
 			</tbody>
 		</table>
@@ -46,7 +48,8 @@
 				<tr>
 					<th>Origin</th>
 					<th>Destination</th>
-					<th>Date</th>
+					<th>Departure Date</th>
+					<th>Return Date</th>
 					<th>Lowest Price</th>
 					<th>Lowest Price Duration</th>
 					<th>Shortest Price</th>
@@ -57,7 +60,8 @@
 				<tr th:each="fd : ${allFlightData}">
 					<td th:text="${fd.origin}">ORIGIN</td>
 					<td th:text="${fd.destination}">DESTINATION</td>
-					<td th:text="${fd.dateString}">DATE</td>
+					<td th:text="${fd.departureDateString}">DEPARTURE_DATE</td>
+					<td th:text="${fd.returnDateString}">RETURN_DATE</td>
 					<td th:text="${fd.lowestPrice}">LOWEST_PRICE</td>
 					<td th:text="${fd.lowestPriceTripDuration}">LOWEST_PRICE_TRIP_DURATION</td>
 					<td th:text="${fd.shortestTimePrice}">SHORTEST_TIME_PRICE</td>

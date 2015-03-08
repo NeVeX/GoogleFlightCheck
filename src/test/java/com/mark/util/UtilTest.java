@@ -30,7 +30,7 @@ public class UtilTest {
 	public void testRequestParams()
 	{
 		FlightSavedSearch fss = new FlightSavedSearch();
-		fss.setDate(DateConverter.convertToDateTime("2014-10-19"));
+		fss.setDepartureDate(DateConverter.convertToDateTime("2014-10-19"));
 		fss.setDestination("dest");
 		fss.setOrigin("origin");
 		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);

@@ -15,7 +15,8 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	
 	private Key key;
 	private Boolean existingSearch = false;
-	private DateTime date;
+	private DateTime departureDate;
+	private DateTime returnDate;
 	
 	public Key getKey() {
 		return key;
@@ -23,6 +24,12 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	public void setKey(Key key) {
 		this.key = key;
 	}
+	
+
+	public Boolean getExistingSearch() {
+		return existingSearch;
+	}
+	
 	public Boolean isExistingSearch() {
 		return existingSearch;
 	}
@@ -32,17 +39,26 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	public DateTime getDate() {
-		return date;
-	}
-	public void setDate(DateTime date) {
-		this.date = date;
-		super.setDateString(DateConverter.convertToString(date));
+
+	public DateTime getDepartureDate() {
+		return departureDate;
 	}
 	@Override
 	public String toString() {
 		return "FlightSavedSearch [key=" + key + ", existingSearch="
-				+ existingSearch + ", date=" + date + "]";
+				+ existingSearch + ", departureDate=" + departureDate
+				+ ", returnDate=" + returnDate + "]";
+	}
+	public void setDepartureDate(DateTime departureDate) {
+		this.departureDate = departureDate;
+		super.setDepartureDateString(DateConverter.convertToString(departureDate));
+	}
+	public DateTime getReturnDate() {
+		return returnDate;
+	}
+	public void setReturnDate(DateTime returnDate) {
+		this.returnDate = returnDate;
+		super.setReturnDateString(DateConverter.convertToString(returnDate));
 	}
 
 }

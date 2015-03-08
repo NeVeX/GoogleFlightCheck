@@ -11,7 +11,8 @@ public class FlightSearch implements Serializable {
 	private static final long serialVersionUID = 4160281245555626055L;
 	private String origin;
 	private String destination;
-	private String dateString;
+	private String departureDateString;
+	private String returnDateString;
 	
 	public String getOrigin() {
 		return origin;
@@ -25,13 +26,23 @@ public class FlightSearch implements Serializable {
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
-	
-	public String getDateString() {
-		return dateString;
+	public String getDepartureDateString() {
+		return departureDateString;
 	}
-	public void setDateString(String dateString) {
-		this.dateString = dateString;
+	public void setDepartureDateString(String departureDateString) {
+		this.departureDateString = departureDateString;
 	}
-	
-	
+	public String getReturnDateString() {
+		return returnDateString;
+	}
+	public void setReturnDateString(String returnDateString) {
+		this.returnDateString = returnDateString;
+	}
+	@Override
+	public String toString() {
+		return "FlightSearch [origin=" + origin + ", destination="
+				+ destination + ", departureDateString=" + departureDateString
+				+ ", returnDateString=" + returnDateString + "]";
+	}
+
 }

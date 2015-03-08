@@ -10,7 +10,8 @@ public class FlightParsedData extends FlightSearch implements Serializable {
 	private float price;
 	private int numberOfStops;
 	private int tripLength;
-	private DateTime date;
+	private DateTime departureDate;
+	private DateTime returnDate;
 	
 	public float getPrice() {
 		return price;
@@ -33,12 +34,19 @@ public class FlightParsedData extends FlightSearch implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	public DateTime getDate() {
-		return date;
+	public DateTime getDepartureDate() {
+		return departureDate;
 	}
-	public void setDate(DateTime date) {
-		this.date = date;
+	public void setDepartureDate(DateTime departureDate) {
+		this.departureDate = departureDate;
 	}
+	public DateTime getReturnDate() {
+		return returnDate;
+	}
+	public void setReturnDate(DateTime returnDate) {
+		this.returnDate = returnDate;
+	}
+	
 	
 	
 

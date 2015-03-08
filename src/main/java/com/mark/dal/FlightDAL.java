@@ -9,9 +9,9 @@ import com.mark.model.dal.FlightSavedSearch;
 
 public interface FlightDAL {
 
-	public FlightSavedSearch save(String origin, String destination, DateTime date);
+	public FlightSavedSearch save(String origin, String destination, DateTime departureDate, DateTime returnDate);
 	
-	public FlightSavedSearch find(String origin, String destination, DateTime date);
+	public FlightSavedSearch find(String origin, String destination, DateTime departureDate, DateTime returnDate);
 
 	public FlightData findFlightData(FlightSavedSearch savedSearch);
 	

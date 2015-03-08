@@ -7,19 +7,27 @@
 <body>
 	<div
 		style="width =: 200px; height: 200px; margin: 0 auto; display: inline; text-align: center;">
-		<h2>Details</h2>
+		<h3>Enter your flight details below</h3>
 		<form method="post" action="main/inputs" th:object="${flightData}">
 			<table style="margin: auto;">
 				<tr>
-					<td>From</td>
+					<td>Origin</td>
 					<td><input type="text" name="origin" th:field="*{origin}"></input></td>
-					<td>To</td>
+				</tr>
+				<tr>
+					<td>Destination</td>
 					<td><input type="text" name="destination"
 						th:field="*{destination}"></input></td>
 				</tr>
 				<tr style="margin-top: 30px">
-					<td>Date</td>
-					<td><input type="date" name="date" th:field="*{dateString}"></input></td>
+					<td>Departure Date</td>
+					<td><input type="date" name="departureDate"
+						th:field="*{departureDateString}"></input></td>
+				</tr>
+				<tr style="margin-top: 30px"  >
+					<td>Return Date</td>
+					<td ><input type="date" name="returnDate"
+						th:field="*{returnDateString}" disabled="disabled"></input>Coming soon</td>
 				</tr>
 				<tr style="margin-top: 50px;">
 					<td align="left"><button type="submit">Search</button></td>
@@ -38,8 +46,12 @@
 				<td th:text="${flightData.destination}"></td>
 			</tr>
 			<tr>
-				<td>Date</td>
-				<td th:text="${flightData.dateString}"></td>
+				<td>Departure Date</td>
+				<td th:text="${flightData.departureDateString}"></td>
+			</tr>
+			<tr>
+				<td>Return Date</td>
+				<td th:text="${flightData.returnDateString}"></td>
 			</tr>
 			<tr>
 				<td>Lowest Price</td>
@@ -52,15 +64,14 @@
 		</table>
 
 		<div th:switch="${flightData.existingSearch}">
-			<p th:case="'false'">This search has now being saved and will run
+			<p th:case="${false}">This search has now being saved and will run
 				daily to track flight fares</p>
-			<p th:case="'true'">This search already exists and is already
+			<p th:case="${true}">This search already exists and is already
 				tracking flight fares daily</p>
-			<!-- <p th:case="*">You should never see this</p>    -->
 		</div>
-		<div th:if="${T(com.mark.util.FlightProperties).getProperty('debugMode')}" style="color: red">
-			In Debug Mode
-		</div>
+		<div
+			th:if="${T(com.mark.util.FlightProperties).getProperty('debugMode')}"
+			style="color: red">In Debug Mode</div>
 	</div>
 
 </body>

@@ -11,7 +11,7 @@ import com.mark.model.google.response.GoogleFlightResponse;
 
 public interface IFlightService {
 
-	public FlightData getFlights(String from, String to, String date);
+	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString);
 
 	public List<FlightSavedSearch> getAllFlightSavedSearches();
 
