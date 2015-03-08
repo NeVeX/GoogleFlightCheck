@@ -80,7 +80,9 @@ public class FlightDALImpl implements FlightDAL {
 		if ( entity != null)
 		{
 			System.out.println("Found a match for search");	
-			return createFlightSavedSearchFromEntity(entity);
+			FlightSavedSearch fss = createFlightSavedSearchFromEntity(entity);
+			fss.setExistingSearch(true);
+			return fss;
 		}
 		System.out.println("No match found for search");	
 		return null;

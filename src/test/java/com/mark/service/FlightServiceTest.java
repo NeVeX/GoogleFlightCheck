@@ -3,6 +3,7 @@ package com.mark.service;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -10,11 +11,11 @@ import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.impl.FlightServiceImpl;
+import com.mark.util.FlightProperties;
 
 public class FlightServiceTest {
 	
 	IFlightService flightService = new FlightServiceImpl();
-	
 
 	@Ignore
 	public void testMockDataReturns()

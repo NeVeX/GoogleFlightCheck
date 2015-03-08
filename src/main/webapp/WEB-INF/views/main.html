@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="ISO-8859-1"></meta>
+<meta charset="ISO-8859-1"></meta>
 <title>Mark's Flight History Page</title>
 </head>
-<body >
-	<div style="width=:200px; height: 200px; margin:0 auto; display:inline; text-align: center;">
+<body>
+	<div
+		style="width =: 200px; height: 200px; margin: 0 auto; display: inline; text-align: center;">
 		<h2>Details</h2>
 		<form method="post" action="main/inputs" th:object="${flightData}">
 			<table style="margin: auto;">
@@ -13,7 +14,8 @@
 					<td>From</td>
 					<td><input type="text" name="origin" th:field="*{origin}"></input></td>
 					<td>To</td>
-					<td><input type="text" name="destination" th:field="*{destination}"></input></td>
+					<td><input type="text" name="destination"
+						th:field="*{destination}"></input></td>
 				</tr>
 				<tr style="margin-top: 30px">
 					<td>Date</td>
@@ -23,9 +25,9 @@
 					<td align="left"><button type="submit">Search</button></td>
 				</tr>
 			</table>
-			
+
 		</form>
-		
+
 		<table>
 			<tr>
 				<td>Origin</td>
@@ -48,14 +50,18 @@
 				<td th:text="${flightData.shortestTimePrice}"></td>
 			</tr>
 		</table>
-		
-		<div th:switch="${flightData.existingSearch}"> 
-		  <p th:case="'false'">This search has now being saved and will run daily to track flight fares</p>
-		  <p th:case="'true'">This search already exists and is already tracking flight fares daily</p>
-		  <!-- <p th:case="*">You should never see this</p>    -->
+
+		<div th:switch="${flightData.existingSearch}">
+			<p th:case="'false'">This search has now being saved and will run
+				daily to track flight fares</p>
+			<p th:case="'true'">This search already exists and is already
+				tracking flight fares daily</p>
+			<!-- <p th:case="*">You should never see this</p>    -->
 		</div>
-		
+		<div th:if="${T(com.mark.util.FlightProperties).getProperty('debugMode')}" style="color: red">
+			In Debug Mode
+		</div>
 	</div>
-	
+
 </body>
 </html>

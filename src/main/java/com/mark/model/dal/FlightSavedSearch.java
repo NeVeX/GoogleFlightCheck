@@ -14,7 +14,7 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private Key key;
-	private Boolean existingSearch;
+	private Boolean existingSearch = false;
 	private DateTime date;
 	
 	public Key getKey() {
