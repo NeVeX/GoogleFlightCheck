@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -38,10 +39,10 @@ import com.mark.model.google.response.Trip;
 import com.mark.model.google.response.TripOption;
 import com.mark.service.IFlightService;
 import com.mark.util.FlightProperties;
-import com.mark.util.JsonConverter;
 import com.mark.util.client.RestClient;
 import com.mark.util.client.type.IGoogleFlightClient;
 import com.mark.util.converter.DateConverter;
+import com.mark.util.converter.JsonConverter;
 
 @Service
 public class FlightServiceImpl implements IFlightService {
@@ -54,12 +55,15 @@ public class FlightServiceImpl implements IFlightService {
 	private IGoogleFlightClient client;
 	private static String apiKey = FlightProperties.getProperty("google.flight.api.key");
 	private static int flightCallLmit = Integer.valueOf(FlightProperties.getProperty("google.flight.api.daily.call.limit"));
-	private AtomicInteger flightCallCurrentCount = new AtomicInteger(0);
+	private AtomicLong flightCallCurrentCount = new AtomicLong(0);
 	@PostConstruct
 	public void setup()
 	{
 		ApplicationState appState = applicationDAL.getApplicationState();
-		flightCallCurrentCount = new AtomicInteger(appState.getFlightApiCount());
+		if ( appState != null )
+		{
+			flightCallCurrentCount = new AtomicLong(appState.getFlightApiCount());
+		}
 		// get the client we need to call Google
 		client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
 	}
@@ -211,5 +215,20 @@ public class FlightServiceImpl implements IFlightService {
 		gfr.setSaleCountry("US"); // hard code to America - all flights in USD
 		request.setRequest(gfr);
 		return request;
+	}
+
+	@Override
+	public List<FlightSavedSearch> getAllFlightSavedSearches() {
+		return flightDAL.getAllFlightSavedSearches();
+	}
+
+	@Override
+	public List<FlightData> getAllFlightData() {
+		return flightDAL.getAllFlightData();
+	}
+
+	@Override
+	public List<ApplicationState> getAllApplicationStates() {
+		return applicationDAL.getAllApplicationStates();
 	}
 }

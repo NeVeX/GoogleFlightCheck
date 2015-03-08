@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 
 public class FlightSearch implements Serializable {
 
+	private static final long serialVersionUID = 4160281245555626055L;
 	private String origin;
 	private String destination;
 	private String dateString;

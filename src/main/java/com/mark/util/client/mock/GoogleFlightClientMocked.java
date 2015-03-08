@@ -5,8 +5,8 @@ import java.io.InputStream;
 import com.mark.exception.FlightException;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.response.GoogleFlightResponse;
-import com.mark.util.JsonConverter;
 import com.mark.util.client.type.IGoogleFlightClient;
+import com.mark.util.converter.JsonConverter;
 
 
 public class GoogleFlightClientMocked implements IGoogleFlightClient

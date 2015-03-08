@@ -1,5 +1,6 @@
 package com.mark.dal.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -14,6 +15,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IApplicationDAL;
 import com.mark.model.dal.ApplicationState;
 import com.mark.util.converter.DateConverter;
@@ -34,18 +36,13 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, todayDateString);
 		Query q = new Query(APPLICATION_STATE_TABLE).setFilter(dateCompare);
 		System.out.println("Searching for application state: "+q.toString());
-		
-		ApplicationState state = new ApplicationState();
-		state.setDate(todayDate);
-		state.setFlightApiCount(0);
 		Entity result = datastore.prepare(q).asSingleEntity();
 		if ( result != null)
 		{
-			Integer apiCount = (Integer)result.getProperty(FLIGHT_API_COUNT);
-			state.setFlightApiCount(apiCount != null ? apiCount : 0);
+			ApplicationState state = this.createApplicationStateFromEntity(result);
 			System.out.println("Found application state with apiCount ["+state.getFlightApiCount()+"]");
 		}
-		return state;
+		return null;
 	}
 	
 	@Override
@@ -57,6 +54,33 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		en.setProperty(FLIGHT_API_COUNT, state.getFlightApiCount());
 		
 		return datastore.put(en) != null ? true : false;
+	}
+
+	@Override
+	public List<ApplicationState> getAllApplicationStates() {
+		System.out.println("Getting all application states");
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query(APPLICATION_STATE_TABLE).addSort(DATE, SortDirection.DESCENDING);
+		Iterable<Entity> iter = datastore.prepare(q).asIterable();
+		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();
+		while (iter.iterator().hasNext())
+		{
+			Entity en = iter.iterator().next();
+			if( en != null )
+			{
+				allApplicationStates.add(this.createApplicationStateFromEntity(en));
+			}
+		}
+		return null;
+	}
+	
+	private ApplicationState createApplicationStateFromEntity(Entity en)
+	{
+		ApplicationState appState = new ApplicationState();
+		Long apiCount = (Long)en.getProperty(FLIGHT_API_COUNT);
+		appState.setFlightApiCount(apiCount != null ? apiCount : 0);
+		appState.setDate(DateConverter.convertToDateTime((String)en.getProperty(DATE)));
+		return appState;
 	}
 	
 

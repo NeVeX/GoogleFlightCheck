@@ -1,5 +1,7 @@
 package com.mark.dal;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 
 import com.mark.model.FlightData;
@@ -14,4 +16,8 @@ public interface FlightDAL {
 	public FlightData findFlightData(FlightSavedSearch savedSearch);
 	
 	public boolean saveFlightData(FlightData fd);
+
+	public List<FlightSavedSearch> getAllFlightSavedSearches();
+
+	public List<FlightData> getAllFlightData();
 }

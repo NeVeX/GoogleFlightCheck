@@ -1,4 +1,4 @@
-package com.mark.util;
+package com.mark.util.converter;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
