@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,24 +39,17 @@ public class FlightController {
 		return "Sanity Check OK\nTime: "+new Date();
 	}
 	
-	@RequestMapping("/hello/{name}")
-	public String hello(@PathVariable("name") String name)
-	{
-		return flightService.sayHi(name)+"<br><br>Time: "+new Date();
-	}
-	
-	@RequestMapping("/hello")
-	public String hello()
-	{
-		return "Hi!<br><br>Time: "+new Date();
-	}
-	
 	@RequestMapping(value=BASE_URL, method=RequestMethod.GET)
 	public String getMainPage(ModelMap model)
 	{
 		if (!model.containsKey("flightData"))
 		{
-			model.addAttribute("flightData", new FlightData());
+			FlightData fd = new FlightData();
+			fd.setDate(new DateTime());
+			fd.setDateString(DateConverter.convertToString(fd.getDate()));
+			fd.setDestination("DUB");
+			fd.setOrigin("SFO");
+			model.addAttribute("flightData", fd);
 		}
 		return "main";
 	}

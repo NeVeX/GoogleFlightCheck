@@ -89,13 +89,7 @@ public class FlightServiceImpl implements IFlightService {
 		{
 			// TODO: implement this
 		}
-		
 		applicationDAL.saveApplicationState(appState);
-	}
-	
-	@Override
-	public String sayHi(String name) {
-		return "Hello "+name+"!";
 	}
 
 	// For now return the mock data from the google docs
