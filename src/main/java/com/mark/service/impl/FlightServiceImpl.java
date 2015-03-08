@@ -7,17 +7,23 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mark.dal.FlightDAL;
+import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
 import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
 import com.mark.model.compare.FlightLowestPriceCompare;
 import com.mark.model.compare.FlightLowestPriceForShortestTimeCompare;
+import com.mark.model.dal.ApplicationState;
 import com.mark.model.dal.FlightSavedSearch;
 import com.mark.model.google.request.DepartureTime;
 import com.mark.model.google.request.GoogleFlightRequest;
@@ -43,11 +49,45 @@ public class FlightServiceImpl implements IFlightService {
 	private String googleBaseUrl = FlightProperties.getProperty("google.flight.api.baseUrl");
 	@Autowired
 	private FlightDAL flightDAL;
-	private static boolean debugMode;
+	@Autowired
+	private IApplicationDAL applicationDAL;
+	private IGoogleFlightClient client;
+	private static boolean debugMode = Boolean.valueOf(FlightProperties.getProperty("debugMode"));
 	private static String apiKey = FlightProperties.getProperty("google.flight.api.key");
-	static
+	private static int flightCallLmit = Integer.valueOf(FlightProperties.getProperty("google.flight.api.daily.call.limit"));
+	private AtomicInteger flightCallCurrentCount = new AtomicInteger(0);
+	@PostConstruct
+	public void setup()
 	{
-		debugMode = Boolean.valueOf(FlightProperties.getProperty("debugMode"));
+		ApplicationState appState = applicationDAL.getApplicationState();
+		flightCallCurrentCount = new AtomicInteger(appState.getFlightApiCount());
+		// get the client we need to call Google
+		client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
+	}
+	
+	@PreDestroy
+	public void preDestroy()
+	{
+		this.saveState(false);
+	}
+	
+	@Override
+	public void finalize(){
+		this.saveState(false);
+	}
+	
+	
+	private void saveState(boolean async)
+	{
+		ApplicationState appState = new ApplicationState();
+		appState.setDate(new DateTime());
+		appState.setFlightApiCount(flightCallCurrentCount.get());
+		if ( async )
+		{
+			// TODO: implement this
+		}
+		
+		applicationDAL.saveApplicationState(appState);
 	}
 	
 	@Override
@@ -79,11 +119,19 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		else
 		{
-			// get the client we need to call Google
-			IGoogleFlightClient client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
-			response = client.postForFlightInfo(apiKey, createRequest(savedSearch));
+			// check if our limit is reached
+			if ( flightCallCurrentCount.get() < flightCallLmit )
+			{
+				flightCallCurrentCount.incrementAndGet(); // increment by one
+				response = client.postForFlightInfo(apiKey, createRequest(savedSearch));
+			}
+			else
+			{
+				System.err.println("The limit for today's Flight API call has being reached");
+			}
 		}
-		
+		// save the state again -> async
+		this.saveState(true);
 		if (response != null)
 		{
 			// now for the fun part, parse the result
