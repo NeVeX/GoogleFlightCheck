@@ -106,6 +106,7 @@ public class FlightServiceImpl implements IFlightService {
 		// Check if we have the data for this search
 		if ( savedSearch.isExistingSearch())
 		{
+			// find if we have data for today already
 			FlightData fd = flightDAL.findFlightData(savedSearch);
 			if ( fd != null )
 			{

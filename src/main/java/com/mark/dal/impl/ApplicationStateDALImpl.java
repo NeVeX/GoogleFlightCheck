@@ -53,9 +53,10 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	private ApplicationState findApplicationState(DateTime dt)
 	{
 		String todayDateString = DateConverter.convertToString(dt);
+		System.out.println("Searching for application state for date: "+todayDateString);
 		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, todayDateString);
 		Query q = new Query(APPLICATION_STATE_TABLE).setFilter(dateCompare);
-		System.out.println("Searching for application state: "+q.toString());
+		System.out.println("Query: "+q.toString());
 		Entity en = dataStore.prepare(q).asSingleEntity();
 		if ( en != null )
 		{
@@ -106,6 +107,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	public List<ApplicationState> getAllApplicationStates() {
 		System.out.println("Getting all application states");
 		Query q = new Query(APPLICATION_STATE_TABLE).addSort(DATE, SortDirection.DESCENDING);
+		System.out.println("Query: "+q.toString());
 		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();
 		for (Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(100)))
 		{

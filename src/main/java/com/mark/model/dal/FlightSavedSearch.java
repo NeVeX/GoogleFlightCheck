@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Primary;
 
 import com.google.appengine.api.datastore.Key;
 import com.mark.model.FlightSearch;
+import com.mark.util.converter.DateConverter;
 
 public class FlightSavedSearch extends FlightSearch implements Serializable{
 	
@@ -15,6 +16,11 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	private Key key;
 	private Boolean existingSearch;
 	private DateTime date;
+	
+	public String getDateString()
+	{
+		return DateConverter.convertToString(date);
+	}
 	
 	public Key getKey() {
 		return key;

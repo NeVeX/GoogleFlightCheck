@@ -4,12 +4,14 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
+import com.mark.util.converter.DateConverter;
+
 public class FlightSearch implements Serializable {
 
 	private static final long serialVersionUID = 4160281245555626055L;
 	private String origin;
 	private String destination;
-	private String dateString;
+	
 	public String getOrigin() {
 		return origin;
 	}
@@ -22,16 +24,11 @@ public class FlightSearch implements Serializable {
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
-	public String getDateString() {
-		return dateString;
-	}
-	public void setDateString(String dateString) {
-		this.dateString = dateString;
-	}
+	
 	@Override
 	public String toString() {
 		return "FlightSearch ["+super.toString()+" origin=" + origin + ", destination="
-				+ destination + ", dateString=" + dateString + "]";
+				+ destination+"]";
 	}
 	
 	

@@ -46,7 +46,6 @@ public class FlightController {
 		{
 			FlightData fd = new FlightData();
 			fd.setDate(new DateTime());
-			fd.setDateString(DateConverter.convertToString(fd.getDate()));
 			fd.setDestination("DUB");
 			fd.setOrigin("SFO");
 			model.addAttribute("flightData", fd);
@@ -65,7 +64,7 @@ public class FlightController {
 			FlightData fd = flightService.getFlights(from, to, date);
 			redirectAttributes.addFlashAttribute("flightData", fd);	
 		}
-		String re = request.getServletPath() ;
+		String re = request.getServletPath();
 		return "redirect:"+re+BASE_URL;
 	}
 }
