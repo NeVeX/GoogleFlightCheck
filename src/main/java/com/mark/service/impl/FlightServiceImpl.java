@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ import com.mark.util.FlightProperties;
 import com.mark.util.JsonConverter;
 import com.mark.util.client.RestClient;
 import com.mark.util.client.type.IGoogleFlightClient;
+import com.mark.util.converter.DateConverter;
 
 @Service
 public class FlightServiceImpl implements IFlightService {
@@ -55,12 +57,13 @@ public class FlightServiceImpl implements IFlightService {
 
 	// For now return the mock data from the google docs
 	@Override
-	public FlightData getFlights(String from, String to, String date)
+	public FlightData getFlights(String from, String to, String dateString)
 	{	
-		FlightSavedSearch savedSearch = flightDAL.find(from, to, date);
+		DateTime dt = DateConverter.convertToDateTime(dateString);
+		FlightSavedSearch savedSearch = flightDAL.find(from, to, dt);
 		if ( savedSearch == null )
 		{
-			savedSearch = flightDAL.save(from, to, date);
+			savedSearch = flightDAL.save(from, to, dt);
 		}
 		// we have the saved search now. 
 		// Check if we have the data for this search
@@ -168,15 +171,11 @@ public class FlightServiceImpl implements IFlightService {
 		Slice s = new Slice();
 		s.setOrigin(fss.getOrigin());
 		s.setDestination(fss.getDestination());
-		s.setDate(fss.getDate());
-//		DepartureTime dt = new DepartureTime();
-//		dt.setEarliestTime("05:00");
-//		dt.setLatestTime("23:00");
-//		s.setPermittedDepartureTime(dt);
+		s.setDate(DateConverter.convertToString(fss.getDate()));
 		slices.add(s);
 		gfr.setSlice(slices);
 		gfr.setSolutions(20);
-		gfr.setSaleCountry("US");
+		gfr.setSaleCountry("US"); // hard code to America - all flights in USD
 		request.setRequest(gfr);
 		return request;
 	}

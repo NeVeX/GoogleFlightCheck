@@ -2,6 +2,7 @@ package com.mark.dal.impl;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -18,6 +19,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.FlightDAL;
 import com.mark.model.FlightData;
 import com.mark.model.dal.FlightSavedSearch;
+import com.mark.util.converter.DateConverter;
 
 @Repository
 public class FlightDALImpl implements FlightDAL {
@@ -34,10 +36,10 @@ public class FlightDALImpl implements FlightDAL {
 	
 	
 	@Override
-	public FlightSavedSearch save(String origin, String destination, String date) {
+	public FlightSavedSearch save(String origin, String destination, DateTime date) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity en = new Entity(FLIGHT_SEARCH_TABLE);
-		en.setProperty(DATE,date);
+		en.setProperty(DATE,DateConverter.convertToString(date));
 		en.setProperty(DESTINATION,destination);
 		en.setProperty(ORIGIN,origin);
 		Key key = datastore.put(en);
@@ -51,11 +53,11 @@ public class FlightDALImpl implements FlightDAL {
 	}
 
 	@Override
-	public FlightSavedSearch find(String origin, String destination, String date) {
+	public FlightSavedSearch find(String origin, String destination, DateTime date) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Filter originCompare = new FilterPredicate(ORIGIN, FilterOperator.EQUAL, origin);
 		Filter destinationCompare = new FilterPredicate(DESTINATION, FilterOperator.EQUAL, destination);
-		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, date);
+		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, DateConverter.convertToString(date));
 		Filter allCompares = CompositeFilterOperator.and(originCompare, destinationCompare, dateCompare);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setFilter(allCompares);
 		System.out.println("Searching for data: "+q.toString());
@@ -71,7 +73,7 @@ public class FlightDALImpl implements FlightDAL {
 
 	private FlightSavedSearch createFlightSavedSearchFromEntity(Entity entity) {
 		FlightSavedSearch fss = new FlightSavedSearch();
-		fss.setDate((String)entity.getProperty(DATE));
+		fss.setDate(DateConverter.convertToDateTime((String)entity.getProperty(DATE)));
 		fss.setDestination(((String)entity.getProperty(DESTINATION)));
 		fss.setOrigin(((String)entity.getProperty(ORIGIN)));
 		fss.setExistingSearch(true);
@@ -90,7 +92,6 @@ public class FlightDALImpl implements FlightDAL {
 		{
 			System.out.println("Found a match for flight data search for key ["+key.getId()+"]");
 			return createFlightDataFromEntity(list.get(0), savedSearch);
-			
 		}
 		System.out.println("No match found for flight saved data for key ["+key.getId()+"]");	
 		return null;
@@ -103,7 +104,6 @@ public class FlightDALImpl implements FlightDAL {
 		fd.setDate(fss.getDate());
 		fd.setDestination(fss.getDestination());
 		fd.setOrigin(fss.getOrigin());
-		
 		return fd;
 	}
 
@@ -117,8 +117,7 @@ public class FlightDALImpl implements FlightDAL {
 		en.setProperty(LOWEST_PRICE,fd.getLowestPrice());
 		en.setProperty(SHORTEST_TIME_PRICE,fd.getShortestTimePrice());
 		en.setProperty(SAVED_SEARCH_KEY, fd.getKey());
-		Key key = datastore.put(en);
-		return true;
+		return datastore.put(en) != null ? true : false;
 	}
 	
 	

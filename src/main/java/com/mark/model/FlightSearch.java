@@ -2,11 +2,13 @@ package com.mark.model;
 
 import java.io.Serializable;
 
+import org.joda.time.DateTime;
+
 public class FlightSearch implements Serializable {
 
 	private String origin;
 	private String destination;
-	private String date;
+	private String dateString;
 	public String getOrigin() {
 		return origin;
 	}
@@ -19,10 +21,10 @@ public class FlightSearch implements Serializable {
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
-	public String getDate() {
-		return date;
+	public String getDateString() {
+		return dateString;
 	}
-	public void setDate(String date) {
-		this.date = date;
+	public void setDateString(String dateString) {
+		this.dateString = dateString;
 	}
 }

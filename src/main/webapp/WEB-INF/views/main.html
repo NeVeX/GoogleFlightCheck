@@ -17,7 +17,7 @@
 				</tr>
 				<tr style="margin-top: 30px">
 					<td>Date</td>
-					<td><input type="date" name="date" th:field="*{date}"></input></td>
+					<td><input type="date" name="date" th:field="*{dateString}"></input></td>
 				</tr>
 				<tr style="margin-top: 50px;">
 					<td align="left"><button type="submit">Search</button></td>
@@ -37,7 +37,7 @@
 			</tr>
 			<tr>
 				<td>Date</td>
-				<td th:text="${flightData.date}"></td>
+				<td th:text="${flightData.dateString}"></td>
 			</tr>
 			<tr>
 				<td>Lowest Price</td>

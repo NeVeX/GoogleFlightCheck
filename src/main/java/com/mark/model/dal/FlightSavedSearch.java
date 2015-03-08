@@ -2,6 +2,7 @@ package com.mark.model.dal;
 
 import java.io.Serializable;
 
+import org.joda.time.DateTime;
 import org.springframework.context.annotation.Primary;
 
 import com.google.appengine.api.datastore.Key;
@@ -13,6 +14,8 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	
 	private Key key;
 	private Boolean existingSearch;
+	private DateTime date;
+	
 	public Key getKey() {
 		return key;
 	}
@@ -27,6 +30,12 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	public DateTime getDate() {
+		return date;
+	}
+	public void setDate(DateTime date) {
+		this.date = date;
 	}
 	
 	

@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.mark.model.FlightData;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.IFlightService;
+import com.mark.util.converter.DateConverter;
 
 @Controller
 public class FlightController {
@@ -66,7 +67,7 @@ public class FlightController {
 		{
 			String from = fii.getOrigin();
 			String to = fii.getDestination();
-			String date = fii.getDate();
+			String date = fii.getDateString();
 			FlightData fd = flightService.getFlights(from, to, date);
 			redirectAttributes.addFlashAttribute("flightData", fd);	
 		}
