@@ -28,12 +28,10 @@ public class FlightDALImpl implements FlightDAL {
 	private static final String DATE = "DATE";
 	private static final String DESTINATION = "DESTINATION";
 	private static final String ORIGIN = "ORIGIN";
-	private static final String KEY = "KEY";
 	private static final String SAVED_SEARCH_KEY = "SAVED_SEARCH_KEY";
 	private static final String FLIGHT_DATA_TABLE = "FlightData";
 	private static final String LOWEST_PRICE = "LOWEST_PRICE";
 	private static final String SHORTEST_TIME_PRICE = "SHORTEST_TIME";
-	
 	
 	@Override
 	public FlightSavedSearch save(String origin, String destination, DateTime date) {
@@ -61,11 +59,11 @@ public class FlightDALImpl implements FlightDAL {
 		Filter allCompares = CompositeFilterOperator.and(originCompare, destinationCompare, dateCompare);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setFilter(allCompares);
 		System.out.println("Searching for data: "+q.toString());
-		List<Entity> list = datastore.prepare(q).asList(FetchOptions.Builder.withLimit(1));
-		if ( list != null && list.size() > 0)
+		Entity entity = datastore.prepare(q).asSingleEntity();
+		if ( entity != null)
 		{
 			System.out.println("Found a match for search");	
-			return createFlightSavedSearchFromEntity(list.get(0));
+			return createFlightSavedSearchFromEntity(entity);
 		}
 		System.out.println("No match found for search");	
 		return null;
@@ -77,7 +75,7 @@ public class FlightDALImpl implements FlightDAL {
 		fss.setDestination(((String)entity.getProperty(DESTINATION)));
 		fss.setOrigin(((String)entity.getProperty(ORIGIN)));
 		fss.setExistingSearch(true);
-		fss.setKey((Key)entity.getProperty(KEY));
+		fss.setKey(entity.getKey());
 		return fss;	
 	}
 
@@ -85,7 +83,7 @@ public class FlightDALImpl implements FlightDAL {
 	public FlightData findFlightData(FlightSavedSearch savedSearch) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key key = savedSearch.getKey();
-		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY, FilterOperator.EQUAL, key.getId());
+		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY, FilterOperator.EQUAL, key);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setFilter(keyCompare).addSort("DATE", SortDirection.DESCENDING);
 		List<Entity> list = datastore.prepare(q).asList(FetchOptions.Builder.withLimit(1));
 		if (list != null && list.size() > 0)
@@ -104,6 +102,7 @@ public class FlightDALImpl implements FlightDAL {
 		fd.setDate(fss.getDate());
 		fd.setDestination(fss.getDestination());
 		fd.setOrigin(fss.getOrigin());
+		fd.setKey(entity.getKey());
 		return fd;
 	}
 
@@ -111,7 +110,7 @@ public class FlightDALImpl implements FlightDAL {
 	public boolean saveFlightData(FlightData fd) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity en = new Entity(FLIGHT_DATA_TABLE);
-		en.setProperty(DATE,fd.getDate());
+		en.setProperty(DATE,DateConverter.convertToString(fd.getDate()));
 		en.setProperty(DESTINATION,fd.getDestination());
 		en.setProperty(ORIGIN,fd.getOrigin());
 		en.setProperty(LOWEST_PRICE,fd.getLowestPrice());

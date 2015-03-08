@@ -3,6 +3,7 @@ package com.mark.dal.impl;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.springframework.stereotype.Repository;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -17,6 +18,7 @@ import com.mark.dal.IApplicationDAL;
 import com.mark.model.dal.ApplicationState;
 import com.mark.util.converter.DateConverter;
 
+@Repository
 public class ApplicationStateDALImpl implements IApplicationDAL {
 
 	private static final String APPLICATION_STATE_TABLE = "APPLICATION_STATE";
@@ -34,11 +36,12 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		System.out.println("Searching for application state: "+q.toString());
 		
 		ApplicationState state = new ApplicationState();
-		state.setDate(todayDate);		
-		List<Entity> list = datastore.prepare(q).asList(FetchOptions.Builder.withLimit(1));
-		if ( list != null && list.size() == 0)
+		state.setDate(todayDate);
+		state.setFlightApiCount(0);
+		Entity result = datastore.prepare(q).asSingleEntity();
+		if ( result != null)
 		{
-			Integer apiCount = Integer.valueOf((String)list.get(0).getProperty(FLIGHT_API_COUNT));
+			Integer apiCount = (Integer)result.getProperty(FLIGHT_API_COUNT);
 			state.setFlightApiCount(apiCount != null ? apiCount : 0);
 			System.out.println("Found application state with apiCount ["+state.getFlightApiCount()+"]");
 		}
@@ -47,11 +50,12 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	
 	@Override
 	public boolean saveApplicationState(ApplicationState state) {
-		System.out.println("Saving Application State to datestore");
+		System.out.println("Saving Application State to datestore - Flight API Count is ["+state.getFlightApiCount()+"]");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity en = new Entity(APPLICATION_STATE_TABLE);
 		en.setProperty(DATE, DateConverter.convertToString(state.getDate()));
 		en.setProperty(FLIGHT_API_COUNT, state.getFlightApiCount());
+		
 		return datastore.put(en) != null ? true : false;
 	}
 	

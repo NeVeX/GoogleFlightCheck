@@ -110,6 +110,12 @@ public class FlightServiceImpl implements IFlightService {
 		if ( savedSearch.isExistingSearch())
 		{
 			FlightData fd = flightDAL.findFlightData(savedSearch);
+			if ( fd != null )
+			{
+				// just return it
+				System.out.println("Returning saved Flight Data instead of calling Flight API");
+				return fd;
+			}
 		}
 		GoogleFlightResponse response = null;
 		// if we are here, then we know that we need to call the API to get current data for today	
@@ -139,6 +145,7 @@ public class FlightServiceImpl implements IFlightService {
 			// now get the prices we care about
 			FlightData fd = this.getFlightData(listOfFlights);
 			// need to save this!
+			fd.setKey(savedSearch.getKey()); // save the key for this search too
 			flightDAL.saveFlightData(fd);
 			
 			return fd;
@@ -188,6 +195,7 @@ public class FlightServiceImpl implements IFlightService {
 			fd.setTripLength(tripLength);
 			fd.setDate(fss.getDate());
 			fd.setDestination(fss.getDestination());
+			
 			fd.setOrigin(fss.getOrigin());
 			parsedData.add(fd);
 		}
