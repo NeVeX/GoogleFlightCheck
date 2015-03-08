@@ -52,7 +52,6 @@ public class FlightServiceImpl implements IFlightService {
 	@Autowired
 	private IApplicationDAL applicationDAL;
 	private IGoogleFlightClient client;
-	private static boolean debugMode = Boolean.valueOf(FlightProperties.getProperty("debugMode"));
 	private static String apiKey = FlightProperties.getProperty("google.flight.api.key");
 	private static int flightCallLmit = Integer.valueOf(FlightProperties.getProperty("google.flight.api.daily.call.limit"));
 	private AtomicInteger flightCallCurrentCount = new AtomicInteger(0);
@@ -119,25 +118,16 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		GoogleFlightResponse response = null;
 		// if we are here, then we know that we need to call the API to get current data for today	
-		if ( debugMode)
+		if ( flightCallCurrentCount.get() < flightCallLmit ) // check if our limit is reached
 		{
-			response = getTestResponse(); // for debugging, just return mock data instead of using api calls
+			flightCallCurrentCount.incrementAndGet(); // increment by one
+			response = client.postForFlightInfo(apiKey, createRequest(savedSearch));
 		}
 		else
 		{
-			// check if our limit is reached
-			if ( flightCallCurrentCount.get() < flightCallLmit )
-			{
-				flightCallCurrentCount.incrementAndGet(); // increment by one
-				response = client.postForFlightInfo(apiKey, createRequest(savedSearch));
-			}
-			else
-			{
-				System.err.println("The limit for today's Flight API call has being reached");
-			}
+			System.err.println("The limit for today's Flight API call has being reached");
 		}
-		// save the state again -> async
-		this.saveState(true);
+		this.saveState(true); // save the state again -> async
 		if (response != null)
 		{
 			// now for the fun part, parse the result
@@ -147,7 +137,6 @@ public class FlightServiceImpl implements IFlightService {
 			// need to save this!
 			fd.setKey(savedSearch.getKey()); // save the key for this search too
 			flightDAL.saveFlightData(fd);
-			
 			return fd;
 		}
 		System.err.println("Response from google flights is null. Cannot do anything with that.");
@@ -201,18 +190,6 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		
 		return parsedData;
-	}
-
-	private GoogleFlightResponse getTestResponse()
-	{
-		String testDataLocation = "data/example_flight_response.json";
-		try( InputStream in = this.getClass().getClassLoader().getResourceAsStream(testDataLocation))
-		{
-			return JsonConverter.getObjectFromJson(in, GoogleFlightResponse.class);
-		}
-		catch (Exception e) {
-			throw new FlightException("Could not load test data in inputstream from location [%s]", null, testDataLocation);
-		}	
 	}
 	
 	public GoogleFlightRequest createRequest(FlightSavedSearch fss)
