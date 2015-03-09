@@ -118,7 +118,7 @@ public class FlightDALImpl implements FlightDAL {
 			fd.setExistingSearch(true);
 			return fd;
 		}
-		System.out.println("No match found for flight saved data for key ["+key.getId()+"]");	
+		System.out.println("No match found for flight saved data for key ["+key.getId()+"] and date ["+searchDate+"]");	
 		return null;
 	}
 
@@ -147,8 +147,8 @@ public class FlightDALImpl implements FlightDAL {
 
 	@Override
 	public boolean saveFlightData(FlightData fd) {
+		fd.setDateSearched(new DateTime());
 		System.out.println("Saving Flight Data: "+fd.toString());
-		String searchDate = DateConverter.convertToString(new DateTime());
 		Entity en = new Entity(FLIGHT_DATA_TABLE);
 		en.setProperty(DEPARTURE_DATE,DateConverter.convertToString(fd.getDepartureDate()));
 		en.setProperty(RETURN_DATE,DateConverter.convertToString(fd.getReturnDate()));
@@ -157,7 +157,7 @@ public class FlightDALImpl implements FlightDAL {
 		en.setProperty(LOWEST_PRICE,fd.getLowestPrice());
 		en.setProperty(SHORTEST_TIME_PRICE,fd.getShortestTimePrice());
 		en.setProperty(SAVED_SEARCH_KEY_ID, fd.getKey().getId());
-		en.setProperty(SEARCH_DATE, searchDate);
+		en.setProperty(SEARCH_DATE, DateConverter.convertToString(fd.getDateSearched()));
 		en.setProperty(LOWEST_PRICE_DURATION, fd.getLowestPriceTripDuration());
 		en.setProperty(SHORTEST_PRICE_DURATION, fd.getShortestTimePriceTripDuration());
 		return dataStore.put(en) != null ? true : false;

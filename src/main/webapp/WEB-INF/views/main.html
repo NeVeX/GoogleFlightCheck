@@ -58,8 +58,16 @@
 				<td th:text="${flightData.lowestPrice}"></td>
 			</tr>
 			<tr>
+				<td>Lowest Price Trip Duration</td>
+				<td th:text="${flightData.getLowestTripDurationAsString()}"></td>
+			</tr>
+			<tr>
 				<td>Shortest Time Price</td>
 				<td th:text="${flightData.shortestTimePrice}"></td>
+			</tr>
+			<tr>
+				<td>Shortest Price Trip Duration</td>
+				<td th:text="${flightData.getShortestTripDurationAsString()}"></td>
 			</tr>
 		</table>
 

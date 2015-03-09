@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.joda.time.DateTime;
 
 import com.mark.model.dal.FlightSavedSearch;
+import com.mark.util.converter.TimeConverter;
 
 public class FlightData extends FlightSavedSearch implements Serializable {
 	
@@ -15,6 +16,15 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
 	
+	public String getLowestTripDurationAsString()
+	{
+		return TimeConverter.convertToTimeString(lowestPriceTripDuration);
+	}
+	
+	public String getShortestTripDurationAsString()
+	{
+		return TimeConverter.convertToTimeString(shortestTimePriceTripDuration);
+	}
 	
 	public Float getShortestTimePrice() {
 		return shortestTimePrice;

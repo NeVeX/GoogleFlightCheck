@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -14,6 +16,7 @@ import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Slice;
 import com.mark.service.impl.FlightServiceImpl;
 import com.mark.util.converter.DateConverter;
+import com.mark.util.converter.TimeConverter;
 
 public class UtilTest {
 
@@ -61,6 +64,25 @@ public class UtilTest {
 		date = DateConverter.convertToString(null);
 		assertEquals(date, "");
 		
+	}
+	
+	@Test
+	public void testTimeConverter()
+	{
+		String expected = "0d 0h 30m";
+		Long time = 30L;
+		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		expected = "0d 2h 10m";
+		time = 130L;
+		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		expected = "1d 3h 40m";
+		time = 1660L;
+		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		expected = "1d 0h 2m";
+		time = 1442L;
+		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		time = null;
+		assertEquals("", TimeConverter.convertToTimeString(time));
 	}
 	
 	private void assertDateIsAsExpected(DateTime dt, int year, int month, int day)

@@ -63,9 +63,9 @@
 					<td th:text="${fd.departureDateString}">DEPARTURE_DATE</td>
 					<td th:text="${fd.returnDateString}">RETURN_DATE</td>
 					<td th:text="${fd.lowestPrice}">LOWEST_PRICE</td>
-					<td th:text="${fd.lowestPriceTripDuration}">LOWEST_PRICE_TRIP_DURATION</td>
+					<td th:text="${fd.getLowestTripDurationAsString()}">LOWEST_PRICE_TRIP_DURATION</td>
 					<td th:text="${fd.shortestTimePrice}">SHORTEST_TIME_PRICE</td>
-					<td th:text="${fd.shortestTimePriceTripDuration}">SHORTEST_PRICE_TRIP_DURATION</td>
+					<td th:text="${fd.getShortestTripDurationAsString()}">SHORTEST_PRICE_TRIP_DURATION</td>
 				</tr>
 			</tbody>
 		</table>
