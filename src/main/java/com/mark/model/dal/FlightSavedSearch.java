@@ -3,6 +3,7 @@ package com.mark.model.dal;
 import java.io.Serializable;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.context.annotation.Primary;
 
 import com.google.appengine.api.datastore.Key;
@@ -15,8 +16,8 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	
 	private Key key;
 	private Boolean existingSearch = false;
-	private DateTime departureDate;
-	private DateTime returnDate;
+	private LocalDate departureDate;
+	private LocalDate returnDate;
 	
 	public Key getKey() {
 		return key;
@@ -40,25 +41,25 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 		return serialVersionUID;
 	}
 
-	public DateTime getDepartureDate() {
+	public LocalDate getDepartureDate() {
 		return departureDate;
 	}
 	@Override
 	public String toString() {
-		return "FlightSavedSearch [key=" + key + ", existingSearch="
+		return "FlightSavedSearch ["+super.toString()+", key=" + key + ", existingSearch="
 				+ existingSearch + ", departureDate=" + departureDate
 				+ ", returnDate=" + returnDate + "]";
 	}
-	public void setDepartureDate(DateTime departureDate) {
+	public void setDepartureDate(LocalDate departureDate) {
 		this.departureDate = departureDate;
-		super.setDepartureDateString(DateConverter.convertToString(departureDate));
+		super.setDepartureDateString(DateConverter.toString(departureDate));
 	}
-	public DateTime getReturnDate() {
+	public LocalDate getReturnDate() {
 		return returnDate;
 	}
-	public void setReturnDate(DateTime returnDate) {
+	public void setReturnDate(LocalDate returnDate) {
 		this.returnDate = returnDate;
-		super.setReturnDateString(DateConverter.convertToString(returnDate));
+		super.setReturnDateString(DateConverter.toString(returnDate));
 	}
 
 }

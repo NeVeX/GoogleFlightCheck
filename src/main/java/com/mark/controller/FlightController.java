@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +48,7 @@ public class FlightController {
 		if (!model.containsKey("flightData"))
 		{
 			FlightData fd = new FlightData();
-			fd.setDepartureDate(new DateTime());
+			fd.setDepartureDate(new LocalDate());
 			fd.setDestination("DUB");
 			fd.setOrigin("SFO");
 			model.addAttribute("flightData", fd);

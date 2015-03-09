@@ -3,6 +3,7 @@ package com.mark.model.dal;
 import java.io.Serializable;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.appengine.api.datastore.Key;
 import com.mark.util.converter.DateConverter;
@@ -11,7 +12,7 @@ public class ApplicationState implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Long flightApiCount;
-	private DateTime date;
+	private LocalDate date;
 	private String dateString;
 	private Key key;
 	
@@ -21,12 +22,12 @@ public class ApplicationState implements Serializable {
 	public void setFlightApiCount(Long flightApiCount) {
 		this.flightApiCount = flightApiCount;
 	}
-	public DateTime getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
-	public void setDate(DateTime date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
-		this.dateString = DateConverter.convertToString(date);
+		this.dateString = DateConverter.toString(date);
 	}
 	
 	@Override

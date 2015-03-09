@@ -18,4 +18,6 @@ public interface IFlightService {
 	public List<FlightData> getAllFlightData();
 
 	public List<ApplicationState> getAllApplicationStates();
+
+	public void runUpdates();
 }

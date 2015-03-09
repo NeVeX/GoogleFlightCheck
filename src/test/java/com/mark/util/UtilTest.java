@@ -2,11 +2,13 @@ package com.mark.util;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -33,7 +35,7 @@ public class UtilTest {
 	public void testRequestParams()
 	{
 		FlightSavedSearch fss = new FlightSavedSearch();
-		fss.setDepartureDate(DateConverter.convertToDateTime("2014-10-19"));
+		fss.setDepartureDate(DateConverter.toDate("2014-10-19"));
 		fss.setDestination("dest");
 		fss.setOrigin("origin");
 		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
@@ -46,23 +48,23 @@ public class UtilTest {
 	public void testDateConverter()
 	{
 		String date = "2014-10-20";
-		DateTime dt = DateConverter.convertToDateTime(date);
+		LocalDate dt = DateConverter.toDate(date);
 		assertDateIsAsExpected(dt, 2014, 10, 20);
 		date = "20-10-2014";
-		dt = DateConverter.convertToDateTime(date);
+		dt = DateConverter.toDate(date);
 		assertNull(dt);
 		date = null;
-		dt = DateConverter.convertToDateTime(date);
+		dt = DateConverter.toDate(date);
 		assertNull(dt);
 		date = "";
-		dt = DateConverter.convertToDateTime(date);
+		dt = DateConverter.toDate(date);
 		assertNull(dt);
-		dt = new DateTime(2015, 9, 6, 0, 0);
+		dt = new LocalDate(2015, 9, 6);
 		String dateShouldMatch = "2015-09-06";
-		date = DateConverter.convertToString(dt);
+		date = DateConverter.toString(dt);
 		assertEquals(dateShouldMatch, date);
-		date = DateConverter.convertToString(null);
-		assertEquals(date, "");
+		date = DateConverter.toString(null);
+		assertEquals(date, null);
 		
 	}
 	
@@ -85,7 +87,7 @@ public class UtilTest {
 		assertEquals("", TimeConverter.convertToTimeString(time));
 	}
 	
-	private void assertDateIsAsExpected(DateTime dt, int year, int month, int day)
+	private void assertDateIsAsExpected(LocalDate dt, int year, int month, int day)
 	{
 		assertEquals(dt.getDayOfMonth(), day);
 		assertEquals(dt.getMonthOfYear(), month);

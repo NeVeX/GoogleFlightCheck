@@ -1,6 +1,7 @@
 package com.mark.util.converter;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.util.StringUtils;
@@ -15,7 +16,7 @@ public class DateConverter {
 	 * @param dt
 	 * @return
 	 */
-	public static String convertToString(DateTime dt)
+	public static String toString(LocalDate dt)
 	{
 		if ( dt != null )
 		{
@@ -25,7 +26,7 @@ public class DateConverter {
 			}
 			catch(Exception e)
 			{
-				System.err.println("Could not convert DateTime ["+dt+"] to String with Format ["+DATE_FORMAT+"]");
+				System.err.println("Could not convert LocalDate ["+dt+"] to String with Format ["+DATE_FORMAT+"]");
 			}
 		}
 		return null;
@@ -36,17 +37,17 @@ public class DateConverter {
 	 * @param s
 	 * @return
 	 */
-	public static DateTime convertToDateTime(String s)
+	public static LocalDate toDate(String s)
 	{
 		if ( !StringUtils.isEmpty(s))
 		{
 			try 
 			{
-				return formatter.parseDateTime(s);
+				return formatter.parseLocalDate(s);
 			}
 			catch(Exception e)
 			{
-				System.err.println("Could not convert String ["+s+"] to DateTime with Format ["+DATE_FORMAT+"]");
+				System.err.println("Could not convert String ["+s+"] to LocalDate with Format ["+DATE_FORMAT+"]");
 			}	
 		}
 		return null;

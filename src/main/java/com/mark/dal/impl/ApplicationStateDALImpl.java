@@ -1,11 +1,13 @@
 package com.mark.dal.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -40,7 +42,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	@Override
 	public ApplicationState getApplicationState() {
 		// get today's date
-		DateTime todayDate = new DateTime();
+		LocalDate todayDate = new LocalDate();
 		ApplicationState state = this.findApplicationState(todayDate);
 		if ( state != null)
 		{
@@ -50,11 +52,10 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		return null;
 	}
 	
-	private ApplicationState findApplicationState(DateTime dt)
+	private ApplicationState findApplicationState(LocalDate dt)
 	{
-		String todayDateString = DateConverter.convertToString(dt);
-		System.out.println("Searching for application state for date: "+todayDateString);
-		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, todayDateString);
+		System.out.println("Searching for application state for date: "+dt);
+		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt.toDate());
 		Query q = new Query(APPLICATION_STATE_TABLE).setFilter(dateCompare);
 		System.out.println("Query: "+q.toString());
 		Entity en = dataStore.prepare(q).asSingleEntity();
@@ -98,7 +99,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	private Entity poplulteEntityWithData(Entity en, ApplicationState state)
 	{
 		// see if there is an existing state
-		en.setProperty(DATE, DateConverter.convertToString(state.getDate()));
+		en.setProperty(DATE, state.getDate().toDate());
 		en.setProperty(FLIGHT_API_COUNT, state.getFlightApiCount());
 		return en;
 	}
@@ -126,7 +127,8 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		ApplicationState appState = new ApplicationState();
 		Long apiCount = (Long)en.getProperty(FLIGHT_API_COUNT);
 		appState.setFlightApiCount(apiCount != null ? apiCount : 0);
-		appState.setDate(DateConverter.convertToDateTime((String)en.getProperty(DATE)));
+		Date stateDate = (Date) en.getProperty(DATE);
+		appState.setDate(LocalDate.fromDateFields(stateDate));
 		appState.setKey(en.getKey());
 		return appState;
 	}

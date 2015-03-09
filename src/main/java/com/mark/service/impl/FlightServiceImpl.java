@@ -14,10 +14,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mark.dal.FlightDAL;
+import com.mark.dal.IFlightDataDAL;
+import com.mark.dal.IFlightSearchDAL;
 import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
 import com.mark.model.FlightData;
@@ -49,7 +51,9 @@ public class FlightServiceImpl implements IFlightService {
 
 	private String googleBaseUrl = FlightProperties.getProperty("google.flight.api.baseUrl");
 	@Autowired
-	private FlightDAL flightDAL;
+	private IFlightSearchDAL flightSearchDAL;
+	@Autowired
+	private IFlightDataDAL flightDataDAL;
 	@Autowired
 	private IApplicationDAL applicationDAL;
 	private IGoogleFlightClient client;
@@ -79,11 +83,10 @@ public class FlightServiceImpl implements IFlightService {
 		this.saveState(false);
 	}
 	
-	
 	private void saveState(boolean async)
 	{
 		ApplicationState appState = new ApplicationState();
-		appState.setDate(new DateTime());
+		appState.setDate(new LocalDate());
 		appState.setFlightApiCount(flightCallCurrentCount.get());
 		if ( async )
 		{
@@ -96,19 +99,19 @@ public class FlightServiceImpl implements IFlightService {
 	@Override
 	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString)
 	{	
-		DateTime departureDate = DateConverter.convertToDateTime(departureDateString);
-		DateTime returnDate = DateConverter.convertToDateTime(returnDateString);
-		FlightSavedSearch savedSearch = flightDAL.find(from, to, departureDate, returnDate);
+		LocalDate departureDate = DateConverter.toDate(departureDateString);
+		LocalDate returnDate = DateConverter.toDate(returnDateString);
+		FlightSavedSearch savedSearch = flightSearchDAL.find(from, to, departureDate, returnDate);
 		if ( savedSearch == null )
 		{
-			savedSearch = flightDAL.save(from, to, departureDate, returnDate);
+			savedSearch = flightSearchDAL.save(from, to, departureDate, returnDate);
 		}
 		// we have the saved search now. 
 		// Check if we have the data for this search
 		if ( savedSearch.isExistingSearch())
 		{
 			// find if we have data for today already
-			FlightData fd = flightDAL.findFlightData(savedSearch);
+			FlightData fd = flightDataDAL.findFlightData(savedSearch);
 			if ( fd != null )
 			{
 				// just return it
@@ -136,7 +139,7 @@ public class FlightServiceImpl implements IFlightService {
 			FlightData fd = this.getFlightData(listOfFlights);
 			// need to save this!
 			fd.setKey(savedSearch.getKey()); // save the key for this search too
-			flightDAL.saveFlightData(fd);
+			flightDataDAL.saveFlightData(fd);
 			return fd;
 		}
 		System.err.println("Response from google flights is null. Cannot do anything with that.");
@@ -191,7 +194,6 @@ public class FlightServiceImpl implements IFlightService {
 			fd.setOrigin(fss.getOrigin());
 			parsedData.add(fd);
 		}
-		
 		return parsedData;
 	}
 	
@@ -207,7 +209,7 @@ public class FlightServiceImpl implements IFlightService {
 		Slice s = new Slice();
 		s.setOrigin(fss.getOrigin());
 		s.setDestination(fss.getDestination());
-		s.setDate(DateConverter.convertToString(fss.getDepartureDate()));
+		s.setDate(DateConverter.toString(fss.getDepartureDate()));
 		slices.add(s);
 		gfr.setSlice(slices);
 		gfr.setSolutions(20);
@@ -218,16 +220,23 @@ public class FlightServiceImpl implements IFlightService {
 
 	@Override
 	public List<FlightSavedSearch> getAllFlightSavedSearches() {
-		return flightDAL.getAllFlightSavedSearches();
+		return flightSearchDAL.getAllFlightSavedSearches();
 	}
 
 	@Override
 	public List<FlightData> getAllFlightData() {
-		return flightDAL.getAllFlightData();
+		return flightDataDAL.getAllFlightData();
 	}
 
 	@Override
 	public List<ApplicationState> getAllApplicationStates() {
 		return applicationDAL.getAllApplicationStates();
+	}
+
+	@Override
+	public void runUpdates() {
+		// get all the flight data that do not have updates for today
+		List<FlightData> needUpating = flightDataDAL.getFlightDataThatNeedsUpdating();
+		
 	}
 }
