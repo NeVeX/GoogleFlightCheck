@@ -20,12 +20,12 @@ import com.mark.util.client.type.IGoogleFlightClient;
 import com.mark.util.converter.TimeConverter;
 
 @Controller
-@Path("/admin")
 public class AdminController {
 	@Autowired
 	private IFlightService flightService;
-
-	@RequestMapping(method=RequestMethod.GET)
+	private final static String BASE_URI = "/admin";
+	
+	@RequestMapping(value=BASE_URI, method=RequestMethod.GET)
 	public String getMainPage(ModelMap model)
 	{
 		List<FlightSavedSearch> allSavedSearches = flightService.getAllFlightSavedSearches();
@@ -37,12 +37,12 @@ public class AdminController {
 		return "admin"; // the admin page
 	}
 	
-	@RequestMapping(value="/job/run", method=RequestMethod.GET)
+	@RequestMapping(value=BASE_URI+"/job/update", method=RequestMethod.GET)
 	public @ResponseBody String runFlightUpdate()
 	{
 		long start = System.currentTimeMillis();
 		System.out.println("About to run update job for today's date: "+new DateTime());
-		flightService.runUpdates();
+		//flightService.runUpdates();
 		long end = (System.currentTimeMillis() - start);
 		return "Job ran for "+TimeConverter.convertMillisecondTimeToString(end);
 	}

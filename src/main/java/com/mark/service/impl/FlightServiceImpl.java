@@ -256,6 +256,5 @@ public class FlightServiceImpl implements IFlightService {
 				}
 			}
 		}
-		
 	}
 }
