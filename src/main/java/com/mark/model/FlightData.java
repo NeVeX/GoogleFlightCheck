@@ -17,6 +17,10 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
 	
+	private String message;
+	private String exceptionMessage;
+	
+	
 	public String getLowestTripDurationAsString()
 	{
 		return TimeConverter.convertMinuteTimeToString(lowestPriceTripDuration);
@@ -66,6 +70,22 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	public void setShortestTimePriceTripDuration(
 			Long shortestTimePriceTripDuration) {
 		this.shortestTimePriceTripDuration = shortestTimePriceTripDuration;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getExceptionMessage() {
+		return exceptionMessage;
+	}
+
+	public void setExceptionMessage(String exceptionMessage) {
+		this.exceptionMessage = exceptionMessage;
 	}
 	
 	

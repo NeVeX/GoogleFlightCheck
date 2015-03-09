@@ -90,6 +90,12 @@
 			<p th:case="${true}">This search already exists and is already
 				tracking flight fares daily</p>
 		</div>
+		
+		
+		<div>
+			<p style="color: blue" th:text="${flightData.message}"/>
+			<p style="color: red" th:text="${flightData.exceptionMessage}"/>
+		</div>
 		<div
 			th:if="${T(com.mark.util.FlightProperties).getProperty('debugMode')}"
 			style="color: red">In Debug Mode</div>

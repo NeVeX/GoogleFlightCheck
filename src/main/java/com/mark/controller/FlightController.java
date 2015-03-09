@@ -66,7 +66,20 @@ public class FlightController {
 			String departureDate = fii.getDepartureDateString();
 			String returnDate = fii.getReturnDateString();
 			checkInputs(from, to, departureDate);
-			FlightData fd = flightService.getFlights(from, to, departureDate, returnDate, fii.getForceBatchUsage());
+			FlightData fd;
+			try
+			{
+				fd = flightService.getFlights(from, to, departureDate, returnDate, fii.getForceBatchUsage());
+			}
+			catch(FlightException fe)
+			{
+				System.err.println("Caught exception in controller when getting flight info: "+fe.getMessage());
+				fd = new FlightData();
+				fd.setExceptionMessage(fe.getMessage());
+				fd.setOrigin(from);
+				fd.setDestination(to);
+				fd.setDepartureDateString(departureDate);
+			}
 			redirectAttributes.addFlashAttribute("flightData", fd);	
 		}
 		String re = request.getServletPath();

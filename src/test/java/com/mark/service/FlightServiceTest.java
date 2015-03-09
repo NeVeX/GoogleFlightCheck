@@ -20,7 +20,7 @@ public class FlightServiceTest {
 	@Ignore
 	public void testMockDataReturns()
 	{
-		FlightData fd = this.flightService.getFlights("test", "test", "test", "test");
+		FlightData fd = this.flightService.getFlights("test", "test", "test", "test", false);
 		assertNotNull(fd);
 	}
 	
@@ -28,10 +28,9 @@ public class FlightServiceTest {
 	@Ignore
 	public void testCallRealGoogleAPI()
 	{
-		FlightData fd = this.flightService.getFlights("MARK", "DUB", "2015-02-23", null);
+		FlightData fd = this.flightService.getFlights("MARK", "DUB", "2015-02-23", null, false);
 		assertNotNull(fd);
 	}
-	
 
 	@Ignore
 	public void testSaleTotal()

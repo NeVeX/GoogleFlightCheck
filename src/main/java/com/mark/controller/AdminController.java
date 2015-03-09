@@ -42,7 +42,7 @@ public class AdminController {
 	{
 		long start = System.currentTimeMillis();
 		System.out.println("About to run update job for today's date: "+new DateTime());
-		//flightService.runUpdates();
+		flightService.runUpdates();
 		long end = (System.currentTimeMillis() - start);
 		return "Job ran for "+TimeConverter.convertMillisecondTimeToString(end);
 	}

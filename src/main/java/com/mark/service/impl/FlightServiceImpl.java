@@ -105,6 +105,8 @@ public class FlightServiceImpl implements IFlightService {
 	
 	public FlightData getFlights(String from, String to, LocalDate departureDate, LocalDate returnDate, Boolean forceBatchUsage)
 	{	
+		from = from.toUpperCase();
+		to = to.toUpperCase();
 		FlightSavedSearch savedSearch = flightSearchDAL.find(from, to, departureDate, returnDate);
 		if ( savedSearch == null )
 		{
@@ -113,8 +115,7 @@ public class FlightServiceImpl implements IFlightService {
 		
 		if ( forceBatchUsage != null && forceBatchUsage )
 		{
-			System.out.println("Will not get flight details since told to wait for batch process instead");
-			return null;
+			throw new FlightException("Will not get flight details since told to wait for batch process instead");
 		}
 		
 		// we have the saved search now. 
@@ -125,8 +126,10 @@ public class FlightServiceImpl implements IFlightService {
 			FlightData fd = flightDataDAL.findFlightData(savedSearch);
 			if ( fd != null )
 			{
+				String s = "Returning saved Flight Data instead of calling Flight API";
 				// just return it
-				System.out.println("Returning saved Flight Data instead of calling Flight API");
+				System.out.println(s);
+				fd.setMessage(s);
 				return fd;
 			}
 		}
@@ -139,7 +142,7 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		else
 		{
-			System.err.println("The limit for today's Flight API call has being reached");
+			throw new FlightException("The limit for today's Flight API call has being reached");
 		}
 		this.saveState(true); // save the state again -> async
 		if (response != null)
@@ -153,8 +156,7 @@ public class FlightServiceImpl implements IFlightService {
 			flightDataDAL.saveFlightData(fd);
 			return fd;
 		}
-		System.err.println("Response from google flights is null. Cannot do anything with that.");
-		return null;
+		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}
 	
 	private FlightData getFlightData(List<FlightParsedData> listOfFlights) {
@@ -256,7 +258,7 @@ public class FlightServiceImpl implements IFlightService {
 			if ( needsUpdating != null && needsUpdating.size() > 0 )
 			{
 				System.out.println("Found ["+needsUpdating.size()+"] searches that will be updated now");
-				for (FlightSavedSearch fss : savedSearches)
+				for (FlightSavedSearch fss : needsUpdating)
 				{
 					this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate(), false);
 					System.out.println("Updated Flight Data for: "+fss);
