@@ -96,20 +96,27 @@ public class FlightServiceImpl implements IFlightService {
 	}
 	
 	@Override
-	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString)
+	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage)
 	{
 		LocalDate departureDate = DateConverter.toDate(departureDateString);
 		LocalDate returnDate = DateConverter.toDate(returnDateString);
-		return this.getFlights(from, to, departureDate, returnDate);
+		return this.getFlights(from, to, departureDate, returnDate, forceBatchUsage);
 	}
 	
-	public FlightData getFlights(String from, String to, LocalDate departureDate, LocalDate returnDate)
+	public FlightData getFlights(String from, String to, LocalDate departureDate, LocalDate returnDate, Boolean forceBatchUsage)
 	{	
 		FlightSavedSearch savedSearch = flightSearchDAL.find(from, to, departureDate, returnDate);
 		if ( savedSearch == null )
 		{
 			savedSearch = flightSearchDAL.save(from, to, departureDate, returnDate);
 		}
+		
+		if ( forceBatchUsage != null && forceBatchUsage )
+		{
+			System.out.println("Will not get flight details since told to wait for batch process instead");
+			return null;
+		}
+		
 		// we have the saved search now. 
 		// Check if we have the data for this search
 		if ( savedSearch.isExistingSearch())
@@ -251,7 +258,7 @@ public class FlightServiceImpl implements IFlightService {
 				System.out.println("Found ["+needsUpdating.size()+"] searches that will be updated now");
 				for (FlightSavedSearch fss : savedSearches)
 				{
-					this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate());
+					this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate(), false);
 					System.out.println("Updated Flight Data for: "+fss);
 				}
 			}

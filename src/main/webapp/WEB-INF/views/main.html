@@ -34,12 +34,22 @@
 					<td></td>
 					<td align="center"><button style="margin-top: 25px" type="submit">Search</button></td>
 				</tr>
+				
+				<tr style="margin-top: 20px">
+					<td style="color: red">Debug Options</td>
+				</tr>
+				<tr>
+					<td>Force Batch Usage</td>
+					<td><input type="checkbox" name="forceBatchUsage" th:field="*{forceBatchUsage}"/></td>
+				</tr>
 			</table>
+	
+
 
 		</form>
 
-		<h5>Debug Flight Information</h5>
 		<table class="table">
+			<caption><h5>Debug Flight Information</h5></caption>
 			<tr>
 				<td>Origin</td>
 				<td th:text="${flightData.origin}"></td>
@@ -83,7 +93,7 @@
 		<div
 			th:if="${T(com.mark.util.FlightProperties).getProperty('debugMode')}"
 			style="color: red">In Debug Mode</div>
-	</div>
+		</div>
 
 </body>
 </html>

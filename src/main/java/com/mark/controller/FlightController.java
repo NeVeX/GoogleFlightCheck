@@ -66,7 +66,7 @@ public class FlightController {
 			String departureDate = fii.getDepartureDateString();
 			String returnDate = fii.getReturnDateString();
 			checkInputs(from, to, departureDate);
-			FlightData fd = flightService.getFlights(from, to, departureDate, returnDate);
+			FlightData fd = flightService.getFlights(from, to, departureDate, returnDate, fii.getForceBatchUsage());
 			redirectAttributes.addFlashAttribute("flightData", fd);	
 		}
 		String re = request.getServletPath();

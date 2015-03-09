@@ -13,6 +13,7 @@ public class FlightSearch implements Serializable {
 	private String destination;
 	private String departureDateString;
 	private String returnDateString;
+	private Boolean forceBatchUsage;
 	
 	public String getOrigin() {
 		return origin;
@@ -38,11 +39,19 @@ public class FlightSearch implements Serializable {
 	public void setReturnDateString(String returnDateString) {
 		this.returnDateString = returnDateString;
 	}
+	
 	@Override
 	public String toString() {
 		return "FlightSearch [origin=" + origin + ", destination="
 				+ destination + ", departureDateString=" + departureDateString
-				+ ", returnDateString=" + returnDateString + "]";
+				+ ", returnDateString=" + returnDateString
+				+ ", forceBatchUsage=" + forceBatchUsage + "]";
+	}
+	public Boolean getForceBatchUsage() {
+		return forceBatchUsage;
+	}
+	public void setForceBatchUsage(Boolean forceBatchUsage) {
+		this.forceBatchUsage = forceBatchUsage;
 	}
 
 }

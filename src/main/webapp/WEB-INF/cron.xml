@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
   <cron>
-    <url>/admin/job/update</url>
+    <url>/flight/admin/job/update</url>
     <description>Update any flight searches that have not run for today</description>
     <schedule>every 2 minutes</schedule>
   </cron>
