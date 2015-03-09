@@ -6,6 +6,7 @@ public class TimeConverter {
 	private static final String DAY = "d";
 	private static final String MINUTE = "m";
 	private static final String HOUR = "h";
+	private static final String SECOND = "s";
 	private static final String SPACE = " ";
 	
 	
@@ -14,7 +15,7 @@ public class TimeConverter {
 	 * @param time
 	 * @return
 	 */
-	public static String convertToTimeString(Long time)
+	public static String convertMinuteTimeToString(Long time)
 	{
 		if( time != null)
 		{
@@ -32,6 +33,28 @@ public class TimeConverter {
 			}
 			minutes = reducedTime;
 			return days + DAY + SPACE + hours + HOUR + SPACE + minutes + MINUTE;
+		}
+		return "";
+	}
+
+
+	public static String convertMillisecondTimeToString(Long time) {
+		if( time != null)
+		{
+			long reducedTime = time;
+			long minutes = 0, seconds = 0, hours = 0;
+			hours = reducedTime / 3600000;
+			if ( hours > 0 )
+			{
+				reducedTime = reducedTime % 3600000; 
+			}
+			minutes = reducedTime / 60000;
+			if ( minutes > 0)
+			{
+				reducedTime = reducedTime % 60000;
+			}
+			seconds = reducedTime / 1000;
+			return hours + HOUR + SPACE + minutes + MINUTE +SPACE + seconds + SECOND;
 		}
 		return "";
 	}

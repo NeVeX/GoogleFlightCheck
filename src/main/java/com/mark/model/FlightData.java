@@ -19,12 +19,12 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	
 	public String getLowestTripDurationAsString()
 	{
-		return TimeConverter.convertToTimeString(lowestPriceTripDuration);
+		return TimeConverter.convertMinuteTimeToString(lowestPriceTripDuration);
 	}
 	
 	public String getShortestTripDurationAsString()
 	{
-		return TimeConverter.convertToTimeString(shortestTimePriceTripDuration);
+		return TimeConverter.convertMinuteTimeToString(shortestTimePriceTripDuration);
 	}
 	
 	public Float getShortestTimePrice() {

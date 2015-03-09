@@ -130,24 +130,24 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	@Override
-	public List<FlightData> getFlightDataThatNeedsUpdating() 
+	public List<FlightSavedSearch> getFlightDataThatNeedsUpdating(List<FlightSavedSearch> savedSearches) 
 	{
-		
-		System.out.println("Getting all Flight Data that needs updating");
-		
-		Query q = new Query(FLIGHT_DATA_TABLE).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
-		System.out.println("Query: "+q.toString());
-		List<FlightData> allFlightData = new ArrayList<FlightData>();
-		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
+		Date todaysDate = new LocalDate().toDate();
+		System.out.println("Getting all Flight Data that needs updating - records with no search date for today");
+		List<FlightSavedSearch> searchesToUpdate = new ArrayList<FlightSavedSearch>();
+		Filter searchDateCompare = new FilterPredicate(SEARCH_DATE, FilterOperator.EQUAL, todaysDate);
+		for (FlightSavedSearch fss : savedSearches)
 		{
-			if( en != null)
+			Filter searchKeyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, fss.getKey().getId());
+			Filter allCompares = CompositeFilterOperator.and(searchKeyCompare, searchDateCompare);
+			Query q = new Query(FLIGHT_DATA_TABLE).setFilter(allCompares);
+			if ( dataStore.prepare(q).asSingleEntity() == null )
 			{
-				FlightData fd = this.createFlightDataFromEntity(en);
-				System.out.println("Found Flight Data: "+fd.toString());
-				allFlightData.add(fd);;
+				System.out.println("Found Flight Data that needs updating for Search: "+fss.toString());
+				searchesToUpdate.add(fss);
 			}
 		}
-		return allFlightData;
+		return searchesToUpdate;
 	}
 
 }

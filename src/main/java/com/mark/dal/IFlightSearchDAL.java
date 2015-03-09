@@ -14,6 +14,6 @@ public interface IFlightSearchDAL extends IFlightDAL {
 	
 	public FlightSavedSearch find(String origin, String destination, LocalDate departureDate, LocalDate returnDate);
 	
-	public List<FlightSavedSearch> getAllFlightSavedSearches();
-
+	public List<FlightSavedSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly);
+	
 }

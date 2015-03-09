@@ -13,7 +13,7 @@ public interface IFlightDataDAL extends IFlightDAL {
 	
 	public boolean saveFlightData(FlightData fd);
 
-	public List<FlightData> getFlightDataThatNeedsUpdating();
+	public List<FlightSavedSearch> getFlightDataThatNeedsUpdating(List<FlightSavedSearch> savedSearches);
 
 
 }

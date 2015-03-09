@@ -99,9 +99,15 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 
 	@Override
-	public List<FlightSavedSearch> getAllFlightSavedSearches() {
+	public List<FlightSavedSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly) {
 		System.out.println("Getting all Flight saved searches");
 		Query q = new Query(FLIGHT_SEARCH_TABLE).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
+		if ( includeFutureDatesOnly )
+		{
+			Date todaysDate = new LocalDate().toDate();
+			Filter futureFilter = new FilterPredicate(DEPARTURE_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, todaysDate);
+			q.setFilter(futureFilter);
+		}
 		System.out.println("Query: "+q.toString());
 		List<FlightSavedSearch> allFlightSavedSearchs = new ArrayList<FlightSavedSearch>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
@@ -115,6 +121,5 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		}
 		return allFlightSavedSearchs;
 	}
-
 
 }

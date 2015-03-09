@@ -94,13 +94,17 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		applicationDAL.saveApplicationState(appState);
 	}
-
-	// For now return the mock data from the google docs
+	
 	@Override
 	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString)
-	{	
+	{
 		LocalDate departureDate = DateConverter.toDate(departureDateString);
 		LocalDate returnDate = DateConverter.toDate(returnDateString);
+		return this.getFlights(from, to, departureDate, returnDate);
+	}
+	
+	public FlightData getFlights(String from, String to, LocalDate departureDate, LocalDate returnDate)
+	{	
 		FlightSavedSearch savedSearch = flightSearchDAL.find(from, to, departureDate, returnDate);
 		if ( savedSearch == null )
 		{
@@ -220,7 +224,7 @@ public class FlightServiceImpl implements IFlightService {
 
 	@Override
 	public List<FlightSavedSearch> getAllFlightSavedSearches() {
-		return flightSearchDAL.getAllFlightSavedSearches();
+		return flightSearchDAL.getAllFlightSavedSearches(false);
 	}
 
 	@Override
@@ -235,8 +239,23 @@ public class FlightServiceImpl implements IFlightService {
 
 	@Override
 	public void runUpdates() {
-		// get all the flight data that do not have updates for today
-		List<FlightData> needUpating = flightDataDAL.getFlightDataThatNeedsUpdating();
+		System.out.println("Getting list of saved searches with departure dates in the future");
+		List<FlightSavedSearch> savedSearches = flightSearchDAL.getAllFlightSavedSearches(true);
+		if ( savedSearches != null && savedSearches.size() > 0)
+		{
+			System.out.println("Found ["+savedSearches.size()+"] saved searches with departure dates in the future - getting Flight Data with no search for today");
+			// get all the flight searches that do not have updates for today
+			List<FlightSavedSearch> needsUpdating = flightDataDAL.getFlightDataThatNeedsUpdating(savedSearches);
+			if ( needsUpdating != null && needsUpdating.size() > 0 )
+			{
+				System.out.println("Found ["+needsUpdating.size()+"] searches that will be updated now");
+				for (FlightSavedSearch fss : savedSearches)
+				{
+					this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate());
+					System.out.println("Updated Flight Data for: "+fss);
+				}
+			}
+		}
 		
 	}
 }

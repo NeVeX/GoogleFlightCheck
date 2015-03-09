@@ -17,6 +17,7 @@ import com.mark.model.dal.ApplicationState;
 import com.mark.model.dal.FlightSavedSearch;
 import com.mark.service.IFlightService;
 import com.mark.util.client.type.IGoogleFlightClient;
+import com.mark.util.converter.TimeConverter;
 
 @Controller
 @Path("/admin")
@@ -39,11 +40,11 @@ public class AdminController {
 	@RequestMapping(value="/job/run", method=RequestMethod.GET)
 	public @ResponseBody String runFlightUpdate()
 	{
+		long start = System.currentTimeMillis();
 		System.out.println("About to run update job for today's date: "+new DateTime());
-		
 		flightService.runUpdates();
-		
-		return "Job ran";
+		long end = (System.currentTimeMillis() - start);
+		return "Job ran for "+TimeConverter.convertMillisecondTimeToString(end);
 	}
 	
 }

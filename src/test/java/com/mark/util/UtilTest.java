@@ -69,23 +69,40 @@ public class UtilTest {
 	}
 	
 	@Test
-	public void testTimeConverter()
+	public void testMinuteTimeConverter()
 	{
 		String expected = "0d 0h 30m";
 		Long time = 30L;
-		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
 		expected = "0d 2h 10m";
 		time = 130L;
-		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
 		expected = "1d 3h 40m";
 		time = 1660L;
-		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
 		expected = "1d 0h 2m";
 		time = 1442L;
-		assertEquals(expected, TimeConverter.convertToTimeString(time));
+		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
 		time = null;
-		assertEquals("", TimeConverter.convertToTimeString(time));
+		assertEquals("", TimeConverter.convertMinuteTimeToString(time));
 	}
+	
+	@Test
+	public void testMilliSecondTimeConverter()
+	{
+		String expected = "0h 0m 30s";
+		Long time = 30000L;
+		assertEquals(expected, TimeConverter.convertMillisecondTimeToString(time));
+		expected = "0h 1m 0s";
+		time = 60000L;
+		assertEquals(expected, TimeConverter.convertMillisecondTimeToString(time));
+		expected = "0h 1m 5s";
+		time = 65000L;
+		assertEquals(expected, TimeConverter.convertMillisecondTimeToString(time));
+		time = null;
+		assertEquals("", TimeConverter.convertMillisecondTimeToString(time));
+	}
+	
 	
 	private void assertDateIsAsExpected(LocalDate dt, int year, int month, int day)
 	{
