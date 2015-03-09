@@ -7,36 +7,39 @@
 <body>
 	<div
 		style="width =: 200px; height: 200px; margin: 0 auto; display: inline; text-align: center;">
-		<h3>Enter your flight details below</h3>
+		<h4>Enter your flight details below</h4>
 		<form method="post" action="main/inputs" th:object="${flightData}">
-			<table style="margin: auto;">
+			<table class="table" style="margin: auto;">
 				<tr>
 					<td>Origin</td>
 					<td><input type="text" name="origin" th:field="*{origin}"></input></td>
 				</tr>
 				<tr>
 					<td>Destination</td>
-					<td><input type="text" name="destination"
+					<td><input style="margin-top: 5px" type="text" name="destination"
 						th:field="*{destination}"></input></td>
 				</tr>
-				<tr style="margin-top: 30px">
+				<tr >
 					<td>Departure Date</td>
-					<td><input type="date" name="departureDate"
+					<td><input style="margin-top: 5px" type="date" name="departureDate"
 						th:field="*{departureDateString}"></input></td>
 				</tr>
-				<tr style="margin-top: 30px"  >
+				<tr  >
 					<td>Return Date</td>
-					<td ><input type="date" name="returnDate"
-						th:field="*{returnDateString}" disabled="disabled"></input>Coming soon</td>
+					<td ><input style="margin-top: 5px" type="date" name="returnDate"
+						th:field="*{returnDateString}" disabled="disabled" ></input></td>
+					<td style="color: gray;">Coming soon</td>
 				</tr>
-				<tr style="margin-top: 50px;">
-					<td align="left"><button type="submit">Search</button></td>
+				<tr >
+					<td></td>
+					<td align="center"><button style="margin-top: 25px" type="submit">Search</button></td>
 				</tr>
 			</table>
 
 		</form>
 
-		<table>
+		<h5>Debug Flight Information</h5>
+		<table class="table">
 			<tr>
 				<td>Origin</td>
 				<td th:text="${flightData.origin}"></td>
