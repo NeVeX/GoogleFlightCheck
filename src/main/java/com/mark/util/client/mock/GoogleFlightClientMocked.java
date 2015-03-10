@@ -13,24 +13,18 @@ import com.mark.model.google.response.ResponseSlice;
 import com.mark.model.google.response.Segment;
 import com.mark.model.google.response.Trip;
 import com.mark.model.google.response.TripOption;
-import com.mark.util.client.type.IGoogleFlightClient;
+import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
 import com.mark.util.converter.JsonConverter;
 
 
-public class GoogleFlightClientMocked implements IGoogleFlightClient
+public class GoogleFlightClientMocked implements IRestEasyGoogleFlightApiClient
 {
 	private final static String testDataFile =  "data/example_flight_response.json";
 	private final static Random random = new Random();
+	
 	@Override
-	public GoogleFlightResponse postForFlightInfo(String key, GoogleFlightRequest gRequest) {
+	public GoogleFlightResponse postForFlightInfo(GoogleFlightRequest gRequest) {
 		return createDynamicMockedData(gRequest);
-//		try( InputStream in = this.getClass().getClassLoader().getResourceAsStream(testDataFile))
-//		{
-//			return JsonConverter.getObjectFromJson(in, GoogleFlightResponse.class);
-//		}
-//		catch (Exception e) {
-//			throw new FlightException("Could not load test data in inputstream from location [%s]", null, testDataFile);
-//		}	
 	}
 	
 	private GoogleFlightResponse createDynamicMockedData(GoogleFlightRequest request)
@@ -69,6 +63,10 @@ public class GoogleFlightClientMocked implements IGoogleFlightClient
 		
 		
 	}
-	
+
+	@Override
+	public GoogleFlightResponse postForFlightInfo(String key, GoogleFlightRequest gRequest) {
+		return this.postForFlightInfo(gRequest);
+	}
 }
 

@@ -1,4 +1,4 @@
-package com.mark.util.client.type;
+package com.mark.util.client.type.resteasy;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -13,8 +13,9 @@ import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.util.FlightProperties;
+import com.mark.util.client.IGoogleFlightApiClient;
 
-public interface IGoogleFlightClient extends IRestClient {
+public interface IRestEasyGoogleFlightApiClient extends IGoogleFlightApiClient, IRestEasyType {
 	
 	@POST
 	@Path("/qpxExpress/v1/trips/search") //TODO : inject the key

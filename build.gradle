@@ -44,18 +44,9 @@ dependencies {
 
 appengine {
     httpPort = 8077
-
-	//jvmFlags = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8077']
 	
     appcfg {
     	oauth2 = true
-        //email = 'blah@gmail.com'
-        //passIn = false
-
-        //logs {
-          //  severity = 1
-            //outputFile = file('mylogs.txt')
-        //}
 
         app {
             id = 'mark-flight-check-project'

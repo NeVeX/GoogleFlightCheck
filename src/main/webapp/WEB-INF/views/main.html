@@ -96,10 +96,9 @@
 			<p style="color: blue" th:text="${flightData.message}"/>
 			<p style="color: red" th:text="${flightData.exceptionMessage}"/>
 		</div>
-		<div
-			th:if="${T(com.mark.util.FlightProperties).getProperty('debugMode')}"
+		<div th:if="${T(com.mark.util.FlightProperties).IN_DEBUG_MODE}"
 			style="color: red">In Debug Mode</div>
-		</div>
+	</div>
 
 </body>
 </html>

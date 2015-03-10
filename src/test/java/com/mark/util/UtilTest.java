@@ -25,10 +25,8 @@ public class UtilTest {
 	@Test
 	public void testPropertiesLoad()
 	{
-		String url = FlightProperties.getProperty("google.flight.api.baseUrl");
-		assertTrue(url != null && url.length() > 0);
-		String apiKey = FlightProperties.getProperty("google.flight.api.key");
-		assertTrue(apiKey != null && apiKey.length() > 0);
+		assertTrue(FlightProperties.GOOGLE_FLIGHT_API_BASE_URL != null && FlightProperties.GOOGLE_FLIGHT_API_BASE_URL.length() > 0);
+		assertTrue(FlightProperties.GOOGLE_FLIGHT_API_KEY != null && FlightProperties.GOOGLE_FLIGHT_API_KEY.length() > 0);
 	}
 	
 	@Test

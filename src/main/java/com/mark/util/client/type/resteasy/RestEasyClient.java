@@ -1,4 +1,4 @@
-package com.mark.util.client;
+package com.mark.util.client.type.resteasy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,19 +24,12 @@ import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.util.FlightProperties;
 import com.mark.util.client.mock.GoogleFlightClientMocked;
-import com.mark.util.client.type.IGoogleFlightClient;
-import com.mark.util.client.type.IRestClient;
 import com.mark.util.converter.JsonConverter;
 
-public class RestClient {
+public class RestEasyClient {
 	
 	private static ResteasyClient client;
-	private static Map<String, IRestClient> mockedClients = new HashMap<String, IRestClient>()
-	{{
-		put(IGoogleFlightClient.class.getName(), new GoogleFlightClientMocked());
-	}};
 	
-	private static boolean debugMode = Boolean.valueOf(FlightProperties.getProperty("debugMode"));
 	static
 	{
 		ClientConnectionManager cm = new BasicClientConnectionManager();
@@ -46,7 +39,7 @@ public class RestClient {
 		client.register(new RestClientFilter());
 	}
 
-	public static <T extends IRestClient> T getClient(String baseUrl, Class<T> clazz)
+	public static <T extends IRestEasyType> T getClient(String baseUrl, Class<T> clazz)
 	{
 		if ( baseUrl == null || baseUrl.length() == 0 )
 		{
@@ -55,16 +48,6 @@ public class RestClient {
 		if ( clazz == null)
 		{
 			throw new FlightException("Class to use for REST client creation cannot be null", null);
-		}
-		if ( debugMode)
-		{
-			System.out.println("In debug mode - determining if can return mocked client");
-			if ( mockedClients.containsKey(clazz.getName()))
-			{
-				System.out.println("Returning a Mocked Client for class ["+clazz+"] instead of real implementation");
-				return (T) mockedClients.get(clazz.getName()); // return the defined mocked client
-			}
-			System.out.println("In debug mode but did not find any mocked clients for class ["+clazz+"]. Proceeding as normal to get real client");
 		}
 		System.out.println("Creating REST client for class ["+clazz+"]");
         ResteasyWebTarget target = client.target(baseUrl);

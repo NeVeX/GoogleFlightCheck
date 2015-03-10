@@ -41,24 +41,24 @@ import com.mark.model.google.response.Trip;
 import com.mark.model.google.response.TripOption;
 import com.mark.service.IFlightService;
 import com.mark.util.FlightProperties;
-import com.mark.util.client.RestClient;
-import com.mark.util.client.type.IGoogleFlightClient;
+import com.mark.util.client.IGoogleFlightApiClient;
+import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
+import com.mark.util.client.type.resteasy.RestEasyClient;
 import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.JsonConverter;
 
 @Service
 public class FlightServiceImpl implements IFlightService {
 
-	private String googleBaseUrl = FlightProperties.getProperty("google.flight.api.baseUrl");
+//	private String googleBaseUrl = FlightProperties.getProperty("google.flight.api.baseUrl");
 	@Autowired
 	private IFlightSearchDAL flightSearchDAL;
 	@Autowired
 	private IFlightDataDAL flightDataDAL;
 	@Autowired
 	private IApplicationDAL applicationDAL;
-	private IGoogleFlightClient client;
-	private static String apiKey = FlightProperties.getProperty("google.flight.api.key");
-	private static int flightCallLmit = Integer.valueOf(FlightProperties.getProperty("google.flight.api.daily.call.limit"));
+	@Autowired
+	private IGoogleFlightApiClient googleFlightApiClient;
 	private AtomicLong flightCallCurrentCount = new AtomicLong(0);
 	@PostConstruct
 	public void setup()
@@ -68,8 +68,6 @@ public class FlightServiceImpl implements IFlightService {
 		{
 			flightCallCurrentCount = new AtomicLong(appState.getFlightApiCount());
 		}
-		// get the client we need to call Google
-		client = RestClient.getClient(googleBaseUrl, IGoogleFlightClient.class);
 	}
 	
 	@PreDestroy
@@ -135,10 +133,10 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		GoogleFlightResponse response = null;
 		// if we are here, then we know that we need to call the API to get current data for today	
-		if ( flightCallCurrentCount.get() < flightCallLmit ) // check if our limit is reached
+		if ( flightCallCurrentCount.get() < FlightProperties.GOOGLE_FLIGHT_API_DAILY_INVOKE_LIMIT ) // check if our limit is reached
 		{
 			flightCallCurrentCount.incrementAndGet(); // increment by one
-			response = client.postForFlightInfo(apiKey, createRequest(savedSearch));
+			response = googleFlightApiClient.postForFlightInfo(createRequest(savedSearch));
 		}
 		else
 		{

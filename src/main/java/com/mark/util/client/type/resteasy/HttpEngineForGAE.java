@@ -1,4 +1,4 @@
-package com.mark.util.client;
+package com.mark.util.client.type.resteasy;
 
 
 
