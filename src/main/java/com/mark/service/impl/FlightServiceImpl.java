@@ -177,7 +177,7 @@ public class FlightServiceImpl implements IFlightService {
 	private List<FlightParsedData> parseGoogleResponseToFlightData(GoogleFlightResponse response, FlightSavedSearch fss) {
 		Trip trip = response.getTrips();
 		List<FlightParsedData> parsedData = new ArrayList<FlightParsedData>();
-		for (TripOption t : trip.getTripOption())
+		for (TripOption t : trip.getTripOption()) // TODO: CHANGE. THIS CAN BE NULL!
 		{
 			float price = Float.valueOf(t.getSaleTotal().substring(3, t.getSaleTotal().length()));
 			int stops = 0;

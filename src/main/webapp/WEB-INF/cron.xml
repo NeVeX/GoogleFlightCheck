@@ -3,6 +3,7 @@
   <cron>
     <url>/flight/admin/job/update</url>
     <description>Update any flight searches that have not run for today</description>
-    <schedule>every day 06:00</schedule>
+    <schedule>every 5 hours</schedule>
+    <timezone>America/Los_Angeles</timezone>
   </cron>
 </cronentries>

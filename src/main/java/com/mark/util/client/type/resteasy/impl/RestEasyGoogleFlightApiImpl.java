@@ -12,7 +12,6 @@ import com.mark.util.client.mock.GoogleFlightClientMocked;
 import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
 import com.mark.util.client.type.resteasy.RestEasyClient;
 
-@Service
 public class RestEasyGoogleFlightApiImpl implements IGoogleFlightApiClient {
 
 	private IRestEasyGoogleFlightApiClient googleFlightApi;

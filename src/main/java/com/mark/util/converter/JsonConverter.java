@@ -10,15 +10,38 @@ import com.mark.exception.FlightException;
 
 public class JsonConverter {
 
+	public static <T> String getJsonFromObject(T obj, Class<T> clazz)
+	{
+		if ( obj == null )
+		{
+			throw new FlightException("Cannot convert null Object of class ["+clazz+"] into JSON");
+		}
+		if ( clazz == null)
+		{
+			throw new FlightException("Cannot convert JSON to null clazz");
+			
+		}
+		try
+		{
+			Gson gson = new Gson();
+			return gson.toJson(obj, clazz);
+		}
+		catch(Exception e)
+		{
+			throw new FlightException("Could not convert obj type ["+obj.getClass().getName()+"] into JSON");
+		}
+	}
+	
+	
 	public static <T> T getObjectFromJson(InputStream in, Class<T> clazz)
 	{
 		if ( in == null )
 		{
-			throw new FlightException("Cannot convert null Inputstream of JSON to class ["+clazz+"]", null);
+			throw new FlightException("Cannot convert null Inputstream of JSON to class ["+clazz+"]");
 		}
 		if ( clazz == null)
 		{
-			throw new FlightException("Cannot convert JSON to null clazz", null);
+			throw new FlightException("Cannot convert JSON to null clazz");
 			
 		}
 		Reader reader = null;
@@ -42,11 +65,11 @@ public class JsonConverter {
 	{
 		if ( reader == null )
 		{
-			throw new FlightException("Cannot convert null reader of JSON to class ["+clazz+"]", null);
+			throw new FlightException("Cannot convert null reader of JSON to class ["+clazz+"]");
 		}
 		if ( clazz == null)
 		{
-			throw new FlightException("Cannot convert JSON to null clazz", null);
+			throw new FlightException("Cannot convert JSON to null clazz");
 			
 		}
 		Gson gson = new Gson();
@@ -65,11 +88,11 @@ public class JsonConverter {
 	{
 		if ( json == null )
 		{
-			throw new FlightException("Cannot convert null JSON to class ["+clazz+"]", null);
+			throw new FlightException("Cannot convert null JSON to class ["+clazz+"]");
 		}
 		if ( clazz == null)
 		{
-			throw new FlightException("Cannot convert JSON to null clazz", null);
+			throw new FlightException("Cannot convert JSON to null clazz");
 			
 		}
 		Gson gson = new Gson();

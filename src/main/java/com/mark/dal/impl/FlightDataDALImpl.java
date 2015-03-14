@@ -15,6 +15,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -46,7 +47,8 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	@Override
 	public List<FlightData> getAllFlightData() {
 		System.out.println("Getting all saved Flight Data");
-		Query q = new Query(FLIGHT_DATA_TABLE).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightData> allFlightData = new ArrayList<FlightData>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
@@ -68,7 +70,8 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, key.getId());
 		Filter searchDateCompare = new FilterPredicate(SEARCH_DATE, FilterOperator.EQUAL, searchDate.toDate());
 		Filter allCompares = CompositeFilterOperator.and(keyCompare, searchDateCompare);
-		Query q = new Query(FLIGHT_DATA_TABLE).setFilter(allCompares);
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(allCompares);
 		System.out.println("Query: "+q.toString());
 		Entity entity = dataStore.prepare(q).asSingleEntity();
 		if (entity != null)
@@ -86,7 +89,8 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	public boolean saveFlightData(FlightData fd) {
 		fd.setDateSearched(new LocalDate());
 		System.out.println("Saving Flight Data: "+fd.toString());
-		Entity en = new Entity(FLIGHT_DATA_TABLE);
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Entity en = new Entity(FLIGHT_DATA_TABLE, ancestorKey);
 		en.setProperty(DEPARTURE_DATE,fd.getDepartureDate().toDate());
 		en.setProperty(RETURN_DATE, fd.getReturnDate() != null ? fd.getReturnDate().toDate() : null);
 		en.setProperty(DESTINATION,fd.getDestination());
@@ -136,11 +140,12 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		System.out.println("Getting all Flight Data that needs updating - records with no search date for today");
 		List<FlightSavedSearch> searchesToUpdate = new ArrayList<FlightSavedSearch>();
 		Filter searchDateCompare = new FilterPredicate(SEARCH_DATE, FilterOperator.EQUAL, todaysDate);
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
 		for (FlightSavedSearch fss : savedSearches)
 		{
 			Filter searchKeyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, fss.getKey().getId());
 			Filter allCompares = CompositeFilterOperator.and(searchKeyCompare, searchDateCompare);
-			Query q = new Query(FLIGHT_DATA_TABLE).setFilter(allCompares);
+			Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(allCompares);
 			if ( dataStore.prepare(q).asSingleEntity() == null )
 			{
 				System.out.println("Found Flight Data that needs updating for Search: "+fss.toString());

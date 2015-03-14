@@ -3,32 +3,39 @@ package com.mark.service;
 
 import static org.junit.Assert.*;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
+import com.mark.model.dal.FlightSavedSearch;
+import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.impl.FlightServiceImpl;
 import com.mark.util.FlightProperties;
+import com.mark.util.client.IGoogleFlightApiClient;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="classpath*:spring/spring-mvc-test-google-client.xml")
 public class FlightServiceTest {
-	
-	IFlightService flightService = new FlightServiceImpl();
+	@Autowired
+	IGoogleFlightApiClient googleApiClient;
 
-	@Ignore
-	public void testMockDataReturns()
-	{
-		FlightData fd = this.flightService.getFlights("test", "test", "test", "test", false);
-		assertNotNull(fd);
-	}
-	
-
-	@Ignore
+	@Test
 	public void testCallRealGoogleAPI()
 	{
-		FlightData fd = this.flightService.getFlights("MARK", "DUB", "2015-02-23", null, false);
+		FlightSavedSearch fss = new FlightSavedSearch();
+		fss.setOrigin("SFO");
+		fss.setDestination("DUB");
+		fss.setDepartureDate(new LocalDate(2016,6,9));
+		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
+		GoogleFlightResponse fd = this.googleApiClient.postForFlightInfo(gfr);
 		assertNotNull(fd);
 	}
 
