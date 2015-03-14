@@ -17,7 +17,7 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	private LocalDate dateSearched;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
-	private List<FlightData> allFlightData;
+	private ChartData chartData;
 	private String message;
 	private String exceptionMessage;
 	
@@ -89,13 +89,23 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 		this.exceptionMessage = exceptionMessage;
 	}
 
-	public List<FlightData> getAllFlightData() {
-		return allFlightData;
+	public ChartData getChartData() {
+		return chartData;
 	}
 
-	public void setAllFlightData(List<FlightData> allFlightData) {
-		this.allFlightData = allFlightData;
+	public void setChartData(ChartData chartData) {
+		this.chartData = chartData;
 	}
+
+//	public ChartData getChartData() {
+//		return chartData;
+//	}
+//
+//	public void setChartData(ChartData chartData) {
+//		this.chartData = chartData;
+//	}
+
+
 	
 	
 

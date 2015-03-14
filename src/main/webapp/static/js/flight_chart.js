@@ -53,37 +53,33 @@ var options = {
 
 $( document ).ready(function() {
    	console.log("Ready function called in JS. Loading the chart");
-   
-   	var testOne = jsFlightData;
-
-
 
   //Get context with jQuery - using jQuery's .get() method.
     var ctx = $("#flightChart").get(0).getContext("2d");
     // This will get the first returned node in the jQuery collection.
 
     var data = {
-    	    labels: ["01/01/2015", "0/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015"],
+    	    labels: jsFlightData.xAxisLabels, //["01/01/2015", "0/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015"],
     	    datasets: [
     	        {
-    	            label: "My First dataset",
+    	            label: "Lowest Prices",
     	            fillColor: "rgba(220,220,220,0.2)",
     	            strokeColor: "rgba(220,220,220,1)",
     	            pointColor: "rgba(220,220,220,1)",
     	            pointStrokeColor: "#fff",
     	            pointHighlightFill: "#fff",
     	            pointHighlightStroke: "rgba(220,220,220,1)",
-    	            data: [65, 59, 80, 81, 56, 55, 40]
+    	            data: jsFlightData.lowestPriceData // [65, 59, 80, 81, 56, 55, 40]
     	        },
     	        {
-    	            label: "My Second dataset",
+    	            label: "Shortest Trip Duration Prices",
     	            fillColor: "rgba(151,187,205,0.2)",
     	            strokeColor: "rgba(151,187,205,1)",
     	            pointColor: "rgba(151,187,205,1)",
     	            pointStrokeColor: "#fff",
     	            pointHighlightFill: "#fff",
     	            pointHighlightStroke: "rgba(151,187,205,1)",
-    	            data: [28, 48, 40, 19, 86, 27, 90]
+    	            data: jsFlightData.shortestPriceData //[28, 48, 40, 19, 86, 27, 90]
     	        }
     	    ]
     	};

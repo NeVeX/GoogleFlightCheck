@@ -22,6 +22,7 @@ import com.mark.dal.IFlightDataDAL;
 import com.mark.dal.IFlightSearchDAL;
 import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
+import com.mark.model.ChartData;
 import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
 import com.mark.model.compare.FlightLowestPriceCompare;
@@ -93,12 +94,25 @@ public class FlightServiceImpl implements IFlightService {
 		applicationDAL.saveApplicationState(appState);
 	}
 	
+	
 	@Override
-	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage)
-	{
+	public FlightData getFlightsWithChartData(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage) {
 		LocalDate departureDate = DateConverter.toDate(departureDateString);
 		LocalDate returnDate = DateConverter.toDate(returnDateString);
-		return this.getFlights(from, to, departureDate, returnDate, forceBatchUsage);
+		FlightData fd = this.getFlights(from, to, departureDate, returnDate, forceBatchUsage);
+		FlightSavedSearch fss = new FlightSavedSearch();
+//		fss.setDepartureDate(departureDate);
+//		fss.setReturnDate(returnDate);
+//		fss.setOrigin(from);
+//		fss.setDestination(to);
+//		List<FlightData> allFd = this.getAllFlightData(fss);
+//		if (allFd == null || allFd.size() < 1)
+//		{
+//			allFd = new ArrayList<FlightData>();
+//		}
+//		allFd.add(fd);
+		fd.setChartData(this.getChartData(new ArrayList<FlightData>()));
+		return fd;
 	}
 	
 	public FlightData getFlights(String from, String to, LocalDate departureDate, LocalDate returnDate, Boolean forceBatchUsage)
@@ -143,11 +157,7 @@ public class FlightServiceImpl implements IFlightService {
 			throw new FlightException("The limit for today's Flight API call has being reached");
 		}
 		this.saveState(true); // save the state again -> async
-		List<FlightData> allFd = this.getAllFlightData(savedSearch);
-		if (allFd == null || allFd.size() < 1)
-		{
-			allFd = new ArrayList<FlightData>();
-		}
+		
 		if (response != null)
 		{
 			// now for the fun part, parse the result
@@ -162,8 +172,7 @@ public class FlightServiceImpl implements IFlightService {
 					fd.setKey(savedSearch.getKey()); // save the key for this search too
 					fd.setExistingSearch(savedSearch.isExistingSearch());
 					flightDataDAL.saveFlightData(fd);
-					allFd.add(fd);
-					fd.setAllFlightData(allFd);
+					
 					return fd;
 				}
 				throw new FlightException("Found flight information but could not parse details from the objects");
@@ -173,6 +182,44 @@ public class FlightServiceImpl implements IFlightService {
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}
 	
+	private ChartData getChartData(List<FlightData> allFd) {
+		System.out.println("Getting ChartData");
+		ChartData cd = new ChartData();
+		List<String> labels = new ArrayList<String>();
+		List<String> lowestData = new ArrayList<String>();
+		List<String> shortestData = new ArrayList<String>();
+		cd.setLowestPriceData(lowestData);
+		cd.setShortestPriceData(shortestData);
+		cd.setxAxisLabels(labels);
+		if ( allFd != null && allFd.size() > 0)
+		{
+			for (FlightData fd : allFd)
+			{
+				labels.add(DateConverter.toString(fd.getDateSearched()));
+				lowestData.add(""+fd.getLowestPrice());
+				shortestData.add(""+fd.getShortestTimePrice());
+			}
+			
+		}
+		
+		if ( FlightProperties.IN_DEBUG_MODE)
+		{
+			labels.add("01/01/1999");
+			labels.add("02/02/2002");
+
+			labels.add("03/03/2003");
+			lowestData.add("500");
+			lowestData.add("506");
+			lowestData.add("510");
+			shortestData.add("600");
+			shortestData.add("680");
+			shortestData.add("688");
+
+		}
+		System.out.println("Returning ChartData - size is ["+labels.size()+"]");
+		return cd;
+	}
+
 	private List<FlightData> getAllFlightData(FlightSavedSearch savedSearch) {
 		return flightDataDAL.getAllFlightData(savedSearch);
 	}
@@ -305,4 +352,6 @@ public class FlightServiceImpl implements IFlightService {
 			}
 		}
 	}
+
+
 }
