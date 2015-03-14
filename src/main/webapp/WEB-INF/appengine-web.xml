@@ -8,6 +8,18 @@
   -->
   <threadsafe>true</threadsafe>
 
+
+  <static-files>
+  	<include path="js/**.js" />
+  	<include path="/**.js" expiration="1d" />
+   <include path="/*.js" expiration="1d" />
+   <include path="*.js" expiration="1d"  />
+   <include path="js/*.js" expiration="1d"  /> 
+   <include path="**.js" expiration="1d"  /> 
+  </static-files>
+  
+  
+
   <!-- Configure java.util.logging -->
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

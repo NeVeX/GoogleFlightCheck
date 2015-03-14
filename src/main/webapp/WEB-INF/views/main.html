@@ -2,7 +2,20 @@
 <html>
 <head>
 <meta charset="ISO-8859-1"></meta>
-<title>Mark's Flight History Page</title>
+<title>Mark's Flight Tracker Page</title>
+<script src="/static/js/jquery-1.11.2.js" type="text/javascript"></script>
+<script src="/static/js/Chart.js" type="text/javascript"></script>
+<script src="/static/js/flight_chart.js" type="text/javascript"></script>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+    var jsFlightData = [[${flightData}]];
+    
+
+/*]]>*/
+</script>
+
 </head>
 <body>
 	<div
@@ -47,6 +60,10 @@
 
 
 		</form>
+
+		<!-- The lovely chart! -->
+		<canvas id="flightChart" width="400" height="400"></canvas>
+
 
 		<table class="table">
 			<caption><h5>Debug Flight Information</h5></caption>
