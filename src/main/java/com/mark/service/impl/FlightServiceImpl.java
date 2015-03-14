@@ -118,7 +118,7 @@ public class FlightServiceImpl implements IFlightService {
 		
 		// we have the saved search now. 
 		// Check if we have the data for this search
-		if ( savedSearch.isExistingSearch())
+		if ( savedSearch.isExistingSearch() != null && savedSearch.isExistingSearch())
 		{
 			// find if we have data for today already
 			FlightData fd = flightDataDAL.findFlightData(savedSearch);
@@ -147,12 +147,21 @@ public class FlightServiceImpl implements IFlightService {
 		{
 			// now for the fun part, parse the result
 			List<FlightParsedData> listOfFlights = this.parseGoogleResponseToFlightData(response, savedSearch);
-			// now get the prices we care about
-			FlightData fd = this.getFlightData(listOfFlights);
-			// need to save this!
-			fd.setKey(savedSearch.getKey()); // save the key for this search too
-			flightDataDAL.saveFlightData(fd);
-			return fd;
+			if ( listOfFlights != null && listOfFlights.size() > 0)
+			{
+				// now get the prices we care about
+				FlightData fd = this.getFlightData(listOfFlights);
+				if ( fd != null)
+				{
+					// need to save this!
+					fd.setKey(savedSearch.getKey()); // save the key for this search too
+					fd.setExistingSearch(savedSearch.isExistingSearch());
+					flightDataDAL.saveFlightData(fd);
+					return fd;
+				}
+				throw new FlightException("Found flight information but could not parse details from the objects");
+			}
+			throw new FlightException("Did not find any flights from Google API response");
 		}
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}
@@ -177,33 +186,54 @@ public class FlightServiceImpl implements IFlightService {
 	private List<FlightParsedData> parseGoogleResponseToFlightData(GoogleFlightResponse response, FlightSavedSearch fss) {
 		Trip trip = response.getTrips();
 		List<FlightParsedData> parsedData = new ArrayList<FlightParsedData>();
-		for (TripOption t : trip.getTripOption()) // TODO: CHANGE. THIS CAN BE NULL!
+		if ( trip.getTripOption() == null )
+		{
+			throw new FlightException("No flight information returned for search query");
+		}
+		for (TripOption t : trip.getTripOption())
 		{
 			float price = Float.valueOf(t.getSaleTotal().substring(3, t.getSaleTotal().length()));
 			int stops = 0;
-			int tripLength = Integer.valueOf(0);
-			for (ResponseSlice rs : t.getSlice())
+			boolean foundFlightData = false;
+			int tripLength = 0;
+			if (t.getSlice() != null )
 			{
-				
-				for (Segment seg : rs.getSegment())
+				for (ResponseSlice rs : t.getSlice())
 				{
-					for(Leg leg : seg.getLeg())
+					if ( rs.getSegment() != null )
 					{
-						stops++;
-						tripLength += leg.getDuration() != null ? leg.getDuration() : 0;
+						for (Segment seg : rs.getSegment())
+						{
+							if ( seg.getLeg() != null )
+							{
+								for(Leg leg : seg.getLeg())
+								{
+									stops++;
+									tripLength += leg.getDuration() != null ? leg.getDuration() : 0;
+									foundFlightData = true;
+								}
+							}
+						}
 					}
 				}
 			}
-			// create the FlightData object
-			FlightParsedData fd = new FlightParsedData();
-			fd.setPrice(price);
-			fd.setNumberOfStops(stops);
-			fd.setTripLength(tripLength);
-			fd.setDepartureDate(fss.getDepartureDate());
-			fd.setReturnDate(fss.getReturnDate());
-			fd.setDestination(fss.getDestination());
-			fd.setOrigin(fss.getOrigin());
-			parsedData.add(fd);
+			if (foundFlightData)
+			{
+				// create the FlightData object
+				FlightParsedData fd = new FlightParsedData();
+				fd.setPrice(price);
+				fd.setNumberOfStops(stops);
+				fd.setTripLength(tripLength);
+				fd.setDepartureDate(fss.getDepartureDate());
+				fd.setReturnDate(fss.getReturnDate());
+				fd.setDestination(fss.getDestination());
+				fd.setOrigin(fss.getOrigin());
+				parsedData.add(fd);
+			}
+			else
+			{
+				System.out.println("Info: Did not find flight data in Trip Options.");
+			}
 		}
 		return parsedData;
 	}

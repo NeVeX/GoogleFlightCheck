@@ -51,7 +51,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		fss.setOrigin(origin);
 		fss.setExistingSearch(false);
 		System.out.println("Saving flight search: "+fss.toString());
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Entity en = new Entity(FLIGHT_SEARCH_TABLE, ancestorKey);
 		en.setProperty(DEPARTURE_DATE, departureDate.toDate());
 		en.setProperty(RETURN_DATE, returnDate != null ? returnDate.toDate() : null);
@@ -66,8 +66,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	@Override
 	public FlightSavedSearch find(String origin, String destination, LocalDate departureDate, LocalDate returnDate) {
 		System.out.println("Searching for Saved Flight Search ["+origin+", "+destination+", "+departureDate+", "+returnDate+"]");
-//		Key ancestorKey = KeyFactory.createKey("FlightAncestor", origin+destination+departureDate+returnDate);
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Filter originCompare = new FilterPredicate(ORIGIN, FilterOperator.EQUAL, origin);
 		Filter destinationCompare = new FilterPredicate(DESTINATION, FilterOperator.EQUAL, destination);
 		Filter departureDateCompare = new FilterPredicate(DEPARTURE_DATE, FilterOperator.EQUAL, departureDate.toDate());
@@ -105,7 +104,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	@Override
 	public List<FlightSavedSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly) {
 		System.out.println("Getting all Flight saved searches");
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		if ( includeFutureDatesOnly )
 		{

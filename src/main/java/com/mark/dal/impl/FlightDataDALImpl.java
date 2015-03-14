@@ -47,7 +47,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	@Override
 	public List<FlightData> getAllFlightData() {
 		System.out.println("Getting all saved Flight Data");
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightData> allFlightData = new ArrayList<FlightData>();
@@ -70,7 +70,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, key.getId());
 		Filter searchDateCompare = new FilterPredicate(SEARCH_DATE, FilterOperator.EQUAL, searchDate.toDate());
 		Filter allCompares = CompositeFilterOperator.and(keyCompare, searchDateCompare);
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(allCompares);
 		System.out.println("Query: "+q.toString());
 		Entity entity = dataStore.prepare(q).asSingleEntity();
@@ -89,7 +89,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	public boolean saveFlightData(FlightData fd) {
 		fd.setDateSearched(new LocalDate());
 		System.out.println("Saving Flight Data: "+fd.toString());
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Entity en = new Entity(FLIGHT_DATA_TABLE, ancestorKey);
 		en.setProperty(DEPARTURE_DATE,fd.getDepartureDate().toDate());
 		en.setProperty(RETURN_DATE, fd.getReturnDate() != null ? fd.getReturnDate().toDate() : null);
@@ -140,7 +140,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		System.out.println("Getting all Flight Data that needs updating - records with no search date for today");
 		List<FlightSavedSearch> searchesToUpdate = new ArrayList<FlightSavedSearch>();
 		Filter searchDateCompare = new FilterPredicate(SEARCH_DATE, FilterOperator.EQUAL, todaysDate);
-		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, "");
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		for (FlightSavedSearch fss : savedSearches)
 		{
 			Filter searchKeyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, fss.getKey().getId());
