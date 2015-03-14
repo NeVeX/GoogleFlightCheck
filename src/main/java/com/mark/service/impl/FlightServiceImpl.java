@@ -143,6 +143,11 @@ public class FlightServiceImpl implements IFlightService {
 			throw new FlightException("The limit for today's Flight API call has being reached");
 		}
 		this.saveState(true); // save the state again -> async
+		List<FlightData> allFd = this.getAllFlightData(savedSearch);
+		if (allFd == null || allFd.size() < 1)
+		{
+			allFd = new ArrayList<FlightData>();
+		}
 		if (response != null)
 		{
 			// now for the fun part, parse the result
@@ -157,6 +162,8 @@ public class FlightServiceImpl implements IFlightService {
 					fd.setKey(savedSearch.getKey()); // save the key for this search too
 					fd.setExistingSearch(savedSearch.isExistingSearch());
 					flightDataDAL.saveFlightData(fd);
+					allFd.add(fd);
+					fd.setAllFlightData(allFd);
 					return fd;
 				}
 				throw new FlightException("Found flight information but could not parse details from the objects");
@@ -166,6 +173,10 @@ public class FlightServiceImpl implements IFlightService {
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}
 	
+	private List<FlightData> getAllFlightData(FlightSavedSearch savedSearch) {
+		return flightDataDAL.getAllFlightData(savedSearch);
+	}
+
 	private FlightData getFlightData(List<FlightParsedData> listOfFlights) {
 		FlightData fd = new FlightData();
 		Collections.sort(listOfFlights, new FlightLowestPriceCompare());

@@ -15,5 +15,7 @@ public interface IFlightDataDAL extends IFlightDAL {
 
 	public List<FlightSavedSearch> getFlightDataThatNeedsUpdating(List<FlightSavedSearch> savedSearches);
 
+	public List<FlightData> getAllFlightData(FlightSavedSearch savedSearch);
+
 
 }

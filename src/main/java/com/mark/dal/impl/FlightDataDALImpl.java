@@ -62,6 +62,26 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		}
 		return allFlightData;
 	}
+	
+	@Override
+	public List<FlightData> getAllFlightData(FlightSavedSearch savedSearch) {
+		System.out.println("Getting all saved Flight Data for search: "+savedSearch);
+		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
+		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, savedSearch.getKey().getId());
+		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DEPARTURE_DATE, SortDirection.ASCENDING);
+		System.out.println("Query: "+q.toString());
+		List<FlightData> allFlightData = new ArrayList<FlightData>();
+		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
+		{
+			if( en != null)
+			{
+				FlightData fd = this.createFlightDataFromEntity(en);
+				System.out.println("Found Flight Data: "+fd.toString());
+				allFlightData.add(fd);;
+			}
+		}
+		return allFlightData;
+	}
 
 	@Override
 	public FlightData findFlightData(FlightSavedSearch savedSearch) {
@@ -154,5 +174,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		}
 		return searchesToUpdate;
 	}
+
+	
 
 }

@@ -1,6 +1,7 @@
 package com.mark.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -16,7 +17,7 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	private LocalDate dateSearched;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
-	
+	private List<FlightData> allFlightData;
 	private String message;
 	private String exceptionMessage;
 	
@@ -86,6 +87,14 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 
 	public void setExceptionMessage(String exceptionMessage) {
 		this.exceptionMessage = exceptionMessage;
+	}
+
+	public List<FlightData> getAllFlightData() {
+		return allFlightData;
+	}
+
+	public void setAllFlightData(List<FlightData> allFlightData) {
+		this.allFlightData = allFlightData;
 	}
 	
 	
