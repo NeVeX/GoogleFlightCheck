@@ -136,6 +136,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 			System.out.println("Found a match for flight data search for key ["+key.getId()+"] and date ["+searchDate+"]");
 			FlightData fd =createFlightDataFromEntity(entity);
 			fd.setExistingSearch(true);
+			fd.setKey(savedSearch.getKey()); // set the search key. TODO: (should rename this, not clear)
 			return fd;
 		}
 		System.out.println("No match found for flight saved data for key ["+key.getId()+"] and date ["+searchDate+"]");	
@@ -144,7 +145,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 
 	@Override
 	public boolean saveFlightData(FlightData fd) {
-		fd.setDateSearched(new Date());
+		fd.setDateSearched(new LocalDate().toDate());
 		System.out.println("Saving Flight Data: "+fd.toString());
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Entity en = new Entity(FLIGHT_DATA_TABLE, ancestorKey);
@@ -170,7 +171,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		fd.setReturnDate(returnDate);
 		fd.setDestination((String)entity.getProperty(DESTINATION));
 		fd.setOrigin((String)entity.getProperty(ORIGIN));
-		fd.setKey(entity.getKey());
+//		fd.setKey(entity.getKey());
 		fd.setDateSearched(searchDate);
 		fd.setLowestPriceTripDuration((Long) entity.getProperty(LOWEST_PRICE_DURATION));
 		fd.setShortestTimePriceTripDuration((Long) entity.getProperty(SHORTEST_PRICE_DURATION));
