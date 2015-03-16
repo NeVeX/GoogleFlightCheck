@@ -19,7 +19,5 @@ public interface IFlightService {
 
 	public void runUpdates();
 
-//	public FlightData getFlights(String from, String to, String departureDate,String returnDate, Boolean forceBatchUsage);
-
-	public FlightData getFlightsWithChartData(String from, String to, String departureDate, String returnDate, Boolean forceBatchUsage);
+	public FlightData getFlights(String from, String to, String departureDate, String returnDate, Boolean forceBatchUsage);
 }

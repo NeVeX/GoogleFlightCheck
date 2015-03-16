@@ -22,7 +22,6 @@ import com.mark.dal.IFlightDataDAL;
 import com.mark.dal.IFlightSearchDAL;
 import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
-import com.mark.model.ChartData;
 import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
 import com.mark.model.compare.FlightLowestPriceCompare;
@@ -96,22 +95,12 @@ public class FlightServiceImpl implements IFlightService {
 	
 	
 	@Override
-	public FlightData getFlightsWithChartData(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage) {
+	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage) {
 		LocalDate departureDate = DateConverter.toDate(departureDateString);
 		LocalDate returnDate = DateConverter.toDate(returnDateString);
 		FlightData fd = this.getFlights(from, to, departureDate, returnDate, forceBatchUsage);
 		FlightSavedSearch fss = new FlightSavedSearch();
-//		fss.setDepartureDate(departureDate);
-//		fss.setReturnDate(returnDate);
-//		fss.setOrigin(from);
-//		fss.setDestination(to);
-//		List<FlightData> allFd = this.getAllFlightData(fss);
-//		if (allFd == null || allFd.size() < 1)
-//		{
-//			allFd = new ArrayList<FlightData>();
-//		}
-//		allFd.add(fd);
-		fd.setChartData(this.getChartData(new ArrayList<FlightData>()));
+		fd.setHistory(this.getAllFlightDataForSearch(fd));
 		return fd;
 	}
 	
@@ -182,45 +171,7 @@ public class FlightServiceImpl implements IFlightService {
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}
 	
-	private ChartData getChartData(List<FlightData> allFd) {
-		System.out.println("Getting ChartData");
-		ChartData cd = new ChartData();
-		List<String> labels = new ArrayList<String>();
-		List<String> lowestData = new ArrayList<String>();
-		List<String> shortestData = new ArrayList<String>();
-		cd.setLowestPriceData(lowestData);
-		cd.setShortestPriceData(shortestData);
-		cd.setxAxisLabels(labels);
-		if ( allFd != null && allFd.size() > 0)
-		{
-			for (FlightData fd : allFd)
-			{
-				labels.add(DateConverter.toString(fd.getDateSearched()));
-				lowestData.add(""+fd.getLowestPrice());
-				shortestData.add(""+fd.getShortestTimePrice());
-			}
-			
-		}
-		
-		if ( FlightProperties.IN_DEBUG_MODE)
-		{
-			labels.add("01/01/1999");
-			labels.add("02/02/2002");
-
-			labels.add("03/03/2003");
-			lowestData.add("500");
-			lowestData.add("506");
-			lowestData.add("510");
-			shortestData.add("600");
-			shortestData.add("680");
-			shortestData.add("688");
-
-		}
-		System.out.println("Returning ChartData - size is ["+labels.size()+"]");
-		return cd;
-	}
-
-	private List<FlightData> getAllFlightData(FlightSavedSearch savedSearch) {
+	private List<FlightData> getAllFlightDataForSearch(FlightSavedSearch savedSearch) {
 		return flightDataDAL.getAllFlightData(savedSearch);
 	}
 

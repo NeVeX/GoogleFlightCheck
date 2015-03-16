@@ -69,7 +69,7 @@ public class FlightController {
 			FlightData fd;
 			try
 			{
-				fd = flightService.getFlightsWithChartData(from, to, departureDate, returnDate, fii.getForceBatchUsage());
+				fd = flightService.getFlights(from, to, departureDate, returnDate, fii.getForceBatchUsage());
 			}
 			catch(FlightException fe)
 			{
