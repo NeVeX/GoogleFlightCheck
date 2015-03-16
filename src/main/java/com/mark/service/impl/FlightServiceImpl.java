@@ -286,23 +286,32 @@ public class FlightServiceImpl implements IFlightService {
 
 	@Override
 	public void runUpdates() {
-		System.out.println("Getting list of saved searches with departure dates in the future");
+		System.out.println("Batch Job: Getting list of saved searches with departure dates in the future");
 		List<FlightSavedSearch> savedSearches = flightSearchDAL.getAllFlightSavedSearches(true);
 		if ( savedSearches != null && savedSearches.size() > 0)
 		{
-			System.out.println("Found ["+savedSearches.size()+"] saved searches with departure dates in the future - getting Flight Data with no search for today");
+			System.out.println("Batch Job: Found ["+savedSearches.size()+"] saved searches with departure dates in the future - getting Flight Data with no search for today");
 			// get all the flight searches that do not have updates for today
 			List<FlightSavedSearch> needsUpdating = flightDataDAL.getFlightDataThatNeedsUpdating(savedSearches);
 			if ( needsUpdating != null && needsUpdating.size() > 0 )
 			{
-				System.out.println("Found ["+needsUpdating.size()+"] searches that will be updated now");
+				System.out.println("Batch Job: Found ["+needsUpdating.size()+"] searches that will be updated now");
 				for (FlightSavedSearch fss : needsUpdating)
 				{
-					this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate(), false);
-					System.out.println("Updated Flight Data for: "+fss);
+					try
+					{
+						System.out.println("Batch Job: Attempting to update Flight Data for: "+fss);
+						this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate(), false);
+						System.out.println("Updated Flight Data for: "+fss);
+					}
+					catch(Exception e)
+					{
+						System.err.println("Batch Job: Could not update flight details for ["+fss+"].\n"+e);
+					}
 				}
 			}
 		}
+		System.out.println("Batch Job: Finished.");
 	}
 
 
