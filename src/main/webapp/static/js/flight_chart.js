@@ -57,8 +57,19 @@ $( document ).ready(function() {
   //Get context with jQuery - using jQuery's .get() method.
     var ctx = $("#flightChart").get(0).getContext("2d");
     // This will get the first returned node in the jQuery collection.
-    if ( jsFlightHistory != null )
+    if ( jsFlightHistory != null && jsFlightHistory.length > 0)
     {
+    	var xAxisLabels = new Array();
+    	var lowestPrices = new Array();
+    	var shortestPrices = new Array();
+    	
+    	for( int i = 0; i < jsFlightHistory.length; i++)
+		{
+    		
+		}
+	
+    	
+    	
     	var data = {
 		    labels: ["01/01/2015", "0/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015"],
 		    datasets: [

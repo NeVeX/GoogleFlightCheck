@@ -46,7 +46,7 @@ public class UtilTest {
 	public void testDateConverter()
 	{
 		String date = "2014-10-20";
-		LocalDate dt = DateConverter.toDate(date);
+		Date dt = DateConverter.toDate(date);
 		assertDateIsAsExpected(dt, 2014, 10, 20);
 		date = "20-10-2014";
 		dt = DateConverter.toDate(date);
@@ -57,11 +57,11 @@ public class UtilTest {
 		date = "";
 		dt = DateConverter.toDate(date);
 		assertNull(dt);
-		dt = new LocalDate(2015, 9, 6);
+		dt = new LocalDate(2015, 9, 6).toDate();
 		String dateShouldMatch = "2015-09-06";
 		date = DateConverter.toString(dt);
 		assertEquals(dateShouldMatch, date);
-		date = DateConverter.toString(null);
+		date = DateConverter.toString((Date)null);
 		assertEquals(date, null);
 		
 	}
@@ -102,11 +102,12 @@ public class UtilTest {
 	}
 	
 	
-	private void assertDateIsAsExpected(LocalDate dt, int year, int month, int day)
+	private void assertDateIsAsExpected(Date dt, int year, int month, int day)
 	{
-		assertEquals(dt.getDayOfMonth(), day);
-		assertEquals(dt.getMonthOfYear(), month);
-		assertEquals(dt.getYear(), year);
+		LocalDate ld = DateConverter.toLocalDate(dt);
+		assertEquals(ld.getDayOfMonth(), day);
+		assertEquals(ld.getMonthOfYear(), month);
+		assertEquals(ld.getYear(), year);
 	}
 	
 }

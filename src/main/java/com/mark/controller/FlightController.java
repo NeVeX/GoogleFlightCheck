@@ -48,7 +48,7 @@ public class FlightController {
 		if (!model.containsKey("flightData"))
 		{
 			FlightData fd = new FlightData();
-			fd.setDepartureDate(new LocalDate());
+			fd.setDepartureDate(new Date());
 			fd.setDestination("DUB");
 			fd.setOrigin("SFO");
 			model.addAttribute("flightData", fd);

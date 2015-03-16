@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -96,15 +97,15 @@ public class FlightServiceImpl implements IFlightService {
 	
 	@Override
 	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage) {
-		LocalDate departureDate = DateConverter.toDate(departureDateString);
-		LocalDate returnDate = DateConverter.toDate(returnDateString);
+		Date departureDate = DateConverter.toDate(departureDateString);
+		Date returnDate = DateConverter.toDate(returnDateString);
 		FlightData fd = this.getFlights(from, to, departureDate, returnDate, forceBatchUsage);
 		FlightSavedSearch fss = new FlightSavedSearch();
 		fd.setHistory(this.getAllFlightDataForSearch(fd));
 		return fd;
 	}
 	
-	public FlightData getFlights(String from, String to, LocalDate departureDate, LocalDate returnDate, Boolean forceBatchUsage)
+	public FlightData getFlights(String from, String to, Date departureDate, Date returnDate, Boolean forceBatchUsage)
 	{	
 		from = from.toUpperCase();
 		to = to.toUpperCase();

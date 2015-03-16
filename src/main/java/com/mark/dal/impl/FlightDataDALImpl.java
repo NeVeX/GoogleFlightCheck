@@ -107,18 +107,18 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 
 	@Override
 	public boolean saveFlightData(FlightData fd) {
-		fd.setDateSearched(new LocalDate());
+		fd.setDateSearched(new Date());
 		System.out.println("Saving Flight Data: "+fd.toString());
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Entity en = new Entity(FLIGHT_DATA_TABLE, ancestorKey);
-		en.setProperty(DEPARTURE_DATE,fd.getDepartureDate().toDate());
-		en.setProperty(RETURN_DATE, fd.getReturnDate() != null ? fd.getReturnDate().toDate() : null);
+		en.setProperty(DEPARTURE_DATE,fd.getDepartureDate());
+		en.setProperty(RETURN_DATE, fd.getReturnDate());
 		en.setProperty(DESTINATION,fd.getDestination());
 		en.setProperty(ORIGIN,fd.getOrigin());
 		en.setProperty(LOWEST_PRICE,fd.getLowestPrice());
 		en.setProperty(SHORTEST_TIME_PRICE,fd.getShortestTimePrice());
 		en.setProperty(SAVED_SEARCH_KEY_ID, fd.getKey().getId());
-		en.setProperty(SEARCH_DATE, fd.getDateSearched().toDate());
+		en.setProperty(SEARCH_DATE, fd.getDateSearched());
 		en.setProperty(LOWEST_PRICE_DURATION, fd.getLowestPriceTripDuration());
 		en.setProperty(SHORTEST_PRICE_DURATION, fd.getShortestTimePriceTripDuration());
 		return dataStore.put(en) != null ? true : false;
@@ -129,15 +129,12 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		Date departureDate = (Date)entity.getProperty(DEPARTURE_DATE);
 		Date returnDate = (Date)entity.getProperty(RETURN_DATE);
 		Date searchDate = (Date)entity.getProperty(SEARCH_DATE);
-		fd.setDepartureDate(LocalDate.fromDateFields(departureDate));
-		if ( returnDate != null )
-		{
-			fd.setReturnDate(LocalDate.fromDateFields(returnDate));
-		}
+		fd.setDepartureDate(departureDate);
+		fd.setReturnDate(returnDate);
 		fd.setDestination((String)entity.getProperty(DESTINATION));
 		fd.setOrigin((String)entity.getProperty(ORIGIN));
 		fd.setKey(entity.getKey());
-		fd.setDateSearched(LocalDate.fromDateFields(searchDate));
+		fd.setDateSearched(searchDate);
 		fd.setLowestPriceTripDuration((Long) entity.getProperty(LOWEST_PRICE_DURATION));
 		fd.setShortestTimePriceTripDuration((Long) entity.getProperty(SHORTEST_PRICE_DURATION));
 		Double lowestPrice = (Double) entity.getProperty(LOWEST_PRICE);

@@ -33,7 +33,7 @@ public class FlightServiceTest {
 		FlightSavedSearch fss = new FlightSavedSearch();
 		fss.setOrigin("SFO");
 		fss.setDestination("DUB");
-		fss.setDepartureDate(new LocalDate(2016,6,9));
+		fss.setDepartureDate(new LocalDate(2016,6,9).toDate());
 		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
 		GoogleFlightResponse fd = this.googleApiClient.postForFlightInfo(gfr);
 		assertNotNull(fd);

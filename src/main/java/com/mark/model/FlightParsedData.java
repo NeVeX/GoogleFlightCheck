@@ -1,6 +1,7 @@
 package com.mark.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -11,8 +12,8 @@ public class FlightParsedData extends FlightSearch implements Serializable {
 	private float price;
 	private int numberOfStops;
 	private int tripLength;
-	private LocalDate departureDate;
-	private LocalDate returnDate;
+	private Date departureDate;
+	private Date returnDate;
 	
 	public float getPrice() {
 		return price;
@@ -35,16 +36,16 @@ public class FlightParsedData extends FlightSearch implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	public LocalDate getDepartureDate() {
+	public Date getDepartureDate() {
 		return departureDate;
 	}
-	public void setDepartureDate(LocalDate departureDate) {
+	public void setDepartureDate(Date departureDate) {
 		this.departureDate = departureDate;
 	}
-	public LocalDate getReturnDate() {
+	public Date getReturnDate() {
 		return returnDate;
 	}
-	public void setReturnDate(LocalDate returnDate) {
+	public void setReturnDate(Date returnDate) {
 		this.returnDate = returnDate;
 	}
 	

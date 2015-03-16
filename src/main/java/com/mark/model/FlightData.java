@@ -1,6 +1,7 @@
 package com.mark.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -14,10 +15,10 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Float shortestTimePrice;
 	private Float lowestPrice;
-	private LocalDate dateSearched;
+	private Date dateSearched;
+	private String dateSearchedString;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
-//	private ChartData chartData;
 	private List<FlightData> history;
 	private String message;
 	private String exceptionMessage;
@@ -48,10 +49,10 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	public LocalDate getDateSearched() {
+	public Date getDateSearched() {
 		return dateSearched;
 	}
-	public void setDateSearched(LocalDate dateSearched) {
+	public void setDateSearched(Date dateSearched) {
 		this.dateSearched = dateSearched;
 	}
 	@Override
@@ -96,6 +97,14 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 
 	public void setHistory(List<FlightData> history) {
 		this.history = history;
+	}
+
+	public String getDateSearchedString() {
+		return dateSearchedString;
+	}
+
+	public void setDateSearchedString(String dateSearchedString) {
+		this.dateSearchedString = dateSearchedString;
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.mark.model.dal;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -16,8 +17,8 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 	
 	private Key key;
 	private Boolean existingSearch;
-	private LocalDate departureDate;
-	private LocalDate returnDate;
+	private Date departureDate;
+	private Date returnDate;
 	
 	public Key getKey() {
 		return key;
@@ -41,23 +42,25 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 		return serialVersionUID;
 	}
 
-	public LocalDate getDepartureDate() {
-		return departureDate;
-	}
+	
 	@Override
 	public String toString() {
 		return "FlightSavedSearch ["+super.toString()+", key=" + key + ", existingSearch="
 				+ existingSearch + ", departureDate=" + departureDate
 				+ ", returnDate=" + returnDate + "]";
 	}
-	public void setDepartureDate(LocalDate departureDate) {
+	
+	public Date getDepartureDate() {
+		return departureDate;
+	}
+	public void setDepartureDate(Date departureDate) {
 		this.departureDate = departureDate;
 		super.setDepartureDateString(DateConverter.toString(departureDate));
 	}
-	public LocalDate getReturnDate() {
+	public Date getReturnDate() {
 		return returnDate;
 	}
-	public void setReturnDate(LocalDate returnDate) {
+	public void setReturnDate(Date returnDate) {
 		this.returnDate = returnDate;
 		super.setReturnDateString(DateConverter.toString(returnDate));
 	}
