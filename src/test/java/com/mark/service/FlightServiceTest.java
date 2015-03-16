@@ -3,6 +3,8 @@ package com.mark.service;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.mark.dal.impl.FlightDataDALImpl;
 import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
 import com.mark.model.dal.FlightSavedSearch;
@@ -46,5 +49,16 @@ public class FlightServiceTest {
 		Float f = Float.valueOf(price.substring(3, price.length()));
 		assertEquals(f, 133.34f, 0d);
 	}
+	
+	@Test
+	public void testMockFlightData()
+	{
+		FlightSavedSearch fss = new FlightSavedSearch();
+		fss.setOrigin("XXX"); // trigger for mock data return
+		List<FlightData> list = new FlightDataDALImpl().getAllFlightData(fss);
+		assertNotNull(list);
+		assertTrue(list.size() > 0);
+	}
+	
 
 }

@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.mark.model.dal.FlightSavedSearch;
+import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.TimeConverter;
 
 public class FlightData extends FlightSavedSearch implements Serializable {
@@ -54,6 +55,7 @@ public class FlightData extends FlightSavedSearch implements Serializable {
 	}
 	public void setDateSearched(Date dateSearched) {
 		this.dateSearched = dateSearched;
+		this.dateSearchedString = DateConverter.toString(dateSearched);
 	}
 	@Override
 	public String toString() {

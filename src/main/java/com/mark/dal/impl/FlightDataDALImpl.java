@@ -3,6 +3,7 @@ package com.mark.dal.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
@@ -66,6 +67,11 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	@Override
 	public List<FlightData> getAllFlightData(FlightSavedSearch savedSearch) {
 		System.out.println("Getting all saved Flight Data for search: "+savedSearch);
+		if ( savedSearch.getOrigin().equals("XXX"))
+		{
+			System.out.println("Returning mocked Flight Data test search: ");
+			return this.createMockedFlightData();
+		}
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, savedSearch.getKey().getId());
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DEPARTURE_DATE, SortDirection.ASCENDING);
@@ -81,6 +87,37 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 			}
 		}
 		return allFlightData;
+	}
+
+	private Random rand = new Random();
+	private List<FlightData> createMockedFlightData() {
+		LocalDate ld = new LocalDate();
+		
+		List<FlightData> list = new ArrayList<FlightData>();
+		for (int i = 0; i < 50; i++)
+		{
+			FlightData fd = new FlightData();
+			LocalDate date = ld.minusDays(i);
+			int priceOne = rand.nextInt(500) + 250;
+			int priceTwo = rand.nextInt(500) + 250;
+			Float lowestPrice;
+			Float shortestPrice;
+			if ( priceOne < priceTwo)
+			{
+				lowestPrice = Float.valueOf(priceOne);
+				shortestPrice = Float.valueOf(priceTwo);
+			}
+			else
+			{
+				lowestPrice = Float.valueOf(priceTwo);
+				shortestPrice = Float.valueOf(priceOne);
+			}
+			fd.setLowestPrice(lowestPrice);
+			fd.setShortestTimePrice(shortestPrice);
+			fd.setDateSearched(DateConverter.toDate(date));
+			list.add(fd);
+		}
+		return list;
 	}
 
 	@Override

@@ -62,16 +62,16 @@ $( document ).ready(function() {
     	var xAxisLabels = new Array();
     	var lowestPrices = new Array();
     	var shortestPrices = new Array();
-    	
-    	for( int i = 0; i < jsFlightHistory.length; i++)
+    	var i;
+    	for( i = 0; i < jsFlightHistory.length; i++)
 		{
-    		
+    		xAxisLabels.push(jsFlightHistory[i].dateSearchedString);
+    		lowestPrices.push(jsFlightHistory[i].lowestPrice);
+    		shortestPrices.push(jsFlightHistory[i].shortestTimePrice);
 		}
 	
-    	
-    	
     	var data = {
-		    labels: ["01/01/2015", "0/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015", "01/01/2015"],
+		    labels: xAxisLabels,
 		    datasets: [
 		        {
 		            label: "Lowest Prices",
@@ -81,7 +81,7 @@ $( document ).ready(function() {
 		            pointStrokeColor: "#fff",
 		            pointHighlightFill: "#fff",
 		            pointHighlightStroke: "rgba(220,220,220,1)",
-		            data: [65, 59, 80, 81, 56, 55, 40]
+		            data: lowestPrices
 		        },
 		        {
 		            label: "Shortest Trip Duration Prices",
@@ -91,16 +91,12 @@ $( document ).ready(function() {
 		            pointStrokeColor: "#fff",
 		            pointHighlightFill: "#fff",
 		            pointHighlightStroke: "rgba(151,187,205,1)",
-		            data: [28, 48, 40, 19, 86, 27, 90]
+		            data: shortestPrices
 		        }
 		    ]
     	};
     	// draw the chart with the given data
     	new Chart(ctx).Line(data, options);
 	}
-    
-    
-    
-
     
   });
