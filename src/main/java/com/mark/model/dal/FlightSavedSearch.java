@@ -27,7 +27,6 @@ public class FlightSavedSearch extends FlightSearch implements Serializable{
 		this.key = key;
 	}
 	
-
 	public Boolean getExistingSearch() {
 		return existingSearch;
 	}

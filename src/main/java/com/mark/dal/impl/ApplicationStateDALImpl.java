@@ -15,6 +15,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -22,6 +24,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IApplicationDAL;
+import com.mark.dal.IFlightDataDAL;
 import com.mark.model.dal.ApplicationState;
 import com.mark.util.converter.DateConverter;
 
@@ -56,7 +59,8 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	{
 		System.out.println("Searching for application state for date: "+dt);
 		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt.toDate());
-		Query q = new Query(APPLICATION_STATE_TABLE).setFilter(dateCompare);
+		Key ancestorKey = KeyFactory.createKey(IFlightDataDAL.FLIGHT_ANCESTOR_KIND, IFlightDataDAL.FLIGHT_ANCESTOR_ID);
+		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).setFilter(dateCompare);
 		System.out.println("Query: "+q.toString());
 		Entity en = dataStore.prepare(q).asSingleEntity();
 		if ( en != null )
@@ -72,8 +76,9 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		ApplicationState savedState = this.findApplicationState(newState.getDate());
 		if ( savedState == null)
 		{
+			Key ancestorKey = KeyFactory.createKey(IFlightDataDAL.FLIGHT_ANCESTOR_KIND, IFlightDataDAL.FLIGHT_ANCESTOR_ID);
 			// create a new one
-			Entity en = new Entity(APPLICATION_STATE_TABLE);
+			Entity en = new Entity(APPLICATION_STATE_TABLE, ancestorKey);
 			poplulteEntityWithData(en, newState);
 			return dataStore.put(en) != null ? true : false;
 		}
@@ -107,7 +112,8 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	@Override
 	public List<ApplicationState> getAllApplicationStates() {
 		System.out.println("Getting all application states");
-		Query q = new Query(APPLICATION_STATE_TABLE).addSort(DATE, SortDirection.DESCENDING);
+		Key ancestorKey = KeyFactory.createKey(IFlightDataDAL.FLIGHT_ANCESTOR_KIND, IFlightDataDAL.FLIGHT_ANCESTOR_ID);
+		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).addSort(DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();
 		for (Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(100)))

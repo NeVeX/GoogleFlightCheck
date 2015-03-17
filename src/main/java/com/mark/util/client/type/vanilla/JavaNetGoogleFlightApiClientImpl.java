@@ -31,29 +31,24 @@ public class JavaNetGoogleFlightApiClientImpl implements IGoogleFlightApiClient 
 		System.out.println("Sending 'POST' request to Google Flight URL ["+FLIGHT_URL+"]\n     with data ["+gRequest+"]");
 		try
 		{
-			//TODO: TIDY UP THIS MESS
-			
 			URL obj = new URL(FLIGHT_URL+"?key="+FlightProperties.GOOGLE_FLIGHT_API_KEY);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection(); // even though this will be a https connection, we can only use http here (URL Fetch on GAE will know to use https)
-			//add reuqest header
+			// even though this will be a https connection, we can only use http here (URL Fetch on GAE will know to use https)
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection(); 
+			// set up the connection
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
-//			String urlParameters = URLEncoder.encode();
-			// Send post request
-			con.setDoInput (true);
-			con.setDoOutput (true);
-			con.setUseCaches (false);
-			con.setReadTimeout(60000);
-			con.setConnectTimeout(60000);
-//			con.connect();
-			String jsonString = JsonConverter.getJsonFromObject(gRequest, GoogleFlightRequest.class);
+			con.setDoInput(true); // to be able to POST
+			con.setDoOutput(true); // to get results
+			con.setUseCaches(false);
+			con.setReadTimeout(60000); // set it big
+			con.setConnectTimeout(60000); // set it big
+			String jsonString = JsonConverter.getJsonFromObject(gRequest, GoogleFlightRequest.class); // convert what we need in the POST 
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-//			wr.writeBytes(urlParameters);
-			wr.writeBytes(jsonString);
+			wr.writeBytes(jsonString); // write to the stream
 			wr.flush();
-			wr.close();
-			int responseCode = con.getResponseCode();
-			GoogleFlightResponse gfr = JsonConverter.getObjectFromJson(con.getInputStream(), GoogleFlightResponse.class);
+			wr.close(); // send it off
+			int responseCode = con.getResponseCode(); // wait to get the response
+			GoogleFlightResponse gfr = JsonConverter.getObjectFromJson(con.getInputStream(), GoogleFlightResponse.class); // deserialize the response
 			System.out.println("Google Flight API returned with data");
 			return gfr;
 		}
