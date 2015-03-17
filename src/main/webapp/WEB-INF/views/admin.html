@@ -8,7 +8,7 @@
 	<div layout:fragment="content">
 
 		<h2>Application States</h2>
-		<table class="table table-bordered table-striped">
+		<table class="table table-bordered table-striped" border="1">
 			<thead>
 				<tr>
 					<th>Date</th>
@@ -23,7 +23,7 @@
 			</tbody>
 		</table>
 		<h2 style="margin-top: 30px">Saved Flight Searches</h2>
-		<table class="table table-bordered table-striped">
+		<table class="table table-bordered table-striped" border="1">
 			<thead>
 				<tr>
 					<th>Origin</th>
@@ -43,7 +43,7 @@
 		</table>
 
 		<h2 style="margin-top: 30px">Flight Data</h2>
-		<table class="table table-bordered table-striped">
+		<table class="table table-bordered table-striped" border="1">
 			<thead>
 				<tr>
 					<th>Origin</th>
@@ -54,6 +54,7 @@
 					<th>Lowest Price Duration</th>
 					<th>Shortest Price</th>
 					<th>Shortest Price Duration</th>
+					<th>Date Searched</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,6 +67,7 @@
 					<td th:text="${fd.getLowestTripDurationAsString()}">LOWEST_PRICE_TRIP_DURATION</td>
 					<td th:text="${fd.shortestTimePrice}">SHORTEST_TIME_PRICE</td>
 					<td th:text="${fd.getShortestTripDurationAsString()}">SHORTEST_PRICE_TRIP_DURATION</td>
+					<td th:text="${fd.dateSearchedString}">DATE_SEARCHED_STRING</td>
 				</tr>
 			</tbody>
 		</table>

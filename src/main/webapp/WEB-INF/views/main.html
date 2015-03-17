@@ -57,7 +57,9 @@
 				</tr>
 			</table>
 	
-
+	
+	
+	
 
 		</form>
 
@@ -65,7 +67,7 @@
 		<canvas id="flightChart" width="400" height="400"></canvas>
 
 
-		<table class="table">
+		<table class="table" border="1">
 			<caption><h5>Debug Flight Information</h5></caption>
 			<tr>
 				<td>Origin</td>
@@ -99,6 +101,7 @@
 				<td>Shortest Price Trip Duration</td>
 				<td th:text="${flightData.getShortestTripDurationAsString()}"></td>
 			</tr>
+			
 		</table>
 
 		<div th:switch="${flightData.existingSearch}">
