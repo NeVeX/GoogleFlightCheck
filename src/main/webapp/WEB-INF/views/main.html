@@ -36,9 +36,9 @@
 				</tr>
 				<tr >
 					<td>Departure Date</td>
-					<td><input style="margin-top: 5px" type="date" name="departureDateString"
-						th:field="*{departureDateString}"></input></td>
-					<td th:if="${#fields.hasErrors('departureDateString')}" th:errors="*{departureDateString}">Enter a valid date, yo!</td>
+					<td><input style="margin-top: 5px" type="date" name="departureDate"
+						th:field="*{departureDate}"></input></td>
+					<td th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}">Enter a valid date, yo!</td>
 				</tr>
 				<tr  >
 					<td>Return Date</td>
@@ -77,7 +77,7 @@
 			</tr>
 			<tr>
 				<td>Departure Date</td>
-				<td th:text="${flightData.departureDateString}"></td>
+				<td th:text="${flightData.departureDate}"></td>
 			</tr>
 			<tr>
 				<td>Return Date</td>

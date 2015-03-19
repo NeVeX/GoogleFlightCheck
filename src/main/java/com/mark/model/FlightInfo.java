@@ -10,7 +10,7 @@ import org.joda.time.LocalDate;
 import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.TimeConverter;
 
-public class FlightData extends FlightSearch implements Serializable {
+public class FlightInfo extends FlightSearch implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private Float shortestTimePrice;
@@ -19,7 +19,7 @@ public class FlightData extends FlightSearch implements Serializable {
 	private String dateSearchedString;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
-	private List<FlightData> history;
+	private List<FlightInfo> history;
 	private String message;
 	private String exceptionMessage;
 	
@@ -92,11 +92,11 @@ public class FlightData extends FlightSearch implements Serializable {
 		this.exceptionMessage = exceptionMessage;
 	}
 	
-	public List<FlightData> getHistory() {
+	public List<FlightInfo> getHistory() {
 		return history;
 	}
 
-	public void setHistory(List<FlightData> history) {
+	public void setHistory(List<FlightInfo> history) {
 		this.history = history;
 	}
 

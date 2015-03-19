@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.mark.dal.impl.FlightDataDALImpl;
-import com.mark.model.FlightData;
+import com.mark.dal.impl.FlightInfoDALImpl;
+import com.mark.model.FlightInfo;
 import com.mark.model.FlightParsedData;
 import com.mark.model.FlightSearch;
 import com.mark.model.google.request.GoogleFlightRequest;
@@ -55,7 +55,7 @@ public class FlightServiceTest {
 	{
 		FlightSearch fss = new FlightSearch();
 		fss.setOrigin("XXX"); // trigger for mock data return
-		List<FlightData> list = new FlightDataDALImpl().getAllFlightData(fss);
+		List<FlightInfo> list = new FlightInfoDALImpl().getAllSavedFlightInfo();
 		assertNotNull(list);
 		assertTrue(list.size() > 0);
 	}

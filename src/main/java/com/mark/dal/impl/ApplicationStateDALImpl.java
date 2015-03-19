@@ -24,7 +24,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IApplicationDAL;
-import com.mark.dal.IFlightDataDAL;
+import com.mark.dal.IFlightInfoDAL;
 import com.mark.model.dal.ApplicationState;
 import com.mark.util.converter.DateConverter;
 
@@ -59,7 +59,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	{
 		System.out.println("Searching for application state for date: "+dt);
 		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt.toDate());
-		Key ancestorKey = KeyFactory.createKey(IFlightDataDAL.FLIGHT_ANCESTOR_KIND, IFlightDataDAL.FLIGHT_ANCESTOR_ID);
+		Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).setFilter(dateCompare);
 		System.out.println("Query: "+q.toString());
 		Entity en = dataStore.prepare(q).asSingleEntity();
@@ -76,7 +76,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		ApplicationState savedState = this.findApplicationState(newState.getDate());
 		if ( savedState == null)
 		{
-			Key ancestorKey = KeyFactory.createKey(IFlightDataDAL.FLIGHT_ANCESTOR_KIND, IFlightDataDAL.FLIGHT_ANCESTOR_ID);
+			Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
 			// create a new one
 			Entity en = new Entity(APPLICATION_STATE_TABLE, ancestorKey);
 			poplulteEntityWithData(en, newState);
@@ -112,7 +112,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	@Override
 	public List<ApplicationState> getAllApplicationStates() {
 		System.out.println("Getting all application states");
-		Key ancestorKey = KeyFactory.createKey(IFlightDataDAL.FLIGHT_ANCESTOR_KIND, IFlightDataDAL.FLIGHT_ANCESTOR_ID);
+		Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).addSort(DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();

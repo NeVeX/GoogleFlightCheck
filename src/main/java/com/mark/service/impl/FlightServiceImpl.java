@@ -19,11 +19,11 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mark.dal.IFlightDataDAL;
+import com.mark.dal.IFlightInfoDAL;
 import com.mark.dal.IFlightSearchDAL;
 import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
-import com.mark.model.FlightData;
+import com.mark.model.FlightInfo;
 import com.mark.model.FlightParsedData;
 import com.mark.model.FlightSearch;
 import com.mark.model.compare.FlightLowestPriceCompare;
@@ -53,7 +53,7 @@ public class FlightServiceImpl implements IFlightService {
 
 	@Autowired
 	private IFlightSearchDAL flightSearchDAL;@Autowired
-	private IFlightDataDAL flightDataDAL;@Autowired
+	private IFlightInfoDAL flightDataDAL;@Autowired
 	private IApplicationDAL applicationDAL;@Autowired
 	private IGoogleFlightApiClient googleFlightApiClient;
 	private AtomicLong flightCallCurrentCount = new AtomicLong(0);
@@ -76,36 +76,29 @@ public class FlightServiceImpl implements IFlightService {
 	}
 
 	@Override
-	public FlightData getFlights(String from, String to, String departureDateString, String returnDateString, Boolean forceBatchUsage) {
-		Date departureDate = DateConverter.toDate(departureDateString);
-		Date returnDate = DateConverter.toDate(returnDateString);
-		FlightData fd = this.getFlights(from, to, departureDate, returnDate,
-		forceBatchUsage);
-
+	public FlightInfo getFlightInfo(FlightSearch fs) {
+		FlightInfo fd = this.getFlightInfoWithoutHistory(fs);
 		fd.setHistory(this.getAllFlightDataForSearch(fd));
 		return fd;
 	}
 
-	public FlightData getFlights(String from, String to, Date departureDate, Date returnDate, Boolean forceBatchUsage) {
-		from = from.toUpperCase();
-		to = to.toUpperCase();
-		FlightSearch savedSearch = flightSearchDAL.find(from, to,
-		departureDate, returnDate);
+	private FlightInfo getFlightInfoWithoutHistory(FlightSearch fs) {
+		fs.setDestination(fs.getDestination().toUpperCase());
+		fs.setOrigin(fs.getOrigin().toUpperCase());
+		FlightSearch savedSearch = flightSearchDAL.findFlightSavedSearch(fs);
 		if (savedSearch == null) {
-			savedSearch = flightSearchDAL.save(from, to, departureDate,
-			returnDate);
+			savedSearch = flightSearchDAL.saveFlightSearch(fs);
 		}
 
-		if (forceBatchUsage != null && forceBatchUsage) {
-			throw new FlightException(
-				"Will not get flight details since told to wait for batch process instead");
+		if (fs.getForceBatchUsage() != null && fs.getForceBatchUsage()) {
+			throw new FlightException("Will not get flight details since told to wait for batch process instead");
 		}
 
 		// we have the saved search now.
 		// Check if we have the data for this search
 		if (savedSearch.isExistingSearch() != null && savedSearch.isExistingSearch()) {
 			// find if we have data for today already
-			FlightData fd = flightDataDAL.findFlightData(savedSearch);
+			FlightInfo fd = flightDataDAL.findFlightInfo(savedSearch);
 			if (fd != null) {
 				String s = "Returning saved Flight Data instead of calling Flight API";
 				// just return it
@@ -132,13 +125,13 @@ public class FlightServiceImpl implements IFlightService {
 			List < FlightParsedData > listOfFlights = this.parseGoogleResponseToFlightData(response, savedSearch);
 			if (listOfFlights != null && listOfFlights.size() > 0) {
 				// now get the prices we care about
-				FlightData fd = this.getFlightData(listOfFlights);
+				FlightInfo fd = this.getFlightData(listOfFlights);
 				if (fd != null) {
 					// need to save this!
 					fd.setKey(savedSearch.getKey()); // save the key for this
 					// search too
 					fd.setExistingSearch(savedSearch.isExistingSearch());
-					flightDataDAL.saveFlightData(fd);
+					flightDataDAL.saveFlightInfo(fd);
 					return fd;
 				}
 				throw new FlightException("Found flight information but could not parse details from the objects");
@@ -148,12 +141,12 @@ public class FlightServiceImpl implements IFlightService {
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}
 
-	private List < FlightData > getAllFlightDataForSearch(FlightSearch savedSearch) {
-		return flightDataDAL.getAllFlightData(savedSearch);
+	private List<FlightInfo> getAllFlightDataForSearch(FlightSearch savedSearch) {
+		return flightDataDAL.getAllSavedFlightInfo(savedSearch);
 	}
 
-	private FlightData getFlightData(List < FlightParsedData > listOfFlights) {
-		FlightData fd = new FlightData();
+	private FlightInfo getFlightData(List<FlightParsedData> listOfFlights) {
+		FlightInfo fd = new FlightInfo();
 		Collections.sort(listOfFlights, new FlightLowestPriceCompare());
 		FlightParsedData fpdCheap = listOfFlights.get(0);
 		fd.setDepartureDate(fpdCheap.getDepartureDate());
@@ -170,8 +163,8 @@ public class FlightServiceImpl implements IFlightService {
 		return fd;
 	}
 
-	private List <FlightParsedData> parseGoogleResponseToFlightData(GoogleFlightResponse response, FlightSearch fss) {
-		List < FlightParsedData > parsedData = new ArrayList < FlightParsedData > ();
+	private List<FlightParsedData> parseGoogleResponseToFlightData(GoogleFlightResponse response, FlightSearch fss) {
+		List<FlightParsedData> parsedData = new ArrayList < FlightParsedData > ();
 		if (response == null || response.getTrips() == null || response.getTrips().getTripOption() == null) {
 			throw new FlightException("No flight information returned for search query");
 		}
@@ -241,8 +234,8 @@ public class FlightServiceImpl implements IFlightService {
 	}
 
 	@Override
-	public List < FlightData > getAllFlightData() {
-		return flightDataDAL.getAllFlightData();
+	public List <FlightInfo> getAllSavedFlightInfo() {
+		return flightDataDAL.getAllSavedFlightInfo();
 	}
 
 	@Override
@@ -251,19 +244,19 @@ public class FlightServiceImpl implements IFlightService {
 	}
 
 	@Override
-	public void runUpdates() {
+	public void runTracker() {
 		System.out.println("Batch Job: Getting list of saved searches with departure dates in the future");
 		List < FlightSearch > savedSearches = flightSearchDAL.getAllFlightSavedSearches(true);
 		if (savedSearches != null && savedSearches.size() > 0) {
 			System.out.println("Batch Job: Found [" + savedSearches.size() + "] saved searches with departure dates in the future - getting Flight Data with no search for today");
 			// get all the flight searches that do not have updates for today
-			List < FlightSearch > needsUpdating = flightDataDAL.getFlightDataThatNeedsUpdating(savedSearches);
+			List < FlightSearch > needsUpdating = flightDataDAL.getFlightInfoThatNeedsTracking(savedSearches);
 			if (needsUpdating != null && needsUpdating.size() > 0) {
 				System.out.println("Batch Job: Found [" + needsUpdating.size() + "] searches that will be updated now");
 				for (FlightSearch fss: needsUpdating) {
 					try {
 						System.out.println("Batch Job: Attempting to update Flight Data for: " + fss);
-						this.getFlights(fss.getOrigin(), fss.getDestination(), fss.getDepartureDate(), fss.getReturnDate(), false);
+						this.getFlightInfoWithoutHistory(fss);
 						System.out.println("Updated Flight Data for: " + fss);
 					} catch (Exception e) {
 						System.err.println("Batch Job: Could not update flight details for [" + fss + "].\n" + e);

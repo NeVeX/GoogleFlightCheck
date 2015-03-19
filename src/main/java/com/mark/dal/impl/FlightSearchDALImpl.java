@@ -24,7 +24,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IFlightSearchDAL;
-import com.mark.model.FlightData;
+import com.mark.model.FlightInfo;
 import com.mark.model.FlightSearch;
 import com.mark.model.dal.ApplicationState;
 import com.mark.util.converter.DateConverter;
@@ -43,34 +43,29 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 	
 	@Override
-	public FlightSearch save(String origin, String destination, Date departureDate, Date returnDate) {
-		FlightSearch fss = new FlightSearch();
-		fss.setDepartureDate(departureDate);
-		fss.setReturnDate(returnDate);
-		fss.setDestination(destination);
-		fss.setOrigin(origin);
-		fss.setExistingSearch(false);
-		System.out.println("Saving flight search: "+fss.toString());
+	public FlightSearch saveFlightSearch(FlightSearch fs) {
+		fs.setExistingSearch(false);
+		System.out.println("Saving flight search: "+fs.toString());
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Entity en = new Entity(FLIGHT_SEARCH_TABLE, ancestorKey);
-		en.setProperty(DEPARTURE_DATE, departureDate);
-		en.setProperty(RETURN_DATE, returnDate);
-		en.setProperty(DESTINATION,destination);
-		en.setProperty(ORIGIN,origin);
+		en.setProperty(DEPARTURE_DATE, fs.getDepartureDate());
+		en.setProperty(RETURN_DATE, fs.getReturnDate());
+		en.setProperty(DESTINATION,fs.getDestination());
+		en.setProperty(ORIGIN,fs.getOrigin());
 		Key key = dataStore.put(en);
-		fss.setKey(key);
-		System.out.println("Saved flight search: "+fss.toString());
-		return fss;
+		fs.setKey(key);
+		System.out.println("Saved flight search: "+fs.toString());
+		return fs;
 	}
 
 	@Override
-	public FlightSearch find(String origin, String destination, Date departureDate, Date returnDate) {
-		System.out.println("Searching for Saved Flight Search ["+origin+", "+destination+", "+departureDate+", "+returnDate+"]");
+	public FlightSearch findFlightSavedSearch(FlightSearch fs) {
+		System.out.println("Searching for Saved Flight Search ["+fs+"]");
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
-		Filter originCompare = new FilterPredicate(ORIGIN, FilterOperator.EQUAL, origin);
-		Filter destinationCompare = new FilterPredicate(DESTINATION, FilterOperator.EQUAL, destination);
-		Filter departureDateCompare = new FilterPredicate(DEPARTURE_DATE, FilterOperator.EQUAL, departureDate);
-		Filter returnDateCompare = new FilterPredicate(RETURN_DATE, FilterOperator.EQUAL, returnDate);
+		Filter originCompare = new FilterPredicate(ORIGIN, FilterOperator.EQUAL, fs.getOrigin());
+		Filter destinationCompare = new FilterPredicate(DESTINATION, FilterOperator.EQUAL, fs.getDestination());
+		Filter departureDateCompare = new FilterPredicate(DEPARTURE_DATE, FilterOperator.EQUAL, fs.getDepartureDate());
+		Filter returnDateCompare = new FilterPredicate(RETURN_DATE, FilterOperator.EQUAL, fs.getReturnDate());
 		Filter allCompares = CompositeFilterOperator.and(originCompare, destinationCompare, departureDateCompare, returnDateCompare);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setAncestor(ancestorKey).setFilter(allCompares);
 		System.out.println("Query: "+q.toString());

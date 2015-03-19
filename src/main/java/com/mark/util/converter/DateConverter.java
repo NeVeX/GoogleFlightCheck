@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 
 public class DateConverter {
 
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
 	
 	/**

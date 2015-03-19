@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mark.model.FlightData;
+import com.mark.model.FlightInfo;
 import com.mark.model.FlightSearch;
 import com.mark.model.dal.ApplicationState;
 import com.mark.service.IFlightService;
@@ -29,7 +29,7 @@ public class AdminController {
 	public String getMainPage(ModelMap model)
 	{
 		List<FlightSearch> allSavedSearches = flightService.getAllFlightSavedSearches();
-		List<FlightData> allFlightData = flightService.getAllFlightData();
+		List<FlightInfo> allFlightData = flightService.getAllSavedFlightInfo();
 		List<ApplicationState> allApplicationStates = flightService.getAllApplicationStates();
 		model.put("allSavedSearches", allSavedSearches);
 		model.put("allFlightData", allFlightData);
@@ -37,12 +37,12 @@ public class AdminController {
 		return "admin"; // the admin page
 	}
 	
-	@RequestMapping(value=BASE_URI+"/job/update", method=RequestMethod.GET)
+	@RequestMapping(value=BASE_URI+"/job/tracker", method=RequestMethod.GET)
 	public @ResponseBody String runFlightUpdate()
 	{
 		long start = System.currentTimeMillis();
-		System.out.println("About to run update job for today's date: "+new DateTime());
-		flightService.runUpdates();
+		System.out.println("About to run tracker job for today's date: "+new DateTime());
+		flightService.runTracker();
 		long end = (System.currentTimeMillis() - start);
 		return "Job ran for "+TimeConverter.convertMillisecondTimeToString(end);
 	}

@@ -23,13 +23,13 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.mark.dal.IFlightDataDAL;
-import com.mark.model.FlightData;
+import com.mark.dal.IFlightInfoDAL;
+import com.mark.model.FlightInfo;
 import com.mark.model.FlightSearch;
 import com.mark.util.converter.DateConverter;
 
 @Repository
-public class FlightDataDALImpl implements IFlightDataDAL {
+public class FlightInfoDALImpl implements IFlightInfoDAL {
 	private static final String SAVED_SEARCH_KEY_ID = "SAVED_SEARCH_KEY_ID";
 	private static final String FLIGHT_DATA_TABLE = "FlightData";
 	private static final String LOWEST_PRICE = "LOWEST_PRICE";
@@ -46,17 +46,17 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 	
 	@Override
-	public List<FlightData> getAllFlightData() {
+	public List<FlightInfo> getAllSavedFlightInfo() {
 		System.out.println("Getting all saved Flight Data");
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
-		List<FlightData> allFlightData = new ArrayList<FlightData>();
+		List<FlightInfo> allFlightData = new ArrayList<FlightInfo>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
 		{
 			if( en != null)
 			{
-				FlightData fd = this.createFlightDataFromEntity(en);
+				FlightInfo fd = this.createFlightDataFromEntity(en);
 				System.out.println("Found Flight Data: "+fd.toString());
 				allFlightData.add(fd);;
 			}
@@ -65,7 +65,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 	
 	@Override
-	public List<FlightData> getAllFlightData(FlightSearch savedSearch) {
+	public List<FlightInfo> getAllSavedFlightInfo(FlightSearch savedSearch) {
 		System.out.println("Getting all saved Flight Data for search: "+savedSearch);
 		if ( savedSearch.getOrigin().equals("XXX"))
 		{
@@ -76,12 +76,12 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, savedSearch.getKey().getId());
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DEPARTURE_DATE, SortDirection.ASCENDING);
 		System.out.println("Query: "+q.toString());
-		List<FlightData> allFlightData = new ArrayList<FlightData>();
+		List<FlightInfo> allFlightData = new ArrayList<FlightInfo>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
 		{
 			if( en != null)
 			{
-				FlightData fd = this.createFlightDataFromEntity(en);
+				FlightInfo fd = this.createFlightDataFromEntity(en);
 				System.out.println("Found Flight Data: "+fd.toString());
 				allFlightData.add(fd);;
 			}
@@ -90,13 +90,13 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	private Random rand = new Random();
-	private List<FlightData> createMockedFlightData() {
+	private List<FlightInfo> createMockedFlightData() {
 		LocalDate ld = new LocalDate();
 		
-		List<FlightData> list = new ArrayList<FlightData>();
+		List<FlightInfo> list = new ArrayList<FlightInfo>();
 		for (int i = 0; i < 50; i++)
 		{
-			FlightData fd = new FlightData();
+			FlightInfo fd = new FlightInfo();
 			LocalDate date = ld.minusDays(i);
 			int priceOne = rand.nextInt(500) + 250;
 			int priceTwo = rand.nextInt(500) + 250;
@@ -121,7 +121,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	@Override
-	public FlightData findFlightData(FlightSearch savedSearch) {
+	public FlightInfo findFlightInfo(FlightSearch savedSearch) {
 		Key key = savedSearch.getKey();
 		LocalDate searchDate = new LocalDate(); // get today's date
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, key.getId());
@@ -134,7 +134,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		if (entity != null)
 		{
 			System.out.println("Found a match for flight data search for key ["+key.getId()+"] and date ["+searchDate+"]");
-			FlightData fd =createFlightDataFromEntity(entity);
+			FlightInfo fd =createFlightDataFromEntity(entity);
 			fd.setExistingSearch(true);
 			fd.setKey(savedSearch.getKey()); // set the search key. TODO: (should rename this, not clear)
 			return fd;
@@ -144,7 +144,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	@Override
-	public boolean saveFlightData(FlightData fd) {
+	public boolean saveFlightInfo(FlightInfo fd) {
 		fd.setDateSearched(new LocalDate().toDate());
 		System.out.println("Saving Flight Data: "+fd.toString());
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
@@ -162,8 +162,8 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 		return dataStore.put(en) != null ? true : false;
 	}
 	
-	private FlightData createFlightDataFromEntity(Entity entity) {
-		FlightData fd = new FlightData();
+	private FlightInfo createFlightDataFromEntity(Entity entity) {
+		FlightInfo fd = new FlightInfo();
 		Date departureDate = (Date)entity.getProperty(DEPARTURE_DATE);
 		Date returnDate = (Date)entity.getProperty(RETURN_DATE);
 		Date searchDate = (Date)entity.getProperty(SEARCH_DATE);
@@ -189,7 +189,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	@Override
-	public List<FlightSearch> getFlightDataThatNeedsUpdating(List<FlightSearch> savedSearches) 
+	public List<FlightSearch> getFlightInfoThatNeedsTracking(List<FlightSearch> savedSearches) 
 	{
 		Date todaysDate = new LocalDate().toDate();
 		System.out.println("Getting all Flight Data that needs updating - records with no search date for today");

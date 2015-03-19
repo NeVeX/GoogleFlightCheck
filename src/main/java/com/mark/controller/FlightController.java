@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mark.exception.FlightException;
-import com.mark.model.FlightData;
+import com.mark.model.FlightInfo;
 import com.mark.model.FlightSearch;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.IFlightService;
@@ -52,7 +52,7 @@ public class FlightController {
 	{
 		if (!model.containsKey(FLIGHT_DATA_OBJECT))
 		{
-			FlightData fs = new FlightData();
+			FlightInfo fs = new FlightInfo();
 			fs.setDepartureDate(DateConverter.toDate(new LocalDate().plusMonths(6)));
 			fs.setDestination("DUB");
 			fs.setOrigin("SFO");
@@ -62,7 +62,7 @@ public class FlightController {
 	}
 	
 	@RequestMapping(value=BASE_URL, method=RequestMethod.POST)
-	public String postDataToMainPage(@Valid @ModelAttribute(FLIGHT_DATA_OBJECT) FlightData flightData, BindingResult bindingResult, ModelMap model)
+	public String postDataToMainPage(@Valid @ModelAttribute(FLIGHT_DATA_OBJECT) FlightInfo flightData, BindingResult bindingResult, ModelMap model)
 	{
 		if ( bindingResult.hasErrors())
 		{
@@ -70,23 +70,18 @@ public class FlightController {
 		}
 		if ( flightData != null)
 		{
-			String from = flightData.getOrigin();
-			String to = flightData.getDestination();
-			String departureDate = flightData.getDepartureDateString();
-			String returnDate = flightData.getReturnDateString();
-			FlightData fd;
+			FlightInfo fd;
 			try
 			{
-				fd = flightService.getFlights(from, to, departureDate, returnDate, flightData.getForceBatchUsage());
+				fd = flightService.getFlightInfo(flightData);
 			}
 			catch(FlightException fe)
 			{
 				System.err.println("Caught exception in controller when getting flight info: "+fe.getMessage());
-				fd = new FlightData();
+				fd = new FlightInfo();
 				fd.setExceptionMessage(fe.getMessage());
-				fd.setOrigin(from);
-				fd.setDestination(to);
-				fd.setDepartureDateString(departureDate);
+				fd.setOrigin(flightData.getOrigin());
+				fd.setDestination(flightData.getDestination());
 			}
 			model.addAttribute(FLIGHT_DATA_OBJECT, fd);	
 		}

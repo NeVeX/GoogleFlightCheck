@@ -1,15 +1,14 @@
 package com.mark.dal;
 
-import java.util.Date;
 import java.util.List;
 
 import com.mark.model.FlightSearch;
 
 public interface IFlightSearchDAL extends IFlightDAL {
 
-	public FlightSearch save(String origin, String destination, Date departureDate, Date returnDate);
+	public FlightSearch saveFlightSearch(FlightSearch fs);
 	
-	public FlightSearch find(String origin, String destination, Date departureDate, Date returnDate);
+	public FlightSearch findFlightSavedSearch(FlightSearch fs);
 	
 	public List<FlightSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly);
 	
