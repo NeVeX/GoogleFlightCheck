@@ -116,7 +116,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).addSort(DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();
-		for (Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(100)))
+		for (Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null )
 			{

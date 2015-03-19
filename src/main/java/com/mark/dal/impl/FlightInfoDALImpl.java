@@ -52,7 +52,7 @@ public class FlightInfoDALImpl implements IFlightInfoDAL {
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightInfo> allFlightData = new ArrayList<FlightInfo>();
-		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
+		for(Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null)
 			{
@@ -77,7 +77,7 @@ public class FlightInfoDALImpl implements IFlightInfoDAL {
 		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DEPARTURE_DATE, SortDirection.ASCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightInfo> allFlightData = new ArrayList<FlightInfo>();
-		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
+		for(Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null)
 			{

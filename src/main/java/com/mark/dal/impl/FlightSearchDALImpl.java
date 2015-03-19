@@ -106,7 +106,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		}
 		System.out.println("Query: "+q.toString());
 		List<FlightSearch> allFlightSavedSearchs = new ArrayList<FlightSearch>();
-		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
+		for(Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null)
 			{
