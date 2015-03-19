@@ -32,6 +32,14 @@ public class GoogleFlightClientMocked implements IRestEasyGoogleFlightApiClient
 		GoogleFlightResponse gfr = new GoogleFlightResponse();
 		Trip trip = new Trip();
 		List<TripOption> tripOptions = new ArrayList<TripOption>();
+		trip.setTripOption(tripOptions);
+		gfr.setTrips(trip);
+		if ( request.getRequest().getSlice().get(0).getOrigin().equals("123"))
+		{
+			// return no flight data
+			return gfr;
+		}
+		
 		int tripOptionsCount = random.nextInt(10) + 1; // at least have one
 		for (int i = 0; i < tripOptionsCount; i++)
 		{
@@ -57,8 +65,7 @@ public class GoogleFlightClientMocked implements IRestEasyGoogleFlightApiClient
 			to.setSlice(slices);
 			tripOptions.add(to);
 		}
-		trip.setTripOption(tripOptions);
-		gfr.setTrips(trip);
+		
 		return gfr;
 		
 		

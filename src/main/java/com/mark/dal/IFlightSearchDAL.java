@@ -10,6 +10,8 @@ public interface IFlightSearchDAL extends IFlightDAL {
 	
 	public FlightSearch findFlightSavedSearch(FlightSearch fs);
 	
+	public boolean updateFlightSavedSearch(FlightSearch fs);
+	
 	public List<FlightSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly);
 	
 }

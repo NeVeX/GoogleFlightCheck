@@ -89,6 +89,11 @@ public class FlightServiceImpl implements IFlightService {
 		if (savedSearch == null) {
 			savedSearch = flightSearchDAL.saveFlightSearch(fs);
 		}
+		if ( savedSearch.getFlightOptionsExists() != null && !savedSearch.getFlightOptionsExists())
+		{
+			// no flight options exists for this search, so don't continue
+			throw new FlightException("No flight options exists for this search");
+		}
 
 		if (fs.getForceBatchUsage() != null && fs.getForceBatchUsage()) {
 			throw new FlightException("Will not get flight details since told to wait for batch process instead");
@@ -127,14 +132,16 @@ public class FlightServiceImpl implements IFlightService {
 				FlightInfo fd = this.getFlightData(listOfFlights);
 				if (fd != null) {
 					// need to save this!
-					fd.setKey(savedSearch.getKey()); // save the key for this
-					// search too
+					fd.setKey(savedSearch.getKey()); // save the key for this search too
 					fd.setExistingSearch(savedSearch.isExistingSearch());
 					flightDataDAL.saveFlightInfo(fd);
 					return fd;
 				}
 				throw new FlightException("Found flight information but could not parse details from the objects");
 			}
+			// no flights exist for this search, so we need to save this with the search data
+			fs.setFlightOptionsExists(false);
+			this.flightSearchDAL.updateFlightSavedSearch(fs);
 			throw new FlightException("Did not find any flights from Google API response");
 		}
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");

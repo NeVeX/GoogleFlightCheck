@@ -21,6 +21,7 @@
 	<div
 		style="width =: 200px; height: 200px; margin: 0 auto; display: inline; text-align: center;">
 		<h4>Enter your flight details below</h4>
+		<div th:if="${T(com.mark.util.FlightProperties).IN_DEBUG_MODE}" style="color: red">In Debug Mode</div>
 		<form method="post" action="main" th:object="${flightData}">
 			<table class="table" style="margin: auto;">
 				<tr>
@@ -43,7 +44,7 @@
 				<tr  >
 					<td>Return Date</td>
 					<td ><input style="margin-top: 5px" type="date" name="returnDate"
-						th:field="*{returnDateString}" disabled="disabled" ></input></td>
+						th:field="*{returnDate}" disabled="disabled" ></input></td>
 					<td style="color: gray;">Coming soon</td>
 				</tr>
 				<tr >
@@ -60,6 +61,17 @@
 				</tr>
 			</table>
 		</form>
+		
+		<div>
+			<p style="color: blue" th:text="${flightData.infoMessage}"/>
+			<p style="color: red" th:text="${flightData.exceptionMessage}"/>
+		</div>
+		
+		<div th:switch="${flightData.existingSearch}">
+			<p th:case="${false}">This search has now being saved and will run daily to track flight fares</p>
+			<p th:case="${true}">This search already exists and is already tracking flight fares daily</p>
+		</div>
+		
 
 		<!-- The lovely chart! -->
 		<canvas id="flightChart" width="800" height="400"></canvas>
@@ -81,7 +93,7 @@
 			</tr>
 			<tr>
 				<td>Return Date</td>
-				<td th:text="${flightData.returnDateString}"></td>
+				<td th:text="${flightData.returnDate}"></td>
 			</tr>
 			<tr>
 				<td>Lowest Price</td>
@@ -99,23 +111,18 @@
 				<td>Shortest Price Trip Duration</td>
 				<td th:text="${flightData.getShortestTripDurationAsString()}"></td>
 			</tr>
+			<tr>
+				<td>Flight Options Exists</td>
+				<td th:text="${flightData.flightOptionsExists}"></td>
+			</tr>
+			
 			
 		</table>
 
-		<div th:switch="${flightData.existingSearch}">
-			<p th:case="${false}">This search has now being saved and will run
-				daily to track flight fares</p>
-			<p th:case="${true}">This search already exists and is already
-				tracking flight fares daily</p>
-		</div>
 		
 		
-		<div>
-			<p style="color: blue" th:text="${flightData.infoMessage}"/>
-			<p style="color: red" th:text="${flightData.exceptionMessage}"/>
-		</div>
-		<div th:if="${T(com.mark.util.FlightProperties).IN_DEBUG_MODE}"
-			style="color: red">In Debug Mode</div>
+		
+
 	</div>
 
 </body>

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.TimeConverter;
@@ -15,8 +16,8 @@ public class FlightInfo extends FlightSearch implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Float shortestTimePrice;
 	private Float lowestPrice;
+	@DateTimeFormat(pattern=DateConverter.DATE_FORMAT)
 	private Date dateSearched;
-	private String dateSearchedString;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
 	private List<FlightInfo> history;
@@ -54,16 +55,16 @@ public class FlightInfo extends FlightSearch implements Serializable {
 	}
 	public void setDateSearched(Date dateSearched) {
 		this.dateSearched = dateSearched;
-		this.dateSearchedString = DateConverter.toString(dateSearched);
 	}
 
+
+	
 	@Override
 	public String toString() {
 		return "FlightInfo [shortestTimePrice=" + shortestTimePrice
 				+ ", lowestPrice=" + lowestPrice + ", dateSearched="
-				+ dateSearched + ", dateSearchedString=" + dateSearchedString
-				+ ", lowestPriceTripDuration=" + lowestPriceTripDuration
-				+ ", shortestTimePriceTripDuration="
+				+ dateSearched + ", lowestPriceTripDuration="
+				+ lowestPriceTripDuration + ", shortestTimePriceTripDuration="
 				+ shortestTimePriceTripDuration + ", history=" + history
 				+ ", infoMessage=" + infoMessage + ", exceptionMessage="
 				+ exceptionMessage + "]";
@@ -96,14 +97,6 @@ public class FlightInfo extends FlightSearch implements Serializable {
 
 	public void setHistory(List<FlightInfo> history) {
 		this.history = history;
-	}
-
-	public String getDateSearchedString() {
-		return dateSearchedString;
-	}
-
-	public void setDateSearchedString(String dateSearchedString) {
-		this.dateSearchedString = dateSearchedString;
 	}
 
 	public String getInfoMessage() {

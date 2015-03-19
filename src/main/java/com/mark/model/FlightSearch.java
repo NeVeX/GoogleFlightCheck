@@ -27,17 +27,15 @@ public class FlightSearch implements Serializable {
 	@Size(min=3, max=3, message="Destination name must be 3 characters long")
 	@NotBlank(message="Destination cannot be left blank")
 	private String destination;
-	@NotBlank(message="Depature Date cannot be blank")
-//	private String departureDateString;
-	private String returnDateString;
 	private Boolean forceBatchUsage;
 	private Key key;
 	private Boolean existingSearch;
-	@Future
+	@Future(message="Depature date cannot be in the past")
 	@DateTimeFormat(pattern=DateConverter.DATE_FORMAT)
 	private Date departureDate;
-	@Future
 	private Date returnDate;
+	private Boolean flightOptionsExists;
+	
 	
 	public String getOrigin() {
 		return origin;
@@ -51,23 +49,7 @@ public class FlightSearch implements Serializable {
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
-//	public String getDepartureDateString() {
-//		return departureDateString;
-//	}
-//	public void setDepartureDateString(String departureDateString) {
-//		this.departureDateString = departureDateString;
-//		this.departureDate = DateConverter.toDate(this.departureDateString);
-//		
-//	}
-	public String getReturnDateString() {
-		return returnDateString;
-	}
-	public void setReturnDateString(String returnDateString) {
-		this.returnDateString = returnDateString;
-		this.returnDate = DateConverter.toDate(this.returnDateString);
-	}
-	
-	
+
 	public Boolean getForceBatchUsage() {
 		return forceBatchUsage;
 	}
@@ -91,17 +73,21 @@ public class FlightSearch implements Serializable {
 	}
 	public void setDepartureDate(Date departureDate) {
 		this.departureDate = departureDate;
-//		this.departureDateString = DateConverter.toString(departureDate);
 	}
 	public Date getReturnDate() {
 		return returnDate;
 	}
 	public void setReturnDate(Date returnDate) {
 		this.returnDate = returnDate;
-		this.returnDateString = DateConverter.toString(this.returnDate);
 	}
 	public Boolean isExistingSearch() {
 		return existingSearch;
+	}
+	public Boolean getFlightOptionsExists() {
+		return flightOptionsExists;
+	}
+	public void setFlightOptionsExists(Boolean flightOptionsExists) {
+		this.flightOptionsExists = flightOptionsExists;
 	}
 
 }

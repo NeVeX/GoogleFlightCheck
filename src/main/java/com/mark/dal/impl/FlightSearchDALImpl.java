@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -82,16 +83,18 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 
 	private FlightSearch createFlightSavedSearchFromEntity(Entity entity) {
-		FlightSearch fss = new FlightSearch();
+		FlightSearch fs = new FlightSearch();
 		Date departureDate = (Date)entity.getProperty(DEPARTURE_DATE);
 		Date returnDate = (Date)entity.getProperty(RETURN_DATE);
-		fss.setDepartureDate(departureDate);
-		fss.setReturnDate(returnDate);
-		fss.setDestination(((String)entity.getProperty(DESTINATION)));
-		fss.setOrigin(((String)entity.getProperty(ORIGIN)));
-		fss.setKey(entity.getKey());
-		return fss;	
+		fs.setDepartureDate(departureDate);
+		fs.setReturnDate(returnDate);
+		fs.setDestination(((String)entity.getProperty(DESTINATION)));
+		fs.setOrigin(((String)entity.getProperty(ORIGIN)));
+		fs.setFlightOptionsExists((Boolean)entity.getProperty(FLIGHT_OPTION_EXISTS));
+		fs.setKey(entity.getKey());
+		return fs;	
 	}
+	
 
 	@Override
 	public List<FlightSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly) {
@@ -116,6 +119,18 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 			}
 		}
 		return allFlightSavedSearchs;
+	}
+
+	@Override
+	public boolean updateFlightSavedSearch(FlightSearch fs) {
+		try {
+			Entity en = dataStore.get(fs.getKey());
+			en.setProperty(FLIGHT_OPTION_EXISTS, fs.getFlightOptionsExists());
+			return dataStore.put(en) != null ? true : false; // re-save
+		} catch (EntityNotFoundException e) {
+			System.err.println("Could not find application state using key ["+fs.getKey()+"]");
+		}
+		return false;
 	}
 
 }
