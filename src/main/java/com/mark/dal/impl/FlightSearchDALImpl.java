@@ -25,8 +25,8 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IFlightSearchDAL;
 import com.mark.model.FlightData;
+import com.mark.model.FlightSearch;
 import com.mark.model.dal.ApplicationState;
-import com.mark.model.dal.FlightSavedSearch;
 import com.mark.util.converter.DateConverter;
 
 @Repository
@@ -43,8 +43,8 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 	
 	@Override
-	public FlightSavedSearch save(String origin, String destination, Date departureDate, Date returnDate) {
-		FlightSavedSearch fss = new FlightSavedSearch();
+	public FlightSearch save(String origin, String destination, Date departureDate, Date returnDate) {
+		FlightSearch fss = new FlightSearch();
 		fss.setDepartureDate(departureDate);
 		fss.setReturnDate(returnDate);
 		fss.setDestination(destination);
@@ -64,7 +64,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 
 	@Override
-	public FlightSavedSearch find(String origin, String destination, Date departureDate, Date returnDate) {
+	public FlightSearch find(String origin, String destination, Date departureDate, Date returnDate) {
 		System.out.println("Searching for Saved Flight Search ["+origin+", "+destination+", "+departureDate+", "+returnDate+"]");
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Filter originCompare = new FilterPredicate(ORIGIN, FilterOperator.EQUAL, origin);
@@ -78,7 +78,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		if ( entity != null)
 		{
 			System.out.println("Found a match for search");	
-			FlightSavedSearch fss = createFlightSavedSearchFromEntity(entity);
+			FlightSearch fss = createFlightSavedSearchFromEntity(entity);
 			fss.setExistingSearch(true);
 			return fss;
 		}
@@ -86,8 +86,8 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		return null;
 	}
 
-	private FlightSavedSearch createFlightSavedSearchFromEntity(Entity entity) {
-		FlightSavedSearch fss = new FlightSavedSearch();
+	private FlightSearch createFlightSavedSearchFromEntity(Entity entity) {
+		FlightSearch fss = new FlightSearch();
 		Date departureDate = (Date)entity.getProperty(DEPARTURE_DATE);
 		Date returnDate = (Date)entity.getProperty(RETURN_DATE);
 		fss.setDepartureDate(departureDate);
@@ -99,7 +99,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 
 	@Override
-	public List<FlightSavedSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly) {
+	public List<FlightSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly) {
 		System.out.println("Getting all Flight saved searches");
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
@@ -110,12 +110,12 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 			q.setFilter(futureFilter);
 		}
 		System.out.println("Query: "+q.toString());
-		List<FlightSavedSearch> allFlightSavedSearchs = new ArrayList<FlightSavedSearch>();
+		List<FlightSearch> allFlightSavedSearchs = new ArrayList<FlightSearch>();
 		for(Entity en : dataStore.prepare(q).asIterable(FetchOptions.Builder.withLimit(10)))
 		{
 			if( en != null)
 			{
-				FlightSavedSearch fss = this.createFlightSavedSearchFromEntity(en);
+				FlightSearch fss = this.createFlightSavedSearchFromEntity(en);
 				System.out.println("Found Flight Saved Search: "+fss.toString());
 				allFlightSavedSearchs.add(fss);;
 			}

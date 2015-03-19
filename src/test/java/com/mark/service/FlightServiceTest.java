@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.mark.dal.impl.FlightDataDALImpl;
 import com.mark.model.FlightData;
 import com.mark.model.FlightParsedData;
-import com.mark.model.dal.FlightSavedSearch;
+import com.mark.model.FlightSearch;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.impl.FlightServiceImpl;
@@ -33,7 +33,7 @@ public class FlightServiceTest {
 	@Test
 	public void testCallRealGoogleAPI()
 	{
-		FlightSavedSearch fss = new FlightSavedSearch();
+		FlightSearch fss = new FlightSearch();
 		fss.setOrigin("SFO");
 		fss.setDestination("DUB");
 		fss.setDepartureDate(new LocalDate(2016,6,9).toDate());
@@ -53,7 +53,7 @@ public class FlightServiceTest {
 	@Test
 	public void testMockFlightData()
 	{
-		FlightSavedSearch fss = new FlightSavedSearch();
+		FlightSearch fss = new FlightSearch();
 		fss.setOrigin("XXX"); // trigger for mock data return
 		List<FlightData> list = new FlightDataDALImpl().getAllFlightData(fss);
 		assertNotNull(list);

@@ -5,14 +5,12 @@ import static org.junit.Assert.*;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.mark.model.dal.FlightSavedSearch;
+import com.mark.model.FlightSearch;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Slice;
@@ -32,7 +30,7 @@ public class UtilTest {
 	@Test
 	public void testRequestParams()
 	{
-		FlightSavedSearch fss = new FlightSavedSearch();
+		FlightSearch fss = new FlightSearch();
 		fss.setDepartureDate(DateConverter.toDate("2014-10-19"));
 		fss.setDestination("dest");
 		fss.setOrigin("origin");

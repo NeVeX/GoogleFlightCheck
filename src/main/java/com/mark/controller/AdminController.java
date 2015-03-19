@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mark.model.FlightData;
+import com.mark.model.FlightSearch;
 import com.mark.model.dal.ApplicationState;
-import com.mark.model.dal.FlightSavedSearch;
 import com.mark.service.IFlightService;
 import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
 import com.mark.util.converter.TimeConverter;
@@ -28,7 +28,7 @@ public class AdminController {
 	@RequestMapping(value=BASE_URI, method=RequestMethod.GET)
 	public String getMainPage(ModelMap model)
 	{
-		List<FlightSavedSearch> allSavedSearches = flightService.getAllFlightSavedSearches();
+		List<FlightSearch> allSavedSearches = flightService.getAllFlightSavedSearches();
 		List<FlightData> allFlightData = flightService.getAllFlightData();
 		List<ApplicationState> allApplicationStates = flightService.getAllApplicationStates();
 		model.put("allSavedSearches", allSavedSearches);

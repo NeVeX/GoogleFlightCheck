@@ -7,11 +7,10 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import com.mark.model.dal.FlightSavedSearch;
 import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.TimeConverter;
 
-public class FlightData extends FlightSavedSearch implements Serializable {
+public class FlightData extends FlightSearch implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private Float shortestTimePrice;

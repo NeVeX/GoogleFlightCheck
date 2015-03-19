@@ -25,7 +25,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IFlightDataDAL;
 import com.mark.model.FlightData;
-import com.mark.model.dal.FlightSavedSearch;
+import com.mark.model.FlightSearch;
 import com.mark.util.converter.DateConverter;
 
 @Repository
@@ -65,7 +65,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 	
 	@Override
-	public List<FlightData> getAllFlightData(FlightSavedSearch savedSearch) {
+	public List<FlightData> getAllFlightData(FlightSearch savedSearch) {
 		System.out.println("Getting all saved Flight Data for search: "+savedSearch);
 		if ( savedSearch.getOrigin().equals("XXX"))
 		{
@@ -121,7 +121,7 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	@Override
-	public FlightData findFlightData(FlightSavedSearch savedSearch) {
+	public FlightData findFlightData(FlightSearch savedSearch) {
 		Key key = savedSearch.getKey();
 		LocalDate searchDate = new LocalDate(); // get today's date
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, key.getId());
@@ -189,14 +189,14 @@ public class FlightDataDALImpl implements IFlightDataDAL {
 	}
 
 	@Override
-	public List<FlightSavedSearch> getFlightDataThatNeedsUpdating(List<FlightSavedSearch> savedSearches) 
+	public List<FlightSearch> getFlightDataThatNeedsUpdating(List<FlightSearch> savedSearches) 
 	{
 		Date todaysDate = new LocalDate().toDate();
 		System.out.println("Getting all Flight Data that needs updating - records with no search date for today");
-		List<FlightSavedSearch> searchesToUpdate = new ArrayList<FlightSavedSearch>();
+		List<FlightSearch> searchesToUpdate = new ArrayList<FlightSearch>();
 		Filter searchDateCompare = new FilterPredicate(SEARCH_DATE, FilterOperator.EQUAL, todaysDate);
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
-		for (FlightSavedSearch fss : savedSearches)
+		for (FlightSearch fss : savedSearches)
 		{
 			Filter searchKeyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, fss.getKey().getId());
 			Filter allCompares = CompositeFilterOperator.and(searchKeyCompare, searchDateCompare);

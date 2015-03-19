@@ -10,8 +10,8 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-    var jsFlightHistory = [[${flightData.history}]];
-    console.log("Flight History: "+jsFlightHistory);
+   	var jsFlightHistory =  [[${flightData.history}]];
+	console.log("Flight History Found: "+jsFlightHistory);
 
 /*]]>*/
 </script>
@@ -26,16 +26,19 @@
 				<tr>
 					<td>Origin</td>
 					<td><input type="text" name="origin" th:field="*{origin}"></input></td>
+					<td th:if="${#fields.hasErrors('origin')}" th:errors="*{origin}">Ahem, you need to enter the 3 letter airport code!</td>
 				</tr>
 				<tr>
 					<td>Destination</td>
 					<td><input style="margin-top: 5px" type="text" name="destination"
 						th:field="*{destination}"></input></td>
+					<td th:if="${#fields.hasErrors('destination')}" th:errors="*{destination}">Ack! You need to enter the 3 letter airport code!</td>
 				</tr>
 				<tr >
 					<td>Departure Date</td>
-					<td><input style="margin-top: 5px" type="date" name="departureDate"
+					<td><input style="margin-top: 5px" type="date" name="departureDateString"
 						th:field="*{departureDateString}"></input></td>
+					<td th:if="${#fields.hasErrors('departureDateString')}" th:errors="*{departureDateString}">Enter a valid date, yo!</td>
 				</tr>
 				<tr  >
 					<td>Return Date</td>
@@ -45,7 +48,7 @@
 				</tr>
 				<tr >
 					<td></td>
-					<td align="center"><button style="margin-top: 25px" type="submit">Search</button></td>
+					<td align="center"><button style="margin-top: 25px" type="submit">Search and Track</button></td>
 				</tr>
 				
 				<tr style="margin-top: 20px">
@@ -56,15 +59,10 @@
 					<td><input type="checkbox" name="forceBatchUsage" th:field="*{forceBatchUsage}"/></td>
 				</tr>
 			</table>
-	
-	
-	
-	
-
 		</form>
 
 		<!-- The lovely chart! -->
-		<canvas id="flightChart" width="400" height="400"></canvas>
+		<canvas id="flightChart" width="800" height="400"></canvas>
 
 
 		<table class="table" border="1">
