@@ -34,7 +34,8 @@ import com.mark.util.converter.DateConverter;
 
 @Controller
 public class FlightController {
-
+	private static final String MAIN_PAGE_STRING = "main";
+	private static final String FLIGHT_DATA_OBJECT = "flightData";
 	private static final String BASE_URL = "/main";
 	
 	@Autowired
@@ -49,26 +50,23 @@ public class FlightController {
 	@RequestMapping(value=BASE_URL, method=RequestMethod.GET)
 	public String getMainPage(ModelMap model)
 	{
-		if (!model.containsKey("flightData"))
+		if (!model.containsKey(FLIGHT_DATA_OBJECT))
 		{
 			FlightData fs = new FlightData();
 			fs.setDepartureDate(DateConverter.toDate(new LocalDate().plusMonths(6)));
 			fs.setDestination("DUB");
 			fs.setOrigin("SFO");
-			model.addAttribute("flightData", fs);
+			model.addAttribute(FLIGHT_DATA_OBJECT, fs);
 		}
-		return "main";
+		return MAIN_PAGE_STRING;
 	}
 	
-	@RequestMapping(value=BASE_URL+"/inputs", method=RequestMethod.POST)
-	public String getFlightsFromMainPageInputs(@Valid @ModelAttribute("flightData") FlightData flightData, BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes)
+	@RequestMapping(value=BASE_URL, method=RequestMethod.POST)
+	public String postDataToMainPage(@Valid @ModelAttribute(FLIGHT_DATA_OBJECT) FlightData flightData, BindingResult bindingResult, ModelMap model)
 	{
-		String redirectUrl = "redirect:" + request.getServletPath() + BASE_URL;
 		if ( bindingResult.hasErrors())
 		{
-			redirectAttributes.addFlashAttribute("flightData", flightData);	
-			redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.flightData", bindingResult);
-			return redirectUrl; // go back to the page since there are errors with the input
+			return MAIN_PAGE_STRING; // go back to the page since there are errors with the input
 		}
 		if ( flightData != null)
 		{
@@ -90,8 +88,8 @@ public class FlightController {
 				fd.setDestination(to);
 				fd.setDepartureDateString(departureDate);
 			}
-			redirectAttributes.addFlashAttribute("flightData", fd);	
+			model.addAttribute(FLIGHT_DATA_OBJECT, fd);	
 		}
-		return redirectUrl;
+		return MAIN_PAGE_STRING;
 	}
 }
