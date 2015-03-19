@@ -24,9 +24,9 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.dal.IFlightSearchDAL;
+import com.mark.model.ApplicationState;
 import com.mark.model.FlightInfo;
 import com.mark.model.FlightSearch;
-import com.mark.model.dal.ApplicationState;
 import com.mark.util.converter.DateConverter;
 
 @Repository

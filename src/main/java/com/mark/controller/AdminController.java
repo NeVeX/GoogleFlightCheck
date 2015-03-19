@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mark.model.ApplicationState;
 import com.mark.model.FlightInfo;
 import com.mark.model.FlightSearch;
-import com.mark.model.dal.ApplicationState;
 import com.mark.service.IFlightService;
 import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
 import com.mark.util.converter.TimeConverter;

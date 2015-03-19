@@ -2,7 +2,7 @@ package com.mark.dal;
 
 import java.util.List;
 
-import com.mark.model.dal.ApplicationState;
+import com.mark.model.ApplicationState;
 
 public interface IApplicationDAL {
 

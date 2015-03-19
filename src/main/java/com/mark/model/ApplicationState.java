@@ -1,4 +1,4 @@
-package com.mark.model.dal;
+package com.mark.model;
 
 import java.io.Serializable;
 
