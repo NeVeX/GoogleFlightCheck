@@ -90,7 +90,8 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		fs.setReturnDate(returnDate);
 		fs.setDestination(((String)entity.getProperty(DESTINATION)));
 		fs.setOrigin(((String)entity.getProperty(ORIGIN)));
-		fs.setFlightOptionsExists((Boolean)entity.getProperty(FLIGHT_OPTION_EXISTS));
+		Boolean flightsExist = (Boolean)entity.getProperty(FLIGHT_OPTION_EXISTS);
+		fs.setFlightOptionsExists(flightsExist == null ? true : flightsExist.booleanValue());
 		fs.setKey(entity.getKey());
 		return fs;	
 	}

@@ -142,7 +142,7 @@ public class FlightServiceImpl implements IFlightService {
 			// no flights exist for this search, so we need to save this with the search data
 			fs.setFlightOptionsExists(false);
 			this.flightSearchDAL.updateFlightSavedSearch(fs);
-			throw new FlightException("Did not find any flights from Google API response");
+			throw new FlightException("Did not find any flights from the Flight API response");
 		}
 		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
 	}

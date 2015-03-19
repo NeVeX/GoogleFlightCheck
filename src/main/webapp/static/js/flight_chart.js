@@ -65,7 +65,7 @@ $( document ).ready(function() {
     	var i;
     	for( i = 0; i < jsFlightHistory.length; i++)
 		{
-    		xAxisLabels.push(jsFlightHistory[i].dateSearchedString);
+    		xAxisLabels.push(jsFlightHistory[i].dateSearched);
     		lowestPrices.push(jsFlightHistory[i].lowestPrice);
     		shortestPrices.push(jsFlightHistory[i].shortestTimePrice);
 		}

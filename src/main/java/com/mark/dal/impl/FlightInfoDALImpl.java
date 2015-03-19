@@ -74,7 +74,7 @@ public class FlightInfoDALImpl implements IFlightInfoDAL {
 		}
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Filter keyCompare = new FilterPredicate(SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, savedSearch.getKey().getId());
-		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DEPARTURE_DATE, SortDirection.ASCENDING);
+		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<FlightInfo> allFlightData = new ArrayList<FlightInfo>();
 		for(Entity en : dataStore.prepare(q).asIterable())
