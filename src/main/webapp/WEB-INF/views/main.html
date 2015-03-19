@@ -111,7 +111,7 @@
 		
 		
 		<div>
-			<p style="color: blue" th:text="${flightData.message}"/>
+			<p style="color: blue" th:text="${flightData.infoMessage}"/>
 			<p style="color: red" th:text="${flightData.exceptionMessage}"/>
 		</div>
 		<div th:if="${T(com.mark.util.FlightProperties).IN_DEBUG_MODE}"

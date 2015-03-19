@@ -103,7 +103,7 @@ public class FlightServiceImpl implements IFlightService {
 				String s = "Returning saved Flight Data instead of calling Flight API";
 				// just return it
 				System.out.println(s);
-				fd.setMessage(s);
+				fd.setInfoMessage(s);
 				return fd;
 			}
 		}
@@ -115,8 +115,7 @@ public class FlightServiceImpl implements IFlightService {
 			flightCallCurrentCount.incrementAndGet(); // increment by one
 			response = googleFlightApiClient.postForFlightInfo(createRequest(savedSearch));
 		} else {
-			throw new FlightException(
-				"The limit for today's Flight API call has being reached");
+			throw new FlightException("The limit for today's Flight API call has being reached");
 		}
 		this.saveState(true); // save the state again -> async
 

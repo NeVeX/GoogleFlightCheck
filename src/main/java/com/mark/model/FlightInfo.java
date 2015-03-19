@@ -20,7 +20,7 @@ public class FlightInfo extends FlightSearch implements Serializable {
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
 	private List<FlightInfo> history;
-	private String message;
+	private String infoMessage;
 	private String exceptionMessage;
 	
 	
@@ -56,12 +56,19 @@ public class FlightInfo extends FlightSearch implements Serializable {
 		this.dateSearched = dateSearched;
 		this.dateSearchedString = DateConverter.toString(dateSearched);
 	}
+
 	@Override
 	public String toString() {
-		return "FlightData ["+super.toString()+" shortestTimePrice=" + shortestTimePrice
+		return "FlightInfo [shortestTimePrice=" + shortestTimePrice
 				+ ", lowestPrice=" + lowestPrice + ", dateSearched="
-				+ dateSearched + "]";
+				+ dateSearched + ", dateSearchedString=" + dateSearchedString
+				+ ", lowestPriceTripDuration=" + lowestPriceTripDuration
+				+ ", shortestTimePriceTripDuration="
+				+ shortestTimePriceTripDuration + ", history=" + history
+				+ ", infoMessage=" + infoMessage + ", exceptionMessage="
+				+ exceptionMessage + "]";
 	}
+
 	public Long getLowestPriceTripDuration() {
 		return lowestPriceTripDuration;
 	}
@@ -75,15 +82,6 @@ public class FlightInfo extends FlightSearch implements Serializable {
 			Long shortestTimePriceTripDuration) {
 		this.shortestTimePriceTripDuration = shortestTimePriceTripDuration;
 	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
 	public String getExceptionMessage() {
 		return exceptionMessage;
 	}
@@ -106,6 +104,14 @@ public class FlightInfo extends FlightSearch implements Serializable {
 
 	public void setDateSearchedString(String dateSearchedString) {
 		this.dateSearchedString = dateSearchedString;
+	}
+
+	public String getInfoMessage() {
+		return infoMessage;
+	}
+
+	public void setInfoMessage(String infoMessage) {
+		this.infoMessage = infoMessage;
 	}
 
 }
