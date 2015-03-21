@@ -43,11 +43,11 @@ public class RestEasyClient {
 	{
 		if ( baseUrl == null || baseUrl.length() == 0 )
 		{
-			throw new FlightException("BaseUrl to for client cannot be empty/null", null);
+			throw new FlightException("BaseUrl to for client cannot be empty/null");
 		}
 		if ( clazz == null)
 		{
-			throw new FlightException("Class to use for REST client creation cannot be null", null);
+			throw new FlightException("Class to use for REST client creation cannot be null");
 		}
 		System.out.println("Creating REST client for class ["+clazz+"]");
         ResteasyWebTarget target = client.target(baseUrl);

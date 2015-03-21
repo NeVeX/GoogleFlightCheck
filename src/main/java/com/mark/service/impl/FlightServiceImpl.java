@@ -23,6 +23,7 @@ import com.mark.dal.IFlightInfoDAL;
 import com.mark.dal.IFlightSearchDAL;
 import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
+import com.mark.exception.FlightException.FlightExceptionType;
 import com.mark.model.ApplicationState;
 import com.mark.model.FlightInfo;
 import com.mark.model.FlightParsedData;
@@ -78,7 +79,28 @@ public class FlightServiceImpl implements IFlightService {
 
 	@Override
 	public FlightInfo getFlightInfo(FlightSearch fs) {
-		FlightInfo fd = this.getFlightInfoWithoutHistory(fs);
+		FlightInfo fd = null;
+		try
+		{
+			 fd = this.getFlightInfoWithoutHistory(fs);
+		}
+		catch(FlightException fe)
+		{
+			if ( fe.getExceptionType() == FlightExceptionType.FLIGHT_API_LIMIT_REACHED)
+			{
+				// get the history we know of this flight so far
+				fd = new FlightInfo();
+				fd.setDestination(fs.getDestination());
+				fd.setOrigin(fs.getOrigin());
+				fd.setDepartureDate(fs.getDepartureDate());
+				fd.setReturnDate(fs.getReturnDate());
+				fd.setInfoMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");
+			}
+			else
+			{
+				throw fe;
+			}
+		}
 		fd.setHistory(this.getAllFlightDataForSearch(fd));
 		return fd;
 	}
@@ -119,11 +141,13 @@ public class FlightServiceImpl implements IFlightService {
 		if (flightCallCurrentCount.get() < FlightProperties.GOOGLE_FLIGHT_API_DAILY_INVOKE_LIMIT) // check if  our limit is reached
 		{
 			flightCallCurrentCount.incrementAndGet(); // increment by one
+			this.saveState(true); // save the state again -> async
 			response = googleFlightApiClient.postForFlightInfo(createRequest(savedSearch));
 		} else {
-			throw new FlightException("The limit for today's Flight API call has being reached");
+			// can't call the Flight API again, but get the history so far for this search (if any)
+			String msg = "The limit for today's Flight API call has being reached";
+			throw new FlightException(msg, FlightExceptionType.FLIGHT_API_LIMIT_REACHED);
 		}
-		this.saveState(true); // save the state again -> async
 
 		if (response != null) {
 			// now for the fun part, parse the result
