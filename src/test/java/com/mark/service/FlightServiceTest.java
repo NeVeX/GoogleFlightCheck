@@ -30,14 +30,35 @@ public class FlightServiceTest {
 	@Autowired
 	IGoogleFlightApiClient googleApiClient;
 
-	@Test
-	public void testCallRealGoogleAPI()
+	// Only use these to test various ad hoc things
+	@Ignore
+	public void testCallRealGoogleAPI_OneWay()
 	{
 		FlightSearch fss = new FlightSearch();
 		fss.setOrigin("SFO");
 		fss.setDestination("DUB");
 		fss.setDepartureDate(new LocalDate(2016,6,9).toDate());
 		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
+		GoogleFlightResponse fd = this.googleApiClient.postForFlightInfo(gfr);
+		assertNotNull(fd);
+	}
+	
+	// Only use these to test various ad hoc things
+	@Ignore
+	public void testCallRealGoogleAPI_Return()
+	{
+		FlightSearch departFlight = new FlightSearch();
+		departFlight.setOrigin("SFO");
+		departFlight.setDestination("DUB");
+		departFlight.setDepartureDate(new LocalDate(2015,12,19).toDate());
+
+		FlightSearch returnFlight = new FlightSearch();
+		returnFlight.setOrigin("DUB");
+		returnFlight.setDestination("SFO");
+		returnFlight.setDepartureDate(new LocalDate(2015,12,30).toDate());
+		
+		
+		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(departFlight, returnFlight);
 		GoogleFlightResponse fd = this.googleApiClient.postForFlightInfo(gfr);
 		assertNotNull(fd);
 	}

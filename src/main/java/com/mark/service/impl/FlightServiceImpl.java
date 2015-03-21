@@ -57,7 +57,8 @@ public class FlightServiceImpl implements IFlightService {
 	private IApplicationDAL applicationDAL;@Autowired
 	private IGoogleFlightApiClient googleFlightApiClient;
 	private AtomicLong flightCallCurrentCount = new AtomicLong(0);
-
+	private int TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST = 100;
+	
 	@PostConstruct
 	public void setup() {
 		ApplicationState appState = applicationDAL.getApplicationState();
@@ -228,7 +229,32 @@ public class FlightServiceImpl implements IFlightService {
 		s.setDate(DateConverter.toString(fss.getDepartureDate()));
 		slices.add(s);
 		gfr.setSlice(slices);
-		gfr.setSolutions(20);
+		gfr.setSolutions(TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST);
+		gfr.setSaleCountry("US"); // hard code to America - all flights in USD
+		request.setRequest(gfr);
+		return request;
+	}
+	
+	public GoogleFlightRequest createRequest(FlightSearch departFlight, FlightSearch returnFlight) {
+		GoogleFlightRequest request = new GoogleFlightRequest();
+		GoogleFlightRequestDetail gfr = new GoogleFlightRequestDetail();
+		Passengers p = new Passengers();
+		p.setAdultCount(1);
+		p.setChildCount(0);
+		gfr.setPassengers(p);
+		List < Slice > slices = new ArrayList < > ();
+		Slice departSlice = new Slice();
+		departSlice.setOrigin(departFlight.getOrigin());
+		departSlice.setDestination(departFlight.getDestination());
+		departSlice.setDate(DateConverter.toString(departFlight.getDepartureDate()));
+		slices.add(departSlice);
+		Slice returnSlice = new Slice();
+		returnSlice.setOrigin(returnFlight.getOrigin());
+		returnSlice.setDestination(returnFlight.getDestination());
+		returnSlice.setDate(DateConverter.toString(returnFlight.getDepartureDate()));
+		slices.add(returnSlice);
+		gfr.setSlice(slices);
+		gfr.setSolutions(TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST);
 		gfr.setSaleCountry("US"); // hard code to America - all flights in USD
 		request.setRequest(gfr);
 		return request;
