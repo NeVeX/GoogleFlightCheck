@@ -10,9 +10,14 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-   	var jsFlightHistory =  [[${flightData.history}]];
+   	var jsFlightHistory = [[${flightData.history}]];
 	console.log("Flight History Found: "+jsFlightHistory);
 
+	// Create the chart once the document loads
+	$( document ).ready(function() {
+		createChartFromData(jsFlightHistory);
+	  });
+	
 /*]]>*/
 </script>
 
@@ -59,7 +64,11 @@
 					<td><input type="checkbox" name="forceBatchUsage" th:field="*{forceBatchUsage}"/></td>
 				</tr>
 				<tr>
-					<td><a href="admin">Admin Page</a></td>
+					<td><a href="admin">Data View Page</a></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><a href="tracked">Tracked Flights Page</a></td>
 					<td></td>
 				</tr>
 			</table>
@@ -75,7 +84,7 @@
 			<p th:case="${true}">This search already exists and is already tracking flight fares daily</p>
 		</div>
 		
-		<table>
+		<table th:if="${flightData.history != null}">
 			<thead>
 				<tr>
 					<td>The Lovely Chart</td>

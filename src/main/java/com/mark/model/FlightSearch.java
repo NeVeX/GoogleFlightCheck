@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.google.appengine.api.datastore.Key;
 import com.mark.util.converter.DateConverter;
@@ -31,7 +32,7 @@ public class FlightSearch implements Serializable {
 	private Key key;
 	private Boolean existingSearch;
 	@Future(message="Depature date cannot be in the past")
-	@DateTimeFormat(pattern=DateConverter.DATE_FORMAT)
+	@DateTimeFormat(pattern=DateConverter.DATE_FORMAT, iso=ISO.DATE)
 	private Date departureDate;
 	private Date returnDate;
 	private Boolean flightOptionsExists;

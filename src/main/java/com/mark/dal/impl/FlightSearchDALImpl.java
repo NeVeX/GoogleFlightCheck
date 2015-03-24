@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.comparator.CompositeFileComparator;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
@@ -104,11 +105,16 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		System.out.println("Getting all Flight saved searches");
 		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 		Query q = new Query(FLIGHT_SEARCH_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
+		Filter flightsThatExist = new FilterPredicate(FLIGHT_OPTION_EXISTS, FilterOperator.EQUAL, true);
 		if ( includeFutureDatesOnly )
 		{
 			Date todaysDate = new LocalDate().toDate();
 			Filter futureFilter = new FilterPredicate(DEPARTURE_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, todaysDate);
-			q.setFilter(futureFilter);
+			q.setFilter(CompositeFilterOperator.and(flightsThatExist, futureFilter));
+		}
+		else
+		{
+			q.setFilter(flightsThatExist);
 		}
 		System.out.println("Query: "+q.toString());
 		List<FlightSearch> allFlightSavedSearchs = new ArrayList<FlightSearch>();

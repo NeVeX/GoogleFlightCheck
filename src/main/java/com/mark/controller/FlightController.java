@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,23 +69,32 @@ public class FlightController {
 		{
 			return MAIN_PAGE_STRING; // go back to the page since there are errors with the input
 		}
+		FlightInfo fd = this.postDataToMainPage(flightData, bindingResult);
+		model.addAttribute(FLIGHT_DATA_OBJECT, fd);	
+		return MAIN_PAGE_STRING;
+	}
+	
+	@RequestMapping(value="api", method=RequestMethod.POST)
+	public @ResponseBody FlightInfo postDataToMainPage(@Valid @RequestBody FlightInfo flightData, BindingResult bindingResult)
+	{
+		FlightInfo flightInfo = null;
 		if ( flightData != null)
 		{
-			FlightInfo fd;
 			try
 			{
-				fd = flightService.getFlightInfo(flightData);
+				flightInfo = flightService.getFlightInfo(flightData);
 			}
 			catch(FlightException fe)
 			{
 				System.err.println("Caught exception in controller when getting flight info: "+fe.getMessage());
-				fd = new FlightInfo();
-				fd.setExceptionMessage(fe.getMessage());
-				fd.setOrigin(flightData.getOrigin());
-				fd.setDestination(flightData.getDestination());
+				flightInfo = new FlightInfo();
+				flightInfo.setExceptionMessage(fe.getMessage());
+				flightInfo.setOrigin(flightData.getOrigin());
+				flightInfo.setDestination(flightData.getDestination());
 			}
-			model.addAttribute(FLIGHT_DATA_OBJECT, fd);	
+				
 		}
-		return MAIN_PAGE_STRING;
+		return flightInfo;
 	}
+	
 }

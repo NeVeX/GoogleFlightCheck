@@ -139,6 +139,12 @@ public class FlightServiceImpl implements IFlightService {
 		{
 			// save the new data
 			flightDataDAL.saveFlightInfo(apiFlightInfo);
+			if ( apiFlightInfo.getFlightOptionsExists() == null)
+			{
+				// this is the first time getting this flight info, so flag that there is data for this search
+				dbSavedSearch.setFlightOptionsExists(true);
+				this.flightSearchDAL.updateFlightSavedSearch(dbSavedSearch);
+			}
 			return apiFlightInfo;
 		}
 		else
