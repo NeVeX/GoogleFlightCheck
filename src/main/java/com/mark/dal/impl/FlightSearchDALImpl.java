@@ -42,7 +42,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	{
 		dataStore = DatastoreServiceFactory.getDatastoreService();
 	}
-	
+	// TODO: don' return a flight search, use the passed in object to populate
 	@Override
 	public FlightSearch saveFlightSearch(FlightSearch fs) {
 		fs.setExistingSearch(false);
@@ -59,6 +59,8 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		return fs;
 	}
 
+
+	// TODO: don' return a flight search, use the passed in object to populate
 	@Override
 	public FlightSearch findFlightSavedSearch(FlightSearch fs) {
 		System.out.println("Searching for Saved Flight Search ["+fs+"]");

@@ -106,5 +106,6 @@ public class FlightInfo extends FlightSearch implements Serializable {
 	public void setInfoMessage(String infoMessage) {
 		this.infoMessage = infoMessage;
 	}
+	
 
 }

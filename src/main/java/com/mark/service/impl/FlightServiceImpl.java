@@ -94,6 +94,7 @@ public class FlightServiceImpl implements IFlightService {
 				fd.setOrigin(fs.getOrigin());
 				fd.setDepartureDate(fs.getDepartureDate());
 				fd.setReturnDate(fs.getReturnDate());
+				fd.setKey(fs.getKey());
 				fd.setInfoMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");
 			}
 			else
@@ -105,36 +106,52 @@ public class FlightServiceImpl implements IFlightService {
 		return fd;
 	}
 
-	private FlightInfo getFlightInfoWithoutHistory(FlightSearch fs) {
-		fs.setDestination(fs.getDestination().toUpperCase());
-		fs.setOrigin(fs.getOrigin().toUpperCase());
-		FlightSearch savedSearch = flightSearchDAL.findFlightSavedSearch(fs);
-		if (savedSearch == null) {
-			savedSearch = flightSearchDAL.saveFlightSearch(fs);
+	private FlightInfo getFlightInfoWithoutHistory(FlightSearch inputSearch) {
+		inputSearch.setDestination(inputSearch.getDestination().toUpperCase());
+		inputSearch.setOrigin(inputSearch.getOrigin().toUpperCase());
+		FlightSearch dbSavedSearch = flightSearchDAL.findFlightSavedSearch(inputSearch);
+		if (dbSavedSearch == null) {
+			dbSavedSearch = flightSearchDAL.saveFlightSearch(inputSearch);
 		}
-		if ( savedSearch.getFlightOptionsExists() != null && !savedSearch.getFlightOptionsExists())
+		if ( dbSavedSearch.getFlightOptionsExists() != null && !dbSavedSearch.getFlightOptionsExists())
 		{
 			// no flight options exists for this search, so don't continue
 			throw new FlightException("No flight options exists for this search");
 		}
-
-		if (fs.getForceBatchUsage() != null && fs.getForceBatchUsage()) {
+		if (inputSearch.getForceBatchUsage() != null && inputSearch.getForceBatchUsage()) {
 			throw new FlightException("Will not get flight details since told to wait for batch process instead");
 		}
-
 		// we have the saved search now.
 		// Check if we have the data for this search
-		if (savedSearch.isExistingSearch() != null && savedSearch.isExistingSearch()) {
+		if (dbSavedSearch.isExistingSearch() != null && dbSavedSearch.isExistingSearch()) {
 			// find if we have data for today already
-			FlightInfo fd = flightDataDAL.findFlightInfo(savedSearch);
-			if (fd != null) {
+			FlightInfo dbSavedFlightInfo = flightDataDAL.findFlightInfo(dbSavedSearch);
+			if (dbSavedFlightInfo != null) {
 				String s = "Returning saved Flight Data instead of calling Flight API";
 				// just return it
 				System.out.println(s);
-				fd.setInfoMessage(s);
-				return fd;
+				dbSavedFlightInfo.setInfoMessage(s);
+				return dbSavedFlightInfo;
 			}
 		}
+		FlightInfo apiFlightInfo = this.invokeFlightApi(dbSavedSearch);
+		if ( apiFlightInfo != null )
+		{
+			// save the new data
+			flightDataDAL.saveFlightInfo(apiFlightInfo);
+			return apiFlightInfo;
+		}
+		else
+		{
+			// save that this flight search does not have any results for it - to stop further unnessecary searches
+			dbSavedSearch.setFlightOptionsExists(false);
+			this.flightSearchDAL.updateFlightSavedSearch(dbSavedSearch);
+		}
+		throw new FlightException("Could not find any flights for the given search.");
+	}
+	
+	private FlightInfo invokeFlightApi(FlightSearch search)
+	{
 		GoogleFlightResponse response = null;
 		// if we are here, then we know that we need to call the API to get
 		// current data for today
@@ -142,7 +159,7 @@ public class FlightServiceImpl implements IFlightService {
 		{
 			flightCallCurrentCount.incrementAndGet(); // increment by one
 			this.saveState(true); // save the state again -> async
-			response = googleFlightApiClient.postForFlightInfo(createRequest(savedSearch));
+			response = googleFlightApiClient.postForFlightInfo(createRequest(search));
 		} else {
 			// can't call the Flight API again, but get the history so far for this search (if any)
 			String msg = "The limit for today's Flight API call has being reached";
@@ -151,32 +168,27 @@ public class FlightServiceImpl implements IFlightService {
 
 		if (response != null) {
 			// now for the fun part, parse the result
-			List < FlightParsedData > listOfFlights = this.parseGoogleResponseToFlightData(response, savedSearch);
+			List<FlightParsedData> listOfFlights = this.parseGoogleResponseToFlightData(response, search);
 			if (listOfFlights != null && listOfFlights.size() > 0) {
 				// now get the prices we care about
-				FlightInfo fd = this.getFlightData(listOfFlights);
+				FlightInfo fd = this.determineFlightInfoFromApiData(search, listOfFlights);
 				if (fd != null) {
-					// need to save this!
-					fd.setKey(savedSearch.getKey()); // save the key for this search too
-					fd.setExistingSearch(savedSearch.isExistingSearch());
-					flightDataDAL.saveFlightInfo(fd);
 					return fd;
 				}
 				throw new FlightException("Found flight information but could not parse details from the objects");
 			}
-			// no flights exist for this search, so we need to save this with the search data
-			fs.setFlightOptionsExists(false);
-			this.flightSearchDAL.updateFlightSavedSearch(fs);
-			throw new FlightException("Did not find any flights from the Flight API response");
+			System.out.println("Did not find any flights from the Flight API response - perhaps no flights exist for this search");
+			return null;
 		}
-		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(.");
+		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(");
 	}
+	
 
 	private List<FlightInfo> getAllFlightDataForSearch(FlightSearch savedSearch) {
 		return flightDataDAL.getAllSavedFlightInfo(savedSearch);
 	}
 
-	private FlightInfo getFlightData(List<FlightParsedData> listOfFlights) {
+	private FlightInfo determineFlightInfoFromApiData(FlightSearch search, List<FlightParsedData> listOfFlights) {
 		FlightInfo fd = new FlightInfo();
 		Collections.sort(listOfFlights, new FlightLowestPriceCompare());
 		FlightParsedData fpdCheap = listOfFlights.get(0);
@@ -191,6 +203,9 @@ public class FlightServiceImpl implements IFlightService {
 		FlightParsedData fpdShortest = listOfFlights.get(0);
 		fd.setShortestTimePrice(fpdShortest.getPrice());
 		fd.setShortestTimePriceTripDuration(new Long(fpdShortest.getTripLength()));
+		fd.setKey(search.getKey()); // save the key for this search too
+		fd.setExistingSearch(search.isExistingSearch());
+		fd.setFlightOptionsExists(search.getFlightOptionsExists());
 		return fd;
 	}
 
