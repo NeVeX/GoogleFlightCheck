@@ -36,8 +36,7 @@ function populateDestinationList(searchData)
 		{
 			var newDestOption = $("<option />").val(this.destination).text(this.destination);
 			destinationOptions.append(newDestOption);
-			var dateText = this.departureDate.substring(0, 10);
-			var newDepDateOption = $("<option />").val(dateText).text(dateText);
+			var newDepDateOption = $("<option />").val(this.departureDate).text(this.departureDate);
 			departureDateOptions.append(newDepDateOption);
 		}
 	});
@@ -60,8 +59,9 @@ function trackingButtonClicked()
 		departureDate: departureDateSelectedValue
     }
     console.log('json: '+JSON.stringify(searchInput));
+    clearChart();
     $.ajax({
-        url: '/flight/api',
+        url: '/flight/api/history',
         type: 'post',
         dataType: 'json',
         contentType: "application/json",
@@ -81,6 +81,7 @@ function trackingButtonClicked()
         error: function(errorData)
         {
         	console.log('Error trying to get data for tracking search');
+        	alert("There was a problem getting the chart data");
         }
     });
     

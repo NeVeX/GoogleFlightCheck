@@ -48,6 +48,7 @@ import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
 import com.mark.util.client.type.resteasy.RestEasyClient;
 import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.JsonConverter;
+import com.sun.org.apache.bcel.internal.generic.DALOAD;
 
 @Service
 public class FlightServiceImpl implements IFlightService {
@@ -72,7 +73,7 @@ public class FlightServiceImpl implements IFlightService {
 	// TODO: Make async call possible
 	private void saveState(boolean async) {
 		ApplicationState appState = new ApplicationState();
-		appState.setDate(new LocalDate());
+		appState.setDate(new LocalDate().toDate());
 		appState.setFlightApiCount(flightCallCurrentCount.get());
 		applicationDAL.saveApplicationState(appState);
 	}
@@ -342,6 +343,16 @@ public class FlightServiceImpl implements IFlightService {
 			}
 		}
 		System.out.println("Batch Job: Finished.");
+	}
+
+	@Override
+	public FlightInfo getFlightHistory(FlightSearch search) {
+		FlightSearch dbFlightSearch = flightSearchDAL.findFlightSavedSearch(search);
+		if ( dbFlightSearch != null)
+		{
+			return this.getFlightHistory(dbFlightSearch);
+		}
+		return null;
 	}
 
 }

@@ -7,7 +7,9 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.TimeConverter;
 
@@ -16,7 +18,7 @@ public class FlightInfo extends FlightSearch implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Float shortestTimePrice;
 	private Float lowestPrice;
-	@DateTimeFormat(pattern=DateConverter.DATE_FORMAT)
+	@DateTimeFormat (style="S-", pattern=DateConverter.DATE_FORMAT, iso=ISO.NONE) 
 	private Date dateSearched;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;

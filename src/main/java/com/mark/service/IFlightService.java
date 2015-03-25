@@ -23,4 +23,6 @@ public interface IFlightService {
 	public void runTracker();
 
 	public FlightInfo getFlightInfo(FlightSearch flightData);
+
+	public FlightInfo getFlightHistory(FlightSearch flightData);
 }

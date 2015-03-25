@@ -1,10 +1,12 @@
 package com.mark.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.appengine.api.datastore.Key;
 import com.mark.util.converter.DateConverter;
 
@@ -12,8 +14,8 @@ public class ApplicationState implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Long flightApiCount;
-	private LocalDate date;
-	private String dateString;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateConverter.DATE_FORMAT)
+	private Date date;
 	private Key key;
 	
 	public Long getFlightApiCount() {
@@ -22,19 +24,6 @@ public class ApplicationState implements Serializable {
 	public void setFlightApiCount(Long flightApiCount) {
 		this.flightApiCount = flightApiCount;
 	}
-	public LocalDate getDate() {
-		return date;
-	}
-	public void setDate(LocalDate date) {
-		this.date = date;
-		this.dateString = DateConverter.toString(date);
-	}
-	
-	@Override
-	public String toString() {
-		return "ApplicationState [flightApiCount=" + flightApiCount + ", date="
-				+ date + ", dateString=" + dateString + ", key=" + key + "]";
-	}
 
 	public Key getKey() {
 		return key;
@@ -42,8 +31,12 @@ public class ApplicationState implements Serializable {
 	public void setKey(Key key) {
 		this.key = key;
 	}
-	public String getDateString() {
-		return dateString;
+	public Date getDate() {
+		return date;
 	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
 	
 }

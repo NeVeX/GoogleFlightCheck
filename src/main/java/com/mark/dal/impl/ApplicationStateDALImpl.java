@@ -45,7 +45,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	@Override
 	public ApplicationState getApplicationState() {
 		// get today's date
-		LocalDate todayDate = new LocalDate();
+		Date todayDate = new LocalDate().toDate();
 		ApplicationState state = this.findApplicationState(todayDate);
 		if ( state != null)
 		{
@@ -55,10 +55,10 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		return null;
 	}
 	
-	private ApplicationState findApplicationState(LocalDate dt)
+	private ApplicationState findApplicationState(Date dt)
 	{
 		System.out.println("Searching for application state for date: "+dt);
-		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt.toDate());
+		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt);
 		Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).setFilter(dateCompare);
 		System.out.println("Query: "+q.toString());
@@ -104,7 +104,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	private Entity poplulteEntityWithData(Entity en, ApplicationState state)
 	{
 		// see if there is an existing state
-		en.setProperty(DATE, state.getDate().toDate());
+		en.setProperty(DATE, state.getDate());
 		en.setProperty(FLIGHT_API_COUNT, state.getFlightApiCount());
 		return en;
 	}
@@ -134,7 +134,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		Long apiCount = (Long)en.getProperty(FLIGHT_API_COUNT);
 		appState.setFlightApiCount(apiCount != null ? apiCount : 0);
 		Date stateDate = (Date) en.getProperty(DATE);
-		appState.setDate(LocalDate.fromDateFields(stateDate));
+		appState.setDate(stateDate);
 		appState.setKey(en.getKey());
 		return appState;
 	}

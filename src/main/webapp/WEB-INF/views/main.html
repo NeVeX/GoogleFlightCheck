@@ -42,7 +42,7 @@
 				<tr >
 					<td>Departure Date</td>
 					<td><input style="margin-top: 5px" type="date" name="departureDate"
-						th:field="*{departureDate}"></input></td>
+						th:field="*{departureDate}" th:value="*{departureDate}"></input></td>
 					<td th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}" style="color: red" align="left">Enter a valid date, yo!</td>
 				</tr>
 				<tr >

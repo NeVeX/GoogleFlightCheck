@@ -76,7 +76,7 @@ public class FlightServiceTest {
 	{
 		FlightSearch fss = new FlightSearch();
 		fss.setOrigin("XXX"); // trigger for mock data return
-		List<FlightInfo> list = new FlightInfoDALImpl().getAllSavedFlightInfo();
+		List<FlightInfo> list = new FlightInfoDALImpl().getAllSavedFlightInfo(fss);
 		assertNotNull(list);
 		assertTrue(list.size() > 0);
 	}

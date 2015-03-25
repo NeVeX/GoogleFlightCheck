@@ -7,15 +7,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.validation.constraints.Future;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.appengine.api.datastore.Key;
 import com.mark.util.converter.DateConverter;
 
@@ -32,8 +30,11 @@ public class FlightSearch implements Serializable {
 	private Key key;
 	private Boolean existingSearch;
 	@Future(message="Depature date cannot be in the past")
-	@DateTimeFormat(pattern=DateConverter.DATE_FORMAT, iso=ISO.DATE)
+	@DateTimeFormat (style="S-", pattern=DateConverter.DATE_FORMAT, iso=ISO.NONE) 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateConverter.DATE_FORMAT, timezone="GMT")
 	private Date departureDate;
+	private String departureDateAsString;
+	
 	private Date returnDate;
 	private Boolean flightOptionsExists;
 	
@@ -89,6 +90,9 @@ public class FlightSearch implements Serializable {
 	}
 	public void setFlightOptionsExists(Boolean flightOptionsExists) {
 		this.flightOptionsExists = flightOptionsExists;
+	}
+	public String getDepartureDateAsString() {
+		return departureDateAsString;
 	}
 
 }

@@ -77,6 +77,10 @@ public class FlightController {
 	@RequestMapping(value="api", method=RequestMethod.POST)
 	public @ResponseBody FlightInfo postDataToMainPage(@Valid @RequestBody FlightInfo flightData, BindingResult bindingResult)
 	{
+		if( bindingResult.hasErrors() )
+		{
+			throw new FlightException("There are problems with the flight search input\n"+bindingResult.getAllErrors());
+		}
 		FlightInfo flightInfo = null;
 		if ( flightData != null)
 		{
@@ -95,6 +99,16 @@ public class FlightController {
 				
 		}
 		return flightInfo;
+	}
+	
+	@RequestMapping(value="api/history", method=RequestMethod.POST)
+	public @ResponseBody FlightInfo getFlightHistory(@Valid @RequestBody FlightInfo flightData, BindingResult bindingResult)
+	{
+		if( bindingResult.hasErrors() )
+		{
+			throw new FlightException("There are problems with the flight search input\n"+bindingResult.getAllErrors());
+		}
+		return flightService.getFlightHistory(flightData);
 	}
 	
 }

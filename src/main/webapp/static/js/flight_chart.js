@@ -1,4 +1,4 @@
-
+var theChart;
 
 var options = {
 
@@ -49,53 +49,60 @@ var options = {
 
 	};
 
+function clearChart()
+{
+	if ( theChart != null)
+	{
+		myLineChart.destroy();
+	}
+}
 
 function createChartFromData(flightData)
 {
 	console.log("Ready function called in JS. Loading the chart");
-
-	  //Get context with jQuery - using jQuery's .get() method.
-	    var ctx = $("#flightChart").get(0).getContext("2d");
-	    // This will get the first returned node in the jQuery collection.
-	    if ( flightData != null && flightData.length > 0)
-	    {
-	    	var xAxisLabels = new Array();
-	    	var lowestPrices = new Array();
-	    	var shortestPrices = new Array();
-	    	var i;
-	    	for( i = 0; i < flightData.length; i++)
-			{
-	    		xAxisLabels.push(flightData[i].dateSearched);
-	    		lowestPrices.push(flightData[i].lowestPrice);
-	    		shortestPrices.push(flightData[i].shortestTimePrice);
-			}
-		
-	    	var data = {
-			    labels: xAxisLabels,
-			    datasets: [
-			        {
-			            label: "Lowest Prices",
-			            fillColor: "rgba(220,220,220,0.2)",
-			            strokeColor: "rgba(220,220,220,1)",
-			            pointColor: "rgba(220,220,220,1)",
-			            pointStrokeColor: "#fff",
-			            pointHighlightFill: "#fff",
-			            pointHighlightStroke: "rgba(220,220,220,1)",
-			            data: lowestPrices
-			        },
-			        {
-			            label: "Shortest Trip Duration Prices",
-			            fillColor: "rgba(151,187,205,0.2)",
-			            strokeColor: "rgba(151,187,205,1)",
-			            pointColor: "rgba(151,187,205,1)",
-			            pointStrokeColor: "#fff",
-			            pointHighlightFill: "#fff",
-			            pointHighlightStroke: "rgba(151,187,205,1)",
-			            data: shortestPrices
-			        }
-			    ]
-	    	};
-	    	// draw the chart with the given data
-	    	new Chart(ctx).Line(data, options);
-		}	    	
+	clearChart();
+  //Get context with jQuery - using jQuery's .get() method.
+    var ctx = $("#flightChart").get(0).getContext("2d");
+    // This will get the first returned node in the jQuery collection.
+    if ( flightData != null && flightData.length > 0)
+    {
+    	var xAxisLabels = new Array();
+    	var lowestPrices = new Array();
+    	var shortestPrices = new Array();
+    	var i;
+    	for( i = 0; i < flightData.length; i++)
+		{
+    		xAxisLabels.push(flightData[i].dateSearched);
+    		lowestPrices.push(flightData[i].lowestPrice);
+    		shortestPrices.push(flightData[i].shortestTimePrice);
+		}
+	
+    	var data = {
+		    labels: xAxisLabels,
+		    datasets: [
+		        {
+		            label: "Lowest Prices",
+		            fillColor: "rgba(220,220,220,0.2)",
+		            strokeColor: "rgba(220,220,220,1)",
+		            pointColor: "rgba(220,220,220,1)",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(220,220,220,1)",
+		            data: lowestPrices
+		        },
+		        {
+		            label: "Shortest Trip Duration Prices",
+		            fillColor: "rgba(151,187,205,0.2)",
+		            strokeColor: "rgba(151,187,205,1)",
+		            pointColor: "rgba(151,187,205,1)",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(151,187,205,1)",
+		            data: shortestPrices
+		        }
+		    ]
+    	};
+    	// draw the chart with the given data
+    	theChart = new Chart(ctx).Line(data, options);
+	}	    	
 }

@@ -22,5 +22,10 @@
     <datastore-index kind="APPLICATION_STATE" ancestor="true" source="manual">
         <property name="DATE" direction="desc"/>
     </datastore-index>
+    
+    <datastore-index kind="FlightSavedSearch" ancestor="true" source="manual">
+        <property name="FLIGHT_OPTION_EXISTS" direction="asc"/>
+        <property name="DEPARTURE_DATE" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>
