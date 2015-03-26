@@ -3,26 +3,20 @@ package com.mark.service;
 import java.util.List;
 
 import com.mark.model.ApplicationState;
-import com.mark.model.FlightInfo;
-import com.mark.model.FlightParsedData;
-import com.mark.model.FlightSearch;
+import com.mark.model.FlightInputSearch;
+import com.mark.model.FlightSearchHistoricalResult;
+import com.mark.model.FlightSearchResult;
+import com.mark.model.FlightSavedSearch;
 import com.mark.model.google.response.GoogleFlightResponse;
 
 
 public interface IFlightService {
 
-	public List<FlightSearch> getAllFlightSavedSearches();
+	FlightSearchResult getFlightResult(FlightInputSearch inputSearch);
+	
+	FlightSearchResult getFlightResult(FlightSavedSearch savedSearch);
 
-	public List<FlightInfo> getAllSavedFlightInfo();
+	FlightSearchHistoricalResult getFlightHistoricalResult(FlightInputSearch fis);
 
-	public List<ApplicationState> getAllApplicationStates();
-
-	/**
-	 * Determine all the flight info that needs to be updated...and get perform those updates
-	 */
-	public void runTracker();
-
-	public FlightInfo getFlightInfo(FlightSearch flightData);
-
-	public FlightInfo getFlightHistory(FlightSearch flightData);
+	List<FlightSearchResult> getAllFlightSearchResults();
 }

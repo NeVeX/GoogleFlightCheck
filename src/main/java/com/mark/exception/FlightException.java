@@ -3,7 +3,11 @@ package com.mark.exception;
 public class FlightException extends RuntimeException {
 
 	public enum FlightExceptionType {
-		GENERAL, FLIGHT_API_LIMIT_REACHED
+		GENERAL, 
+		FLIGHT_API_LIMIT_REACHED, 
+		FLIGHT_API_EXCEPTION, 
+		FLIGHT_API_RETURNED_NO_DATA, 
+		FLIGHT_ALGORITHM_DID_NOT_WORK, NO_FLIGHT_EXISTS_FOR_SEARCH, FLIGHT_SAVED_SEARCH_EXCEPTION
 	}
 	private FlightExceptionType exceptionType;
 	

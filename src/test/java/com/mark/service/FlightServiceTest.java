@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.mark.dal.impl.FlightInfoDALImpl;
-import com.mark.model.FlightInfo;
-import com.mark.model.FlightParsedData;
-import com.mark.model.FlightSearch;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.mark.dal.impl.FlightResultDAL;
+import com.mark.model.FlightInputSearch;
+import com.mark.model.FlightResult;
+import com.mark.model.FlightSearchResult;
+import com.mark.model.FlightSavedSearch;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.service.impl.FlightServiceImpl;
@@ -29,16 +31,16 @@ import com.mark.util.client.IGoogleFlightApiClient;
 public class FlightServiceTest {
 	@Autowired
 	IGoogleFlightApiClient googleApiClient;
-
+	
 	// Only use these to test various ad hoc things
 	@Ignore
 	public void testCallRealGoogleAPI_OneWay()
 	{
-		FlightSearch fss = new FlightSearch();
+		FlightInputSearch fss = new FlightInputSearch();
 		fss.setOrigin("SFO");
 		fss.setDestination("DUB");
 		fss.setDepartureDate(new LocalDate(2016,6,9).toDate());
-		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
+		GoogleFlightRequest gfr = new FlightServiceImpl().createGoogleFlightRequest(fss);
 		GoogleFlightResponse fd = this.googleApiClient.postForFlightInfo(gfr);
 		assertNotNull(fd);
 	}
@@ -47,18 +49,12 @@ public class FlightServiceTest {
 	@Ignore
 	public void testCallRealGoogleAPI_Return()
 	{
-		FlightSearch departFlight = new FlightSearch();
-		departFlight.setOrigin("SFO");
-		departFlight.setDestination("DUB");
-		departFlight.setDepartureDate(new LocalDate(2015,12,19).toDate());
-
-		FlightSearch returnFlight = new FlightSearch();
-		returnFlight.setOrigin("DUB");
-		returnFlight.setDestination("SFO");
-		returnFlight.setDepartureDate(new LocalDate(2015,12,30).toDate());
-		
-		
-		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(departFlight, returnFlight);
+		FlightInputSearch flight = new FlightInputSearch();
+		flight.setOrigin("SFO");
+		flight.setDestination("DUB");
+		flight.setDepartureDate(new LocalDate(2015,12,19).toDate());
+		flight.setReturnDate(new LocalDate(2015,12,30).toDate());
+		GoogleFlightRequest gfr = new FlightServiceImpl().createGoogleFlightRequest(flight);
 		GoogleFlightResponse fd = this.googleApiClient.postForFlightInfo(gfr);
 		assertNotNull(fd);
 	}
@@ -71,15 +67,15 @@ public class FlightServiceTest {
 		assertEquals(f, 133.34f, 0d);
 	}
 	
-	@Test
-	public void testMockFlightData()
-	{
-		FlightSearch fss = new FlightSearch();
-		fss.setOrigin("XXX"); // trigger for mock data return
-		List<FlightInfo> list = new FlightInfoDALImpl().getAllSavedFlightInfo(fss);
-		assertNotNull(list);
-		assertTrue(list.size() > 0);
-	}
+//	@Test
+//	public void testMockFlightData()
+//	{
+//		FlightInputSearch fss = new FlightInputSearch();
+//		fss.setOrigin("XXX"); // trigger for mock data return
+//		List<FlightResult> list = new FlightResultDAL().getFlightSearchResultHistory(fss);
+//		assertNotNull(list);
+//		assertTrue(list.size() > 0);
+//	}
 	
 
 }

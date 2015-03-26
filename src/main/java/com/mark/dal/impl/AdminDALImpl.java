@@ -23,13 +23,14 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.mark.dal.IApplicationDAL;
-import com.mark.dal.IFlightInfoDAL;
+import com.mark.constant.DALConstants;
+import com.mark.dal.IAdminDAL;
+import com.mark.dal.IFlightResultDAL;
 import com.mark.model.ApplicationState;
 import com.mark.util.converter.DateConverter;
 
 @Repository
-public class ApplicationStateDALImpl implements IApplicationDAL {
+public class AdminDALImpl implements IAdminDAL {
 
 	private static final String APPLICATION_STATE_TABLE = "APPLICATION_STATE";
 	private static final String DATE = "DATE";
@@ -59,7 +60,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	{
 		System.out.println("Searching for application state for date: "+dt);
 		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt);
-		Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
+		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).setFilter(dateCompare);
 		System.out.println("Query: "+q.toString());
 		Entity en = dataStore.prepare(q).asSingleEntity();
@@ -76,7 +77,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 		ApplicationState savedState = this.findApplicationState(newState.getDate());
 		if ( savedState == null)
 		{
-			Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
+			Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 			// create a new one
 			Entity en = new Entity(APPLICATION_STATE_TABLE, ancestorKey);
 			poplulteEntityWithData(en, newState);
@@ -112,7 +113,7 @@ public class ApplicationStateDALImpl implements IApplicationDAL {
 	@Override
 	public List<ApplicationState> getAllApplicationStates() {
 		System.out.println("Getting all application states");
-		Key ancestorKey = KeyFactory.createKey(IFlightInfoDAL.FLIGHT_ANCESTOR_KIND, IFlightInfoDAL.FLIGHT_ANCESTOR_ID);
+		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).addSort(DATE, SortDirection.DESCENDING);
 		System.out.println("Query: "+q.toString());
 		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();

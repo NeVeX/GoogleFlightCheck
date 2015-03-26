@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.mark.model.ApplicationState;
 
-public interface IApplicationDAL {
+public interface IAdminDAL {
 
 	public ApplicationState getApplicationState();
 

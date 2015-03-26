@@ -26,7 +26,7 @@
 	
 		<h4>Enter your flight details below</h4>
 		<div th:if="${T(com.mark.util.FlightProperties).IN_DEBUG_MODE}" style="color: red">In Mocked Data Mode</div>
-		<form method="post" action="main" th:object="${flightData}">
+		<form method="post" action="main" th:object="${flightData.flightSearch}">
 			<table class="table" style="margin: auto;">
 				<tr>
 					<td>Origin</td>
@@ -75,15 +75,15 @@
 		</form>
 		
 		<div>
-			<p style="color: blue" th:text="${flightData.infoMessage}"/>
-			<p style="color: red" th:text="${flightData.exceptionMessage}"/>
+			<p style="color: blue" th:text="${flightData.message}"/>
 		</div>
 		
+		<!-- 
 		<div th:switch="${flightData.existingSearch}">
 			<p th:case="${false}">This search has now being saved and will run daily to track flight fares</p>
 			<p th:case="${true}">This search already exists and is already tracking flight fares daily</p>
 		</div>
-		
+		-->
 		<table th:if="${flightData.history != null}">
 			<thead>
 				<tr>
@@ -104,19 +104,19 @@
 							<caption><h5>Debug Flight Information</h5></caption>
 							<tr>
 								<td>Origin</td>
-								<td th:text="${flightData.origin}"></td>
+								<td th:text="${flightData.flightSearch.origin}"></td>
 							</tr>
 							<tr>
 								<td>Destination</td>
-								<td th:text="${flightData.destination}"></td>
+								<td th:text="${flightData.flightSearch.destination}"></td>
 							</tr>
 							<tr>
 								<td>Departure Date</td>
-								<td th:text="${flightData.departureDate}"></td>
+								<td th:text="${flightData.flightSearch.departureDate}"></td>
 							</tr>
 							<tr>
 								<td>Return Date</td>
-								<td th:text="${flightData.returnDate}"></td>
+								<td th:text="${flightData.flightSearch.returnDate}"></td>
 							</tr>
 							<tr>
 								<td>Lowest Price</td>

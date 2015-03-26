@@ -1,9 +1,5 @@
 package com.mark.model;
 
-import java.io.Serializable;
-
-
-
 import java.util.Date;
 
 import javax.validation.constraints.Future;
@@ -14,11 +10,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.google.appengine.api.datastore.Key;
 import com.mark.util.converter.DateConverter;
 
-public class FlightSearch implements Serializable {
-
+public class FlightInputSearch {
+	
 	private static final long serialVersionUID = 4160281245555626055L;
 	@Size(min=3, max=3, message="Origin name must be 3 characters long")
 	@NotBlank(message="Origin cannot be left blank")
@@ -27,28 +22,41 @@ public class FlightSearch implements Serializable {
 	@NotBlank(message="Destination cannot be left blank")
 	private String destination;
 	private Boolean forceBatchUsage;
-	private Key key;
-	private Boolean existingSearch;
 	@Future(message="Depature date cannot be in the past")
 	@DateTimeFormat (style="S-", pattern=DateConverter.DATE_FORMAT, iso=ISO.NONE) 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateConverter.DATE_FORMAT, timezone="GMT")
 	private Date departureDate;
-	private String departureDateAsString;
-	
 	private Date returnDate;
-	private Boolean flightOptionsExists;
-	
+
+	public FlightInputSearch(FlightInputSearch inputSearch) {
+		this.origin = inputSearch.getOrigin();
+		this.destination = inputSearch.getDestination();
+		this.departureDate = inputSearch.getDepartureDate();
+		this.returnDate = inputSearch.getReturnDate();
+	}
+	public FlightInputSearch() {
+	}
 	
 	public String getOrigin() {
 		return origin;
 	}
 	public void setOrigin(String origin) {
+		if ( origin != null)
+		{
+			this.origin = origin.toUpperCase();
+		}
 		this.origin = origin;
 	}
+	
 	public String getDestination() {
 		return destination;
 	}
+	
 	public void setDestination(String destination) {
+		if ( destination != null)
+		{
+			this.destination = destination.toUpperCase();
+		}
 		this.destination = destination;
 	}
 
@@ -57,18 +65,6 @@ public class FlightSearch implements Serializable {
 	}
 	public void setForceBatchUsage(Boolean forceBatchUsage) {
 		this.forceBatchUsage = forceBatchUsage;
-	}
-	public Key getKey() {
-		return key;
-	}
-	public void setKey(Key key) {
-		this.key = key;
-	}
-	public Boolean getExistingSearch() {
-		return existingSearch;
-	}
-	public void setExistingSearch(Boolean existingSearch) {
-		this.existingSearch = existingSearch;
 	}
 	public Date getDepartureDate() {
 		return departureDate;
@@ -82,17 +78,14 @@ public class FlightSearch implements Serializable {
 	public void setReturnDate(Date returnDate) {
 		this.returnDate = returnDate;
 	}
-	public Boolean isExistingSearch() {
-		return existingSearch;
+	@Override
+	public String toString() {
+		return "FlightInputSearch [origin=" + origin + ", destination="
+				+ destination + ", forceBatchUsage=" + forceBatchUsage
+				+ ", departureDate=" + departureDate + ", returnDate="
+				+ returnDate + "]";
 	}
-	public Boolean getFlightOptionsExists() {
-		return flightOptionsExists;
-	}
-	public void setFlightOptionsExists(Boolean flightOptionsExists) {
-		this.flightOptionsExists = flightOptionsExists;
-	}
-	public String getDepartureDateAsString() {
-		return departureDateAsString;
-	}
-
+	
+	
+	
 }

@@ -7,10 +7,13 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
-import com.mark.model.FlightSearch;
+import com.mark.model.FlightInputSearch;
+import com.mark.model.FlightSavedSearch;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Slice;
@@ -30,11 +33,11 @@ public class UtilTest {
 	@Test
 	public void testRequestParams()
 	{
-		FlightSearch fss = new FlightSearch();
+		FlightInputSearch fss = new FlightInputSearch();
 		fss.setDepartureDate(DateConverter.toDate("2014-10-19"));
 		fss.setDestination("dest");
 		fss.setOrigin("origin");
-		GoogleFlightRequest gfr = new FlightServiceImpl().createRequest(fss);
+		GoogleFlightRequest gfr = new FlightServiceImpl().createGoogleFlightRequest(fss);
 		Gson gson = new Gson();
 		String s = gson.toJson(gfr);//, new TypeToken<List<Slice>>() {}.getType());
 		assertTrue(s != null && s.length() > 0);
@@ -67,10 +70,10 @@ public class UtilTest {
 	@Test
 	public void testMinuteTimeConverter()
 	{
-		String expected = "0d 0h 30m";
+		String expected = "30m";
 		Long time = 30L;
 		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
-		expected = "0d 2h 10m";
+		expected = "2h 10m";
 		time = 130L;
 		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
 		expected = "1d 3h 40m";
@@ -80,23 +83,23 @@ public class UtilTest {
 		time = 1442L;
 		assertEquals(expected, TimeConverter.convertMinuteTimeToString(time));
 		time = null;
-		assertEquals("", TimeConverter.convertMinuteTimeToString(time));
+		assertEquals("N/A", TimeConverter.convertMinuteTimeToString(time));
 	}
 	
 	@Test
 	public void testMilliSecondTimeConverter()
 	{
-		String expected = "0h 0m 30s";
+		String expected = "30s";
 		Long time = 30000L;
 		assertEquals(expected, TimeConverter.convertMillisecondTimeToString(time));
-		expected = "0h 1m 0s";
+		expected = "1m 0s";
 		time = 60000L;
 		assertEquals(expected, TimeConverter.convertMillisecondTimeToString(time));
-		expected = "0h 1m 5s";
+		expected = "1m 5s";
 		time = 65000L;
 		assertEquals(expected, TimeConverter.convertMillisecondTimeToString(time));
 		time = null;
-		assertEquals("", TimeConverter.convertMillisecondTimeToString(time));
+		assertEquals("N/A", TimeConverter.convertMillisecondTimeToString(time));
 	}
 	
 	

@@ -1,287 +1,176 @@
 package com.mark.service.impl;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mark.dal.IFlightInfoDAL;
+import com.mark.dal.IFlightResultDAL;
 import com.mark.dal.IFlightSearchDAL;
-import com.mark.dal.IApplicationDAL;
 import com.mark.exception.FlightException;
 import com.mark.exception.FlightException.FlightExceptionType;
-import com.mark.model.ApplicationState;
-import com.mark.model.FlightInfo;
-import com.mark.model.FlightParsedData;
-import com.mark.model.FlightSearch;
-import com.mark.model.compare.FlightLowestPriceCompare;
-import com.mark.model.compare.FlightLowestPriceForShortestTimeCompare;
-import com.mark.model.google.request.DepartureTime;
+import com.mark.model.FlightInputSearch;
+import com.mark.model.FlightResult;
+import com.mark.model.FlightSavedSearch;
+import com.mark.model.FlightSearchHistoricalResult;
+import com.mark.model.FlightSearchResult;
+import com.mark.model.algorithm.AlgorithmResult;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.request.GoogleFlightRequestDetail;
 import com.mark.model.google.request.Passengers;
 import com.mark.model.google.request.Slice;
 import com.mark.model.google.response.GoogleFlightResponse;
-import com.mark.model.google.response.Leg;
-import com.mark.model.google.response.ResponseSlice;
-import com.mark.model.google.response.Segment;
-import com.mark.model.google.response.Trip;
-import com.mark.model.google.response.TripOption;
+import com.mark.service.IAdminService;
 import com.mark.service.IFlightService;
-import com.mark.util.FlightProperties;
+import com.mark.util.algorithm.IFlightAlgorithm;
 import com.mark.util.client.IGoogleFlightApiClient;
-import com.mark.util.client.type.resteasy.IRestEasyGoogleFlightApiClient;
-import com.mark.util.client.type.resteasy.RestEasyClient;
 import com.mark.util.converter.DateConverter;
-import com.mark.util.converter.JsonConverter;
-import com.sun.org.apache.bcel.internal.generic.DALOAD;
 
 @Service
 public class FlightServiceImpl implements IFlightService {
 
 	@Autowired
-	private IFlightSearchDAL flightSearchDAL;@Autowired
-	private IFlightInfoDAL flightDataDAL;@Autowired
-	private IApplicationDAL applicationDAL;@Autowired
+	private IAdminService adminService;
+	@Autowired
+	private IFlightSearchDAL flightSearchDAL;
+	@Autowired
+	private IFlightResultDAL flightResultFAL;
+	@Autowired
 	private IGoogleFlightApiClient googleFlightApiClient;
-	private AtomicLong flightCallCurrentCount = new AtomicLong(0);
+	@Autowired
+	private IFlightAlgorithm flightAlgorithm;
+	
 	private int TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST = 100;
 	
-	@PostConstruct
-	public void setup() {
-		ApplicationState appState = applicationDAL.getApplicationState();
-		if (appState != null) {
-			flightCallCurrentCount = new AtomicLong(
-			appState.getFlightApiCount());
-		}
-	}
-
-	// TODO: Make async call possible
-	private void saveState(boolean async) {
-		ApplicationState appState = new ApplicationState();
-		appState.setDate(new LocalDate().toDate());
-		appState.setFlightApiCount(flightCallCurrentCount.get());
-		applicationDAL.saveApplicationState(appState);
-	}
-
 	@Override
-	public FlightInfo getFlightInfo(FlightSearch fs) {
-		FlightInfo fd = null;
+	public FlightSearchHistoricalResult getFlightHistoricalResult(FlightInputSearch fis) {
+		FlightSearchResult flightResult = null;
 		try
 		{
-			 fd = this.getFlightInfoWithoutHistory(fs);
+			flightResult = this.getFlightResult(fis);
 		}
 		catch(FlightException fe)
 		{
-			if ( fe.getExceptionType() == FlightExceptionType.FLIGHT_API_LIMIT_REACHED)
+			if ( fe.getExceptionType() != FlightExceptionType.GENERAL)
 			{
 				// get the history we know of this flight so far
-				fd = new FlightInfo();
-				fd.setDestination(fs.getDestination());
-				fd.setOrigin(fs.getOrigin());
-				fd.setDepartureDate(fs.getDepartureDate());
-				fd.setReturnDate(fs.getReturnDate());
-				fd.setKey(fs.getKey());
-				fd.setInfoMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");
+				FlightSavedSearch fss = flightSearchDAL.getFlightSavedSearch(fis);
+				if ( fss != null)
+				{
+					flightResult = new FlightSearchResult(null, fss);
+					flightResult.setMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");	
+				}
+				// could not get the saved search, bad news...
+				throw new FlightException("Could not get the history of flight search [] after initial search for today failed", FlightExceptionType.FLIGHT_SAVED_SEARCH_EXCEPTION);
 			}
 			else
 			{
 				throw fe;
 			}
 		}
-		fd.setHistory(this.getAllFlightDataForSearch(fd));
-		return fd;
+		FlightSearchHistoricalResult historyResult = new FlightSearchHistoricalResult(flightResult);
+		historyResult.setHistory(flightResultFAL.getFlightSearchResultHistory(flightResult.getFlightSearch()));
+		return historyResult;
+	}
+	
+	
+
+	@Override
+	public FlightSearchResult getFlightResult(FlightInputSearch inputSearch) {
+		FlightSavedSearch flightSavedSearch = flightSearchDAL.getFlightSavedSearch(inputSearch);
+		if ( flightSavedSearch == null)
+		{
+			// we don't have this flight so, save it
+			flightSavedSearch = flightSearchDAL.saveFlightSearch(inputSearch);
+		}
+
+		if (inputSearch.getForceBatchUsage() != null && inputSearch.getForceBatchUsage()) {
+			throw new FlightException("This search request will be batched instead of invoked immediately.");
+		}
+		
+		return this.getFlightResult(flightSavedSearch);
 	}
 
-	private FlightInfo getFlightInfoWithoutHistory(FlightSearch inputSearch) {
-		inputSearch.setDestination(inputSearch.getDestination().toUpperCase());
-		inputSearch.setOrigin(inputSearch.getOrigin().toUpperCase());
-		FlightSearch dbSavedSearch = flightSearchDAL.findFlightSavedSearch(inputSearch);
-		if (dbSavedSearch == null) {
-			dbSavedSearch = flightSearchDAL.saveFlightSearch(inputSearch);
-		}
-		if ( dbSavedSearch.getFlightOptionsExists() != null && !dbSavedSearch.getFlightOptionsExists())
+
+	@Override
+	public FlightSearchResult getFlightResult(FlightSavedSearch flightSavedSearch) {
+		if ( flightSavedSearch.getFlightOptionsExists() != null && !flightSavedSearch.getFlightOptionsExists())
 		{
 			// no flight options exists for this search, so don't continue
-			throw new FlightException("No flight options exists for this search");
+			throw new FlightException("No flight options exists for this search", FlightExceptionType.NO_FLIGHT_EXISTS_FOR_SEARCH);
 		}
-		if (inputSearch.getForceBatchUsage() != null && inputSearch.getForceBatchUsage()) {
-			throw new FlightException("Will not get flight details since told to wait for batch process instead");
-		}
+		
 		// we have the saved search now.
 		// Check if we have the data for this search
-		if (dbSavedSearch.isExistingSearch() != null && dbSavedSearch.isExistingSearch()) {
+		if ( flightSavedSearch.getFlightOptionsExists() != null && flightSavedSearch.getFlightOptionsExists()) {
 			// find if we have data for today already
-			FlightInfo dbSavedFlightInfo = flightDataDAL.findFlightInfo(dbSavedSearch);
-			if (dbSavedFlightInfo != null) {
-				String s = "Returning saved Flight Data instead of calling Flight API";
-				// just return it
-				System.out.println(s);
-				dbSavedFlightInfo.setInfoMessage(s);
-				return dbSavedFlightInfo;
+			FlightSearchResult flightSearchResultToday = flightResultFAL.getFlightResultForToday(flightSavedSearch);
+			if (flightSearchResultToday != null) {
+				System.out.println("Found FlightSearchResult for today already stored, so using stored data instead of calling API");
+				return flightSearchResultToday;
 			}
 		}
-		FlightInfo apiFlightInfo = this.invokeFlightApi(dbSavedSearch);
-		if ( apiFlightInfo != null )
-		{
-			// save the new data
-			flightDataDAL.saveFlightInfo(apiFlightInfo);
-			if ( apiFlightInfo.getFlightOptionsExists() == null)
+		GoogleFlightResponse apiResponse = this.getFlightAPIResult(flightSavedSearch);
+		if (apiResponse != null) {
+			// Use the setup algorithm to get results
+			AlgorithmResult algoResult = flightAlgorithm.execute(flightSavedSearch, apiResponse);
+			if ( algoResult != null )
 			{
-				// this is the first time getting this flight info, so flag that there is data for this search
-				dbSavedSearch.setFlightOptionsExists(true);
-				this.flightSearchDAL.updateFlightSavedSearch(dbSavedSearch);
+				// we have data to use, so create FlightInfo
+				FlightResult fResult = new FlightResult(new LocalDate().toDate());
+				fResult.setLowestPrice(algoResult.getLowestPrice());
+				fResult.setLowestPriceTripDuration(algoResult.getLowestPriceTripDuration());
+				fResult.setShortestTimePrice(algoResult.getShortestTimePrice());
+				fResult.setShortestTimePriceTripDuration(algoResult.getShortestTimePriceTripDuration());
+				FlightSearchResult flightResult = new FlightSearchResult(fResult, flightSavedSearch);
+				// save the new data
+				flightResultFAL.saveFlightSearchResult(flightResult);
+				if ( flightSavedSearch.getFlightOptionsExists() == null || !flightSavedSearch.getFlightOptionsExists()) 
+				{
+					// this is the first time getting this flight info, so flag that there is data for this search
+					flightSavedSearch.setFlightOptionsExists(true);
+					this.flightSearchDAL.updateFlightSavedSearch(flightSavedSearch);
+				}
+				return flightResult;
 			}
-			return apiFlightInfo;
+			throw new FlightException("The Flight Algorithm returned no results!", FlightExceptionType.FLIGHT_ALGORITHM_DID_NOT_WORK);
 		}
 		else
 		{
 			// save that this flight search does not have any results for it - to stop further unnessecary searches
-			dbSavedSearch.setFlightOptionsExists(false);
-			this.flightSearchDAL.updateFlightSavedSearch(dbSavedSearch);
-		}
-		throw new FlightException("Could not find any flights for the given search.");
+			flightSavedSearch.setFlightOptionsExists(false);
+			this.flightSearchDAL.updateFlightSavedSearch(flightSavedSearch);
+		}	
+		throw new FlightException("No results were returned from Google Flight API", FlightExceptionType.FLIGHT_API_RETURNED_NO_DATA);
 	}
 	
-	private FlightInfo invokeFlightApi(FlightSearch search)
+	private GoogleFlightResponse getFlightAPIResult(FlightSavedSearch flightSearch)
 	{
 		GoogleFlightResponse response = null;
-		// if we are here, then we know that we need to call the API to get
-		// current data for today
-		if (flightCallCurrentCount.get() < FlightProperties.GOOGLE_FLIGHT_API_DAILY_INVOKE_LIMIT) // check if  our limit is reached
+		// if we are here, then we know that we need to call the API to get current data for today
+		if (adminService.isAllowedToCallFlightAPI()) // check if our limit is reached
 		{
-			flightCallCurrentCount.incrementAndGet(); // increment by one
-			this.saveState(true); // save the state again -> async
-			response = googleFlightApiClient.postForFlightInfo(createRequest(search));
-		} else {
+			adminService.incrementFlightAPICount(); // increment it
+			try
+			{
+				response = googleFlightApiClient.postForFlightInfo(createGoogleFlightRequest(flightSearch));
+			}
+			catch(Exception e)
+			{
+				throw new FlightException("There was a problem calling the FlightAPI", e, FlightExceptionType.FLIGHT_API_EXCEPTION);
+			}
+		} 
+		else {
 			// can't call the Flight API again, but get the history so far for this search (if any)
 			String msg = "The limit for today's Flight API call has being reached";
 			throw new FlightException(msg, FlightExceptionType.FLIGHT_API_LIMIT_REACHED);
 		}
+		return response;
+	}	
 
-		if (response != null) {
-			// now for the fun part, parse the result
-			List<FlightParsedData> listOfFlights = this.parseGoogleResponseToFlightData(response, search);
-			if (listOfFlights != null && listOfFlights.size() > 0) {
-				// now get the prices we care about
-				FlightInfo fd = this.determineFlightInfoFromApiData(search, listOfFlights);
-				if (fd != null) {
-					return fd;
-				}
-				throw new FlightException("Found flight information but could not parse details from the objects");
-			}
-			System.out.println("Did not find any flights from the Flight API response - perhaps no flights exist for this search");
-			return null;
-		}
-		throw new FlightException("Response from google flights is null. Cannot do anything with no data! :-(");
-	}
-	
-
-	private List<FlightInfo> getAllFlightDataForSearch(FlightSearch savedSearch) {
-		return flightDataDAL.getAllSavedFlightInfo(savedSearch);
-	}
-
-	private FlightInfo determineFlightInfoFromApiData(FlightSearch search, List<FlightParsedData> listOfFlights) {
-		FlightInfo fd = new FlightInfo();
-		Collections.sort(listOfFlights, new FlightLowestPriceCompare());
-		FlightParsedData fpdCheap = listOfFlights.get(0);
-		fd.setDepartureDate(fpdCheap.getDepartureDate());
-		fd.setReturnDate(fpdCheap.getReturnDate());
-		fd.setOrigin(fpdCheap.getOrigin());
-		fd.setDestination(fpdCheap.getDestination());
-		fd.setLowestPrice(fpdCheap.getPrice());
-		fd.setLowestPriceTripDuration(new Long(fpdCheap.getTripLength()));
-		Collections.sort(listOfFlights,
-		new FlightLowestPriceForShortestTimeCompare());
-		FlightParsedData fpdShortest = listOfFlights.get(0);
-		fd.setShortestTimePrice(fpdShortest.getPrice());
-		fd.setShortestTimePriceTripDuration(new Long(fpdShortest.getTripLength()));
-		fd.setKey(search.getKey()); // save the key for this search too
-		fd.setExistingSearch(search.isExistingSearch());
-		fd.setFlightOptionsExists(search.getFlightOptionsExists());
-		return fd;
-	}
-
-	private List<FlightParsedData> parseGoogleResponseToFlightData(GoogleFlightResponse response, FlightSearch fss) {
-		List<FlightParsedData> parsedData = new ArrayList < FlightParsedData > ();
-		if (response == null || response.getTrips() == null || response.getTrips().getTripOption() == null) {
-			throw new FlightException("No flight information returned for search query");
-		}
-		Trip trip = response.getTrips();
-		for (TripOption t: trip.getTripOption()) {
-			float price = Float.valueOf(t.getSaleTotal().substring(3,
-			t.getSaleTotal().length()));
-			int stops = 0;
-			boolean foundFlightData = false;
-			int tripLength = 0;
-			if (t.getSlice() != null) {
-				for (ResponseSlice rs: t.getSlice()) {
-					if (rs.getSegment() != null) {
-						for (Segment seg: rs.getSegment()) {
-							if (seg.getLeg() != null) {
-								for (Leg leg: seg.getLeg()) {
-									stops++;
-									tripLength += leg.getDuration() != null ? leg.getDuration() : 0;
-									foundFlightData = true;
-								}
-							}
-						}
-					}
-				}
-			}
-			if (foundFlightData) {
-				// create the FlightData object
-				FlightParsedData fd = new FlightParsedData();
-				fd.setPrice(price);
-				fd.setNumberOfStops(stops);
-				fd.setTripLength(tripLength);
-				fd.setDepartureDate(fss.getDepartureDate());
-				fd.setReturnDate(fss.getReturnDate());
-				fd.setDestination(fss.getDestination());
-				fd.setOrigin(fss.getOrigin());
-				parsedData.add(fd);
-			} else {
-				System.out.println("Info: Did not find flight data in Trip Options.");
-			}
-		}
-		return parsedData;
-	}
-
-	public GoogleFlightRequest createRequest(FlightSearch fss) {
-		GoogleFlightRequest request = new GoogleFlightRequest();
-		GoogleFlightRequestDetail gfr = new GoogleFlightRequestDetail();
-		Passengers p = new Passengers();
-		p.setAdultCount(1);
-		p.setChildCount(0);
-		gfr.setPassengers(p);
-		List < Slice > slices = new ArrayList < > ();
-		Slice s = new Slice();
-		s.setOrigin(fss.getOrigin());
-		s.setDestination(fss.getDestination());
-		s.setDate(DateConverter.toString(fss.getDepartureDate()));
-		slices.add(s);
-		gfr.setSlice(slices);
-		gfr.setSolutions(TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST);
-		gfr.setSaleCountry("US"); // hard code to America - all flights in USD
-		request.setRequest(gfr);
-		return request;
-	}
-	
-	public GoogleFlightRequest createRequest(FlightSearch departFlight, FlightSearch returnFlight) {
+	public GoogleFlightRequest createGoogleFlightRequest(FlightInputSearch flightSearch) {
 		GoogleFlightRequest request = new GoogleFlightRequest();
 		GoogleFlightRequestDetail gfr = new GoogleFlightRequestDetail();
 		Passengers p = new Passengers();
@@ -290,15 +179,19 @@ public class FlightServiceImpl implements IFlightService {
 		gfr.setPassengers(p);
 		List < Slice > slices = new ArrayList < > ();
 		Slice departSlice = new Slice();
-		departSlice.setOrigin(departFlight.getOrigin());
-		departSlice.setDestination(departFlight.getDestination());
-		departSlice.setDate(DateConverter.toString(departFlight.getDepartureDate()));
+		departSlice.setOrigin(flightSearch.getOrigin());
+		departSlice.setDestination(flightSearch.getDestination());
+		departSlice.setDate(DateConverter.toString(flightSearch.getDepartureDate()));
 		slices.add(departSlice);
-		Slice returnSlice = new Slice();
-		returnSlice.setOrigin(returnFlight.getOrigin());
-		returnSlice.setDestination(returnFlight.getDestination());
-		returnSlice.setDate(DateConverter.toString(returnFlight.getDepartureDate()));
-		slices.add(returnSlice);
+		if ( flightSearch.getReturnDate() != null )
+		{
+			// Just flip the original flight around (origin <--> destination)
+			Slice returnSlice = new Slice();
+			returnSlice.setOrigin(flightSearch.getDestination());
+			returnSlice.setDestination(flightSearch.getOrigin());
+			returnSlice.setDate(DateConverter.toString(flightSearch.getReturnDate()));
+			slices.add(returnSlice);
+		}
 		gfr.setSlice(slices);
 		gfr.setSolutions(TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST);
 		gfr.setSaleCountry("US"); // hard code to America - all flights in USD
@@ -306,53 +199,28 @@ public class FlightServiceImpl implements IFlightService {
 		return request;
 	}
 
-	@Override
-	public List < FlightSearch > getAllFlightSavedSearches() {
-		return flightSearchDAL.getAllFlightSavedSearches(false);
-	}
+
 
 	@Override
-	public List <FlightInfo> getAllSavedFlightInfo() {
-		return flightDataDAL.getAllSavedFlightInfo();
-	}
-
-	@Override
-	public List < ApplicationState > getAllApplicationStates() {
-		return applicationDAL.getAllApplicationStates();
-	}
-
-	@Override
-	public void runTracker() {
-		System.out.println("Batch Job: Getting list of saved searches with departure dates in the future");
-		List < FlightSearch > savedSearches = flightSearchDAL.getAllFlightSavedSearches(true);
-		if (savedSearches != null && savedSearches.size() > 0) {
-			System.out.println("Batch Job: Found [" + savedSearches.size() + "] saved searches with departure dates in the future - getting Flight Data with no search for today");
-			// get all the flight searches that do not have updates for today
-			List < FlightSearch > needsUpdating = flightDataDAL.getFlightInfoThatNeedsTracking(savedSearches);
-			if (needsUpdating != null && needsUpdating.size() > 0) {
-				System.out.println("Batch Job: Found [" + needsUpdating.size() + "] searches that will be updated now");
-				for (FlightSearch fss: needsUpdating) {
-					try {
-						System.out.println("Batch Job: Attempting to update Flight Data for: " + fss);
-						this.getFlightInfoWithoutHistory(fss);
-						System.out.println("Updated Flight Data for: " + fss);
-					} catch (Exception e) {
-						System.err.println("Batch Job: Could not update flight details for [" + fss + "].\n" + e);
+	public List<FlightSearchResult> getAllFlightSearchResults() {
+		// get all flight searches first
+		List<FlightSavedSearch> savedSearches = flightSearchDAL.getAllFlightSavedSearches(true);
+		List<FlightSearchResult> searchResults = new ArrayList<FlightSearchResult>();
+		if ( savedSearches != null)
+		{
+			for(FlightSavedSearch fss : savedSearches)
+			{
+				List<FlightResult> flightResults = flightResultFAL.getFlightSearchResultHistory(fss);
+				if ( flightResults != null)
+				{
+					for ( FlightResult fr : flightResults)
+					{
+						searchResults.add(new FlightSearchResult(fr, fss));
 					}
 				}
 			}
 		}
-		System.out.println("Batch Job: Finished.");
-	}
-
-	@Override
-	public FlightInfo getFlightHistory(FlightSearch search) {
-		FlightSearch dbFlightSearch = flightSearchDAL.findFlightSavedSearch(search);
-		if ( dbFlightSearch != null)
-		{
-			return this.getFlightHistory(dbFlightSearch);
-		}
-		return null;
+		return searchResults;
 	}
 
 }

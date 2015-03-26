@@ -2,16 +2,19 @@ package com.mark.dal;
 
 import java.util.List;
 
-import com.mark.model.FlightSearch;
+import com.mark.model.FlightInputSearch;
+import com.mark.model.FlightSavedSearch;
 
-public interface IFlightSearchDAL extends IFlightDAL {
+public interface IFlightSearchDAL {
 
-	public FlightSearch saveFlightSearch(FlightSearch fs);
+	public FlightSavedSearch saveFlightSearch(FlightInputSearch fs);
 	
-	public FlightSearch findFlightSavedSearch(FlightSearch fs);
+	public FlightSavedSearch getFlightSavedSearch(FlightInputSearch fs);
 	
-	public boolean updateFlightSavedSearch(FlightSearch fs);
+	public boolean updateFlightSavedSearch(FlightSavedSearch fs);
 	
-	public List<FlightSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly);
+	public List<FlightSavedSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly);
+
+	List<FlightSavedSearch> getFlightSearchesThatNeedsTrackingForToday(List<FlightSavedSearch> savedSearches);
 	
 }
