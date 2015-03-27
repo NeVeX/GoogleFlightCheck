@@ -1,15 +1,20 @@
 package com.mark.model;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mark.util.converter.DateConverter;
 
 public class FlightInputSearch {
@@ -21,12 +26,13 @@ public class FlightInputSearch {
 	@Size(min=3, max=3, message="Destination name must be 3 characters long")
 	@NotBlank(message="Destination cannot be left blank")
 	private String destination;
+	@JsonProperty
 	private Boolean forceBatchUsage;
 	@Future(message="Depature date cannot be in the past")
-	@DateTimeFormat (style="S-", pattern=DateConverter.DATE_FORMAT, iso=ISO.NONE) 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateConverter.DATE_FORMAT, timezone="GMT")
+	@JsonFormat(timezone="GMT", pattern=DateConverter.DATE_FORMAT, shape=Shape.STRING)
 	private Date departureDate;
 	private Date returnDate;
+
 
 	public FlightInputSearch(FlightInputSearch inputSearch) {
 		this.origin = inputSearch.getOrigin();
@@ -60,9 +66,11 @@ public class FlightInputSearch {
 		this.destination = destination;
 	}
 
+	@JsonIgnore
 	public Boolean getForceBatchUsage() {
 		return forceBatchUsage;
 	}
+	@JsonProperty
 	public void setForceBatchUsage(Boolean forceBatchUsage) {
 		this.forceBatchUsage = forceBatchUsage;
 	}

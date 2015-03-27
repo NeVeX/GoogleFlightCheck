@@ -14,13 +14,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.appengine.api.datastore.Key;
 import com.mark.util.converter.DateConverter;
 
 public class FlightSavedSearch extends FlightInputSearch implements Serializable {
 
 	private static final long serialVersionUID = 4160281245555626055L;
+	@JsonIgnore
 	private Key key;
+	@JsonIgnore
 	private Boolean flightOptionsExists;
 	
 	public FlightSavedSearch(Key key, FlightInputSearch inputSearch)

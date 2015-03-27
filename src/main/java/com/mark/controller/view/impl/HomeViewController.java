@@ -30,6 +30,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.mark.constant.ControllerConstants;
 import com.mark.controller.api.IFlightAPIController;
+import com.mark.controller.view.IHomeViewController;
 import com.mark.exception.FlightException;
 import com.mark.model.FlightResult;
 import com.mark.model.FlightSearchHistoricalResult;
@@ -41,7 +42,7 @@ import com.mark.service.IFlightService;
 import com.mark.util.converter.DateConverter;
 
 @Controller
-public class HomeViewController {
+public class HomeViewController implements IHomeViewController {
 	public static final String FLIGHT_DATA_OBJECT = "flightData";
 	
 	@Autowired
@@ -66,7 +67,7 @@ public class HomeViewController {
 			model.addAttribute(ControllerConstants.VIEW_ERROR_FLAG, true); // tell the user in general there is an error
 			return ControllerConstants.HOME_VIEW_NAME; // go back to the page since there are errors with the input
 		}
-		FlightSearchResult flightInfo = this.iFlightApiController.postForFlightInfo(flightInputSearch, bindingResult);
+		FlightSearchResult flightInfo = this.iFlightApiController.postForFlightInfo(flightInputSearch);
 		if (flightInfo != null)
 		{
 			model.addAttribute(FLIGHT_DATA_OBJECT, flightInfo);	

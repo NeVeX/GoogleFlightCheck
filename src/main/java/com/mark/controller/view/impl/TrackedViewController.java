@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mark.constant.ControllerConstants;
+import com.mark.controller.view.ITrackedViewController;
 import com.mark.exception.FlightException;
 import com.mark.model.FlightSearchResult;
 import com.mark.model.FlightSavedSearch;
@@ -37,7 +38,7 @@ import com.mark.service.IFlightTrackerService;
 import com.mark.util.converter.DateConverter;
 
 @Controller
-public class TrackedViewController {
+public class TrackedViewController implements ITrackedViewController {
 	private static final String SAVED_SEARCHES_ATTRIBUTE_NAME = "savedSearches";
 	
 	@Autowired

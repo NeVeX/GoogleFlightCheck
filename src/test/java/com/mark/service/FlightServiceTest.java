@@ -26,6 +26,7 @@ import com.mark.service.impl.FlightServiceImpl;
 import com.mark.util.FlightProperties;
 import com.mark.util.client.IGoogleFlightApiClient;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath*:spring/spring-mvc-test-google-client.xml")
 public class FlightServiceTest {

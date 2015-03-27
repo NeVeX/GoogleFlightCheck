@@ -57,7 +57,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		en.setProperty(DALConstants.COLUMN_ORIGIN,fs.getOrigin());
 		Key key = dataStore.put(en);
 		System.out.println("Saved flight search: "+fs.toString());
-		return new FlightSavedSearch(key, fs, false);
+		return new FlightSavedSearch(key, fs);
 	}
 
 

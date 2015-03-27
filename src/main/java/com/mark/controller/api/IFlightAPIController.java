@@ -7,8 +7,6 @@ import com.mark.model.FlightInputSearch;
 
 public interface IFlightAPIController {
 
-	public FlightSearchResult postForFlightInfo(FlightInputSearch flightInputSearch, BindingResult bindingResult);
-	
-	public FlightSearchResult postForFlightHistory(FlightInputSearch flightInputSearch, BindingResult bindingResult);
+	public FlightSearchResult postForFlightInfo(FlightInputSearch flightInputSearch);
 	
 }

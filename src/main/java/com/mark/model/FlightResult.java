@@ -3,6 +3,9 @@ package com.mark.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.mark.util.converter.DateConverter;
 import com.mark.util.converter.TimeConverter;
 
 public class FlightResult implements Serializable {
@@ -10,6 +13,7 @@ public class FlightResult implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Float shortestTimePrice;
 	private Float lowestPrice;
+	@JsonFormat(timezone="GMT", pattern=DateConverter.DATE_FORMAT, shape=Shape.STRING)
 	private Date dateSearched;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;

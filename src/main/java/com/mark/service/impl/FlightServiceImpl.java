@@ -59,7 +59,7 @@ public class FlightServiceImpl implements IFlightService {
 				FlightSavedSearch fss = flightSearchDAL.getFlightSavedSearch(fis);
 				if ( fss != null)
 				{
-					flightResult = new FlightSearchResult(null, fss);
+					flightResult = new FlightSearchResult(new FlightResult(new LocalDate().toDate()), fss);
 					flightResult.setMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");	
 				}
 				// could not get the saved search, bad news...
