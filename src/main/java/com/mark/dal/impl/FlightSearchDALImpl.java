@@ -45,7 +45,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	{
 		dataStore = DatastoreServiceFactory.getDatastoreService();
 	}
-	// TODO: don' return a flight search, use the passed in object to populate
+	
 	@Override
 	public FlightSavedSearch saveFlightSearch(FlightInputSearch fs) {
 		System.out.println("Saving flight search: "+fs.toString());
@@ -55,6 +55,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		en.setProperty(DALConstants.COLUMN_RETURN_DATE, fs.getReturnDate());
 		en.setProperty(DALConstants.COLUMN_DESTINATION,fs.getDestination());
 		en.setProperty(DALConstants.COLUMN_ORIGIN,fs.getOrigin());
+		en.setProperty(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, true);
 		Key key = dataStore.put(en);
 		System.out.println("Saved flight search: "+fs.toString());
 		return new FlightSavedSearch(key, fs);
@@ -84,9 +85,8 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	}
 
 	private FlightSavedSearch createFlightSavedSearchFromEntity(Entity entity) {
-		FlightSavedSearch fs = new FlightSavedSearch(entity.getKey(), this.createFlightInputSearchFromEntity(entity));
 		Boolean flightsExist = (Boolean)entity.getProperty(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS);
-		fs.setFlightOptionsExists(flightsExist == null ? true : flightsExist.booleanValue());
+		FlightSavedSearch fs = new FlightSavedSearch(entity.getKey(), this.createFlightInputSearchFromEntity(entity), flightsExist != null ? flightsExist : true);
 		return fs;	
 	}
 	
@@ -107,7 +107,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		System.out.println("Getting all Flight saved searches");
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(DALConstants.TABLE_FLIGHT_SEARCH).setAncestor(ancestorKey).addSort(DALConstants.COLUMN_DEPARTURE_DATE, SortDirection.DESCENDING);
-		Filter flightsThatExist = new FilterPredicate(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, FilterOperator.NOT_EQUAL, false);
+		Filter flightsThatExist = new FilterPredicate(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, FilterOperator.EQUAL, true);
 		if ( includeFutureDatesOnly )
 		{
 			Date todaysDate = new LocalDate().toDate();
@@ -139,7 +139,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 			en.setProperty(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, fss.getFlightOptionsExists());
 			return dataStore.put(en) != null ? true : false; // re-save
 		} catch (EntityNotFoundException e) {
-			System.err.println("Could not find application state using key ["+fss.getKey()+"]");
+			System.err.println("Could not find flight saved search result using key ["+fss.getKey()+"]");
 		}
 		return false;
 	}

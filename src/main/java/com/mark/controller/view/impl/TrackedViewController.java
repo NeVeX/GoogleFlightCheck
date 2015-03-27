@@ -39,7 +39,7 @@ import com.mark.util.converter.DateConverter;
 
 @Controller
 public class TrackedViewController implements ITrackedViewController {
-	private static final String SAVED_SEARCHES_ATTRIBUTE_NAME = "savedSearches";
+	private static final String SAVED_SEARCHES_ATTRIBUTE_NAME = "savedFlightResults";
 	
 	@Autowired
 	private IFlightTrackerService trackedFlightService;

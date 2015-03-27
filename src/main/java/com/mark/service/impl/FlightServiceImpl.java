@@ -45,40 +45,55 @@ public class FlightServiceImpl implements IFlightService {
 	private int TOTAL_FLIGHT_SOLUTIONS_TO_REQUEST = 100;
 	
 	@Override
-	public FlightSearchHistoricalResult getFlightHistoricalResult(FlightInputSearch fis) {
+	public FlightSearchHistoricalResult getFlightSearchHistoricalResult(FlightInputSearch fis) {
 		FlightSearchResult flightResult = null;
 		try
 		{
-			flightResult = this.getFlightResult(fis);
+			flightResult = this.getFlightSearchResult(fis);
 		}
 		catch(FlightException fe)
 		{
 			if ( fe.getExceptionType() != FlightExceptionType.GENERAL)
 			{
 				// get the history we know of this flight so far
-				FlightSavedSearch fss = flightSearchDAL.getFlightSavedSearch(fis);
-				if ( fss != null)
+				FlightSearchHistoricalResult fullHistory = this.getFlightSearchHistoricalStoredResults(fis);
+				if ( fullHistory != null )
 				{
-					flightResult = new FlightSearchResult(new FlightResult(new LocalDate().toDate()), fss);
-					flightResult.setMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");	
+					fullHistory.setMessage("The Flight API limit has being reached today, but here is the history of this flight thus far");	
+					return fullHistory;
 				}
 				// could not get the saved search, bad news...
-				throw new FlightException("Could not get the history of flight search [] after initial search for today failed", FlightExceptionType.FLIGHT_SAVED_SEARCH_EXCEPTION);
+				throw new FlightException("Could not get the history of flight search ["+fis+"] after initial search for today failed", FlightExceptionType.FLIGHT_SAVED_SEARCH_EXCEPTION);
 			}
 			else
 			{
 				throw fe;
 			}
 		}
+		return this.getFlightStoredHistory(flightResult);
+	}
+	
+	@Override
+	public FlightSearchHistoricalResult getFlightSearchHistoricalStoredResults(FlightInputSearch fis)
+	{
+		FlightSavedSearch fss = flightSearchDAL.getFlightSavedSearch(fis);
+		if ( fss != null)
+		{
+			FlightSearchResult flightResult = new FlightSearchResult(new FlightResult(new LocalDate().toDate()), fss);
+			return this.getFlightStoredHistory(flightResult);
+		}
+		return null; // nothing for today
+	}
+	
+	private FlightSearchHistoricalResult getFlightStoredHistory(FlightSearchResult flightResult)
+	{
 		FlightSearchHistoricalResult historyResult = new FlightSearchHistoricalResult(flightResult);
 		historyResult.setHistory(flightResultFAL.getFlightSearchResultHistory(flightResult.getFlightSearch()));
 		return historyResult;
 	}
-	
-	
 
 	@Override
-	public FlightSearchResult getFlightResult(FlightInputSearch inputSearch) {
+	public FlightSearchResult getFlightSearchResult(FlightInputSearch inputSearch) {
 		FlightSavedSearch flightSavedSearch = flightSearchDAL.getFlightSavedSearch(inputSearch);
 		if ( flightSavedSearch == null)
 		{
@@ -94,7 +109,6 @@ public class FlightServiceImpl implements IFlightService {
 	}
 
 
-	@Override
 	public FlightSearchResult getFlightResult(FlightSavedSearch flightSavedSearch) {
 		if ( flightSavedSearch.getFlightOptionsExists() != null && !flightSavedSearch.getFlightOptionsExists())
 		{
@@ -127,12 +141,6 @@ public class FlightServiceImpl implements IFlightService {
 				FlightSearchResult flightResult = new FlightSearchResult(fResult, flightSavedSearch);
 				// save the new data
 				flightResultFAL.saveFlightSearchResult(flightResult);
-				if ( flightSavedSearch.getFlightOptionsExists() == null || !flightSavedSearch.getFlightOptionsExists()) 
-				{
-					// this is the first time getting this flight info, so flag that there is data for this search
-					flightSavedSearch.setFlightOptionsExists(true);
-					this.flightSearchDAL.updateFlightSavedSearch(flightSavedSearch);
-				}
 				return flightResult;
 			}
 			throw new FlightException("The Flight Algorithm returned no results!", FlightExceptionType.FLIGHT_ALGORITHM_DID_NOT_WORK);

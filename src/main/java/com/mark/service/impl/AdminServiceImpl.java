@@ -59,7 +59,7 @@ public class AdminServiceImpl implements IAdminService {
 				for (FlightSavedSearch fss: needsUpdating) {
 					try {
 						System.out.println("Batch Job: Attempting to update Flight Data for: " + fss);
-						this.flightService.getFlightResult(fss);
+						this.flightService.getFlightSearchResult(fss);
 						System.out.println("Updated Flight Data for: " + fss);
 					} catch (Exception e) {
 						encounteredProblems = true;

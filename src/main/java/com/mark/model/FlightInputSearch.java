@@ -29,16 +29,23 @@ public class FlightInputSearch {
 	@JsonProperty
 	private Boolean forceBatchUsage;
 	@Future(message="Depature date cannot be in the past")
+	@DateTimeFormat(style="S-", pattern=DateConverter.DATE_FORMAT,iso=ISO.DATE)
 	@JsonFormat(timezone="GMT", pattern=DateConverter.DATE_FORMAT, shape=Shape.STRING)
 	private Date departureDate;
 	private Date returnDate;
-
-
+	
+	/**
+	 * for ui usage
+	 * @param inputSearch
+	 */
+	private String departureDateAsString;
+	private String returnDateAsString;
+	
 	public FlightInputSearch(FlightInputSearch inputSearch) {
 		this.origin = inputSearch.getOrigin();
 		this.destination = inputSearch.getDestination();
-		this.departureDate = inputSearch.getDepartureDate();
-		this.returnDate = inputSearch.getReturnDate();
+		this.setDepartureDate(inputSearch.getDepartureDate());
+		this.setReturnDate(inputSearch.getReturnDate());
 	}
 	public FlightInputSearch() {
 	}
@@ -79,12 +86,14 @@ public class FlightInputSearch {
 	}
 	public void setDepartureDate(Date departureDate) {
 		this.departureDate = departureDate;
+		this.departureDateAsString = DateConverter.toString(departureDate);
 	}
 	public Date getReturnDate() {
 		return returnDate;
 	}
 	public void setReturnDate(Date returnDate) {
 		this.returnDate = returnDate;
+		this.returnDateAsString = DateConverter.toString(returnDate);
 	}
 	@Override
 	public String toString() {
@@ -92,6 +101,18 @@ public class FlightInputSearch {
 				+ destination + ", forceBatchUsage=" + forceBatchUsage
 				+ ", departureDate=" + departureDate + ", returnDate="
 				+ returnDate + "]";
+	}
+	public String getReturnDateAsString() {
+		return returnDateAsString;
+	}
+	public void setReturnDateAsString(String returnDateAsString) {
+		this.returnDateAsString = returnDateAsString;
+	}
+	public String getDepartureDateAsString() {
+		return departureDateAsString;
+	}
+	public void setDepartureDateAsString(String departureDateAsString) {
+		this.departureDateAsString = departureDateAsString;
 	}
 	
 	

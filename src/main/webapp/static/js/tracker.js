@@ -31,14 +31,26 @@ function populateDestinationList(searchData)
 	var originSelectedValue = $("#originSelect option:selected").val();
 	destinationOptions.html(''); // remove all the previous options
 	departureDateOptions.html(''); // remove all the previous options
+	
+	var destinationArray = new Array();
+	var departureDateArray = new Array();
+	
 	$.each(searchData, function() {
 		if ( this.origin === originSelectedValue)
 		{
-			var newDestOption = $("<option />").val(this.destination).text(this.destination);
-			destinationOptions.append(newDestOption);
-			var newDepDateOption = $("<option />").val(this.departureDate).text(this.departureDate);
-			departureDateOptions.append(newDepDateOption);
-		}
+			if ( $.inArray(this.destination, destinationArray) == -1)
+			{
+				destinationArray.push(this.destination);
+				var newDestOption = $("<option />").val(this.destination).text(this.destination);
+				destinationOptions.append(newDestOption);
+			}
+			if ( $.inArray(this.departureDateAsString, departureDateArray) == -1)
+			{
+				departureDateArray.push(this.departureDateAsString);
+				var newDepDateOption = $("<option />").val(this.departureDate).text(this.departureDateAsString);
+				departureDateOptions.append(newDepDateOption);
+			}
+		}	
 	});
 }
 
@@ -80,7 +92,7 @@ function trackingButtonClicked()
     	},
         error: function(errorData)
         {
-        	console.log('Error trying to get data for tracking search');
+        	console.log('Error trying to get data for tracking search: '+errorData);
         	alert("There was a problem getting the chart data");
         }
     });
@@ -92,6 +104,6 @@ $( document ).ready(function() {
 	destinationOptions = $("#destinationSelect");
 	departureDateOptions = $("#departureDateSelect");
 	
-	populateOriginList(savedSearches);
+	populateOriginList(savedFlightResults);
 	$("#showTrackedButton").click(trackingButtonClicked);
   });

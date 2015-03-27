@@ -26,14 +26,15 @@ public class FlightSavedSearch extends FlightInputSearch implements Serializable
 	@JsonIgnore
 	private Boolean flightOptionsExists;
 	
+	
 	public FlightSavedSearch(Key key, FlightInputSearch inputSearch)
 	{
-		super(inputSearch);
-		this.key = key;
-	}
+		this(key, inputSearch, true);
+		this.key = key;}
 	
 	public FlightSavedSearch(Key key, FlightInputSearch inputSearch, boolean flightOptionsExist) {
-		this(key, inputSearch);
+		super(inputSearch);
+		this.key = key;
 		this.flightOptionsExists = flightOptionsExist;
 	}
 

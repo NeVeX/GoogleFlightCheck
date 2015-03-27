@@ -17,10 +17,12 @@ public class FlightResult implements Serializable {
 	private Date dateSearched;
 	private Long lowestPriceTripDuration;
 	private Long shortestTimePriceTripDuration;
+	private String dateSearchedAsString;
 	
 	public FlightResult(Date dateSearched)
 	{
 		this.dateSearched = dateSearched;
+		this.setDateSearchedAsString(DateConverter.toString(dateSearched));
 	}
 	
 	public FlightResult(FlightResult flightResult)
@@ -70,6 +72,14 @@ public class FlightResult implements Serializable {
 	public void setShortestTimePriceTripDuration(
 			Long shortestTimePriceTripDuration) {
 		this.shortestTimePriceTripDuration = shortestTimePriceTripDuration;
+	}
+
+	public String getDateSearchedAsString() {
+		return dateSearchedAsString;
+	}
+
+	public void setDateSearchedAsString(String dateSearchedAsString) {
+		this.dateSearchedAsString = dateSearchedAsString;
 	}
 
 }

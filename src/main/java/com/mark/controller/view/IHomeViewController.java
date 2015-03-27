@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.mark.model.FlightInputSearch;
+import com.mark.model.FlightSearchHistoricalResult;
 
 public interface IHomeViewController {
 	

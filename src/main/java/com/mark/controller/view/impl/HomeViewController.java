@@ -43,48 +43,73 @@ import com.mark.util.converter.DateConverter;
 
 @Controller
 public class HomeViewController implements IHomeViewController {
-	public static final String FLIGHT_DATA_OBJECT = "flightData";
-	
+	public static final String FLIGHT_SEARCH_RESULT = "flightResult";
+	public static final String FLIGHT_INPUT_SEARCH = "flightInputSearch";
+
 	@Autowired
 	private IFlightAPIController iFlightApiController;
-	
-	@RequestMapping(value=ControllerConstants.HOME_VIEW_URI, method=RequestMethod.GET)
-	public String getMainPage(ModelMap model)
-	{
-		if (!model.containsKey(FLIGHT_DATA_OBJECT))
-		{
+
+	@RequestMapping(value = ControllerConstants.HOME_VIEW_URI, method = RequestMethod.GET)
+	public String getMainPage(ModelMap model) {
+		if (!model.containsKey(FLIGHT_INPUT_SEARCH)) {
+			FlightInputSearch fis = this.createDefaultFlightInfo();
 			// add defaulted data
-			model.addAttribute(FLIGHT_DATA_OBJECT, this.createDefaultFlightInfo());
+			model.addAttribute(FLIGHT_INPUT_SEARCH, fis);
+			model.addAttribute(FLIGHT_SEARCH_RESULT,
+					this.createDefaultFlightSearchResult(fis));
 		}
 		return ControllerConstants.HOME_VIEW_NAME;
 	}
-	
-	@RequestMapping(value=ControllerConstants.HOME_VIEW_URI, method=RequestMethod.POST)
-	public String postDataToMainPage(@Valid @ModelAttribute FlightInputSearch flightInputSearch, BindingResult bindingResult, ModelMap model)
-	{
-		if ( bindingResult.hasErrors())
-		{
-			model.addAttribute(ControllerConstants.VIEW_ERROR_FLAG, true); // tell the user in general there is an error
-			return ControllerConstants.HOME_VIEW_NAME; // go back to the page since there are errors with the input
+
+	@RequestMapping(value = ControllerConstants.HOME_VIEW_URI, method = RequestMethod.POST)
+	public String postDataToMainPage(
+			@Valid @ModelAttribute(FLIGHT_INPUT_SEARCH) FlightInputSearch flightInputSearch,
+			BindingResult bindingResult, ModelMap model) {
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(ControllerConstants.VIEW_ERROR_FLAG, true); // tell
+																			// the
+																			// user
+																			// in
+																			// general
+																			// there
+																			// is
+																			// an
+																			// error
+			model.addAttribute(FLIGHT_SEARCH_RESULT,
+					this.createDefaultFlightSearchResult(flightInputSearch));
+			return ControllerConstants.HOME_VIEW_NAME; // go back to the page
+														// since there are
+														// errors with the input
 		}
-		FlightSearchResult flightInfo = this.iFlightApiController.postForFlightInfo(flightInputSearch);
-		if (flightInfo != null)
-		{
-			model.addAttribute(FLIGHT_DATA_OBJECT, flightInfo);	
+		FlightSearchResult flightSearchResult = this.iFlightApiController
+				.postForFlightResults(flightInputSearch);
+		if (flightSearchResult != null) {
+
+			model.addAttribute(FLIGHT_INPUT_SEARCH,
+					flightSearchResult.getFlightSearch());
+			model.addAttribute(FLIGHT_SEARCH_RESULT, flightSearchResult);
 		}
 		return ControllerConstants.HOME_VIEW_NAME;
 	}
-		
-	
-	private FlightSearchHistoricalResult createDefaultFlightInfo()
-	{
+
+	private FlightInputSearch createDefaultFlightInfo() {
 		FlightInputSearch fis = new FlightInputSearch();
 		fis.setDepartureDate(DateConverter.toDate(new LocalDate().plusMonths(6)));
 		fis.setDestination("DUB");
 		fis.setOrigin("SFO");
-		FlightSavedSearch fss = new FlightSavedSearch(KeyFactory.createKey("blah", "blah"), fis);
-		FlightSearchResult fsr = new FlightSearchResult(new FlightResult((Date)null), fss);
-		FlightSearchHistoricalResult flightInfo = new FlightSearchHistoricalResult(fsr);
-		return flightInfo;
+		return fis;
 	}
+
+	// TODO: Get rid of this, this should not happen, redesign the model object
+	// inheritance/create dto's.
+	private FlightSearchHistoricalResult createDefaultFlightSearchResult(
+			FlightInputSearch fis) {
+		FlightResult fr = new FlightResult((Date) null);
+		FlightSavedSearch fss = new FlightSavedSearch(KeyFactory.createKey(
+				"this_is", "terrible"), fis);
+		FlightSearchResult fsr = new FlightSearchResult(fr, fss);
+		FlightSearchHistoricalResult fhr = new FlightSearchHistoricalResult(fsr);
+		return fhr;
+	}
+
 }

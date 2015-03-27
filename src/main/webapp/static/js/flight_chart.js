@@ -57,24 +57,24 @@ function clearChart()
 	}
 }
 
-function createChartFromData(flightData)
+function createChartFromData(flightResult)
 {
 	console.log("Ready function called in JS. Loading the chart");
 	clearChart();
   //Get context with jQuery - using jQuery's .get() method.
     var ctx = $("#flightChart").get(0).getContext("2d");
     // This will get the first returned node in the jQuery collection.
-    if ( flightData != null && flightData.length > 0)
+    if ( flightResult != null && flightResult.length > 0)
     {
     	var xAxisLabels = new Array();
     	var lowestPrices = new Array();
     	var shortestPrices = new Array();
     	var i;
-    	for( i = 0; i < flightData.length; i++)
+    	for( i = 0; i < flightResult.length; i++)
 		{
-    		xAxisLabels.push(flightData[i].dateSearched);
-    		lowestPrices.push(flightData[i].lowestPrice);
-    		shortestPrices.push(flightData[i].shortestTimePrice);
+    		xAxisLabels.push(flightResult[i].dateSearchedAsString);
+    		lowestPrices.push(flightResult[i].lowestPrice);
+    		shortestPrices.push(flightResult[i].shortestTimePrice);
 		}
 	
     	var data = {

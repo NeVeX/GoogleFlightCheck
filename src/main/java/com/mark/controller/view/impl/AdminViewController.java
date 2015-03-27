@@ -25,6 +25,9 @@ import com.mark.util.converter.TimeConverter;
 @Controller
 public class AdminViewController implements IAdminViewController {
 	
+	private static final String ALL_FLIGHT_SEARCH_RESULTS = "allFlightSearchResults";
+	private static final String ALL_APPLICATION_STATES = "allApplicationStates";
+	
 	@Autowired
 	private IAdminService adminService;
 	@Autowired
@@ -35,8 +38,8 @@ public class AdminViewController implements IAdminViewController {
 	{
 		List<FlightSearchResult> allFlightData = flightService.getAllFlightSearchResults();
 		List<ApplicationState> allApplicationStates = adminService.getAllApplicationStates();
-		model.put("allFlightResults", allFlightData);
-		model.put("allApplicationStates", allApplicationStates);
+		model.put(ALL_FLIGHT_SEARCH_RESULTS, allFlightData);
+		model.put(ALL_APPLICATION_STATES, allApplicationStates);
 		return ControllerConstants.ADMIN_VIEW_NAME; // the admin page
 	}
 	

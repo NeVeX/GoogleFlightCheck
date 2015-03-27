@@ -21,14 +21,27 @@ public class FlightAPIControllerImpl implements IFlightAPIController {
 	@Autowired
 	private IFlightService flightService;
 	
+	@Override
 	@RequestMapping(value=ControllerConstants.API_URI, method=RequestMethod.POST)
-	public @ResponseBody FlightSearchResult postForFlightInfo(@Valid @RequestBody FlightInputSearch flightInputSearch)
+	public @ResponseBody FlightSearchResult postForFlightResults(@Valid @RequestBody FlightInputSearch flightInputSearch)
 	{
 //		if( bindingResult.hasErrors() || flightInputSearch == null)
 //		{
 //			throw new FlightException("There are problems with the flight search input\n"+bindingResult.getAllErrors());
 //		}
-		return this.flightService.getFlightHistoricalResult(flightInputSearch);	
+		return this.flightService.getFlightSearchHistoricalResult(flightInputSearch);	
+	}
+	
+
+	@Override
+	@RequestMapping(value=ControllerConstants.API_HISTORY_URI, method=RequestMethod.POST)
+	public @ResponseBody FlightSearchResult postForFlightHistoricalResults(@Valid @RequestBody FlightInputSearch flightInputSearch)
+	{
+//		if( bindingResult.hasErrors() || flightInputSearch == null)
+//		{
+//			throw new FlightException("There are problems with the flight search input\n"+bindingResult.getAllErrors());
+//		}
+		return this.flightService.getFlightSearchHistoricalStoredResults(flightInputSearch);	
 	}
 	
 }
