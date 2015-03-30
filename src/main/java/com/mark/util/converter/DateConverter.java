@@ -1,14 +1,19 @@
 package com.mark.util.converter;
 
+import java.io.IOException;
 import java.util.Date;
 
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.JsonSerializer;
+import org.codehaus.jackson.map.SerializerProvider;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.util.StringUtils;
 
-public class DateConverter {
+public class DateConverter extends JsonSerializer<Date> {
 
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
@@ -100,5 +105,21 @@ public class DateConverter {
 		}
 		return null;
 	}
+
+//	@Override
+//	public void serialize(Date value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+//		System.out.println("value is "+value);
+//		
+//	}
+
+	@Override
+	public void serialize(Date value, JsonGenerator jgen,
+			SerializerProvider provider) throws IOException,
+			JsonProcessingException {
+		System.out.println("value is "+value);
+			
+	}
+
+
 	
 }

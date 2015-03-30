@@ -7,6 +7,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -30,7 +31,8 @@ public class FlightInputSearch {
 	private Boolean forceBatchUsage;
 	@Future(message="Depature date cannot be in the past")
 	@DateTimeFormat(style="S-", pattern=DateConverter.DATE_FORMAT,iso=ISO.DATE)
-	@JsonFormat(timezone="GMT", pattern=DateConverter.DATE_FORMAT, shape=Shape.STRING)
+	@JsonFormat(timezone="UTC", pattern=DateConverter.DATE_FORMAT, shape=Shape.STRING)
+//	@JsonSerialize(using = DateConverter.class)
 	private Date departureDate;
 	private Date returnDate;
 	
@@ -85,16 +87,33 @@ public class FlightInputSearch {
 		return departureDate;
 	}
 	public void setDepartureDate(Date departureDate) {
-		this.departureDate = departureDate;
-		this.departureDateAsString = DateConverter.toString(departureDate);
+		if ( departureDate != null )
+		{
+			this.departureDate = new LocalDate(departureDate.getTime(), DateTimeZone.UTC).toDate();
+			this.departureDateAsString = DateConverter.toString(departureDate);
+		}
+		else
+		{
+			this.departureDate = null;
+			this.departureDateAsString = "";
+		}
 	}
 	public Date getReturnDate() {
 		return returnDate;
 	}
 	public void setReturnDate(Date returnDate) {
-		this.returnDate = returnDate;
-		this.returnDateAsString = DateConverter.toString(returnDate);
+		if ( returnDate != null )
+		{
+			this.returnDate = new LocalDate(returnDate.getTime(), DateTimeZone.UTC).toDate();
+			this.returnDateAsString = DateConverter.toString(departureDate);
+		}
+		else
+		{
+			this.returnDate = null;
+			this.returnDateAsString = "";
+		}
 	}
+	
 	@Override
 	public String toString() {
 		return "FlightInputSearch [origin=" + origin + ", destination="
