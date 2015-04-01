@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -23,11 +24,12 @@ import com.mark.exception.FlightException;
 import com.mark.model.google.request.GoogleFlightRequest;
 import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.util.FlightProperties;
+import com.mark.util.algorithm.impl.CheapestAndShortestPricesAlgorithm;
 import com.mark.util.client.mock.GoogleFlightClientMocked;
 import com.mark.util.converter.JsonConverter;
 
 public class RestEasyClient {
-	
+	private static final Logger log = Logger.getLogger(RestEasyClient.class.getName());
 	private static ResteasyClient client;
 	
 	static
@@ -49,10 +51,10 @@ public class RestEasyClient {
 		{
 			throw new FlightException("Class to use for REST client creation cannot be null");
 		}
-		System.out.println("Creating REST client for class ["+clazz+"]");
+		log.info("Creating REST client for class ["+clazz+"]");
         ResteasyWebTarget target = client.target(baseUrl);
         T proxyClient = target.proxy(clazz);
-		System.out.println("REST client created for baseUrl ["+baseUrl+"] with class ["+clazz+"]");
+		log.info("REST client created for baseUrl ["+baseUrl+"] with class ["+clazz+"]");
         return proxyClient;
 	}
 	

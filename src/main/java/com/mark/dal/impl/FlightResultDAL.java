@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
@@ -33,6 +34,8 @@ import com.mark.util.converter.DateConverter;
 @Repository
 public class FlightResultDAL implements IFlightResultDAL {
 	private DatastoreService dataStore;
+
+	private static final Logger log = Logger.getLogger(FlightResultDAL.class.getName()); 
 	
 	@PostConstruct
 	public void setup()
@@ -42,17 +45,17 @@ public class FlightResultDAL implements IFlightResultDAL {
 	
 //	@Override
 //	public List<FlightResult> getAllSavedFlightResults() {
-//		System.out.println("Getting all saved Flight Data");
+//		log.info("Getting all saved Flight Data");
 //		Key ancestorKey = KeyFactory.createKey(FLIGHT_ANCESTOR_KIND, FLIGHT_ANCESTOR_ID);
 //		Query q = new Query(FLIGHT_DATA_TABLE).setAncestor(ancestorKey).addSort(DEPARTURE_DATE, SortDirection.DESCENDING);
-//		System.out.println("Query: "+q.toString());
+//		log.info("Query: "+q.toString());
 //		List<FlightResult> allFlightResults = new ArrayList<FlightSearchResult>();
 //		for(Entity en : dataStore.prepare(q).asIterable())
 //		{
 //			if( en != null)
 //			{
 //				FlightSearchResult fd = this.createFlightResultFromEntity(en);
-//				System.out.println("Found Flight Data: "+fd.toString());
+//				log.info("Found Flight Data: "+fd.toString());
 //				allFlightData.add(fd);;
 //			}
 //		}
@@ -61,23 +64,23 @@ public class FlightResultDAL implements IFlightResultDAL {
 //	
 	@Override
 	public List<FlightResult> getFlightSearchResultHistory(FlightSavedSearch savedSearch) {
-		System.out.println("Getting all saved Flight Data for search: "+savedSearch);
+		log.info("Getting all saved Flight Data for search: "+savedSearch);
 		if ( savedSearch.getOrigin().equals("XXX"))
 		{
-			System.out.println("Returning mocked Flight Data test search: ");
+			log.info("Returning mocked Flight Data test search: ");
 			return this.createMockedFlightData(savedSearch);
 		}
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Filter keyCompare = new FilterPredicate(DALConstants.COLUMN_SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, savedSearch.getKey().getId());
 		Query q = new Query(DALConstants.TABLE_FLIGHT_RESULT).setAncestor(ancestorKey).setFilter(keyCompare).addSort(DALConstants.COLUMN_SEARCH_DATE, SortDirection.DESCENDING);
-		System.out.println("Query: "+q.toString());
+		log.info("Query: "+q.toString());
 		List<FlightResult> allFlightData = new ArrayList<FlightResult>();
 		for(Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null)
 			{
 				FlightResult fd = this.createFlightResultFromEntity(en);
-				System.out.println("Found Flight Data: "+fd.toString());
+				log.info("Found Flight Data: "+fd.toString());
 				allFlightData.add(fd);;
 			}
 		}
@@ -93,14 +96,14 @@ public class FlightResultDAL implements IFlightResultDAL {
 		Filter allCompares = CompositeFilterOperator.and(keyCompare, searchDateCompare);
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(DALConstants.TABLE_FLIGHT_RESULT).setAncestor(ancestorKey).setFilter(allCompares);
-		System.out.println("Query: "+q.toString());
+		log.info("Query: "+q.toString());
 		Entity entity = dataStore.prepare(q).asSingleEntity();
 		if (entity != null)
 		{
-			System.out.println("Found a match for flight data search for key ["+key.getId()+"] and date ["+searchDate+"]");
+			log.info("Found a match for flight data search for key ["+key.getId()+"] and date ["+searchDate+"]");
 			return this.createFlightSearchResultFromEntity(savedSearch, entity);
 		}
-		System.out.println("No match found for flight saved data for key ["+key.getId()+"] and date ["+searchDate+"]");	
+		log.info("No match found for flight saved data for key ["+key.getId()+"] and date ["+searchDate+"]");	
 		return null;
 	}
 
@@ -112,7 +115,7 @@ public class FlightResultDAL implements IFlightResultDAL {
 
 	@Override
 	public boolean saveFlightSearchResult(FlightSearchResult fd) {
-		System.out.println("Saving Flight Data: "+fd.toString());
+		log.info("Saving Flight Data: "+fd.toString());
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Entity en = new Entity(DALConstants.TABLE_FLIGHT_RESULT, ancestorKey);
 		en.setProperty(DALConstants.COLUMN_LOWEST_PRICE,fd.getLowestPrice());

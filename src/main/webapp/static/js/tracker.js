@@ -10,12 +10,19 @@ function populateOriginList(searchData)
 	}
 	console.log('populating the origin list with data');
 	
+	var originArray = new Array();
 	originOptions.html(''); // remove all the previous options
 	originOptions.change(searchData, populateDestinationListFromChangeEvent);
 	$.each(searchData, function() {
-		// Just append options to this list
-		var newOption = $("<option />").val(this.origin).text(this.origin);
-		originOptions.append(newOption);
+		// check if we already have this origin in the list
+		if ( $.inArray(this.origin, originArray) == -1)
+		{
+			originArray.push(this.origin);
+			// Just append options to this list
+			var newOption = $("<option />").val(this.origin).text(this.origin);
+			originOptions.append(newOption);
+		}
+		
 	});
 	populateDestinationList(searchData);
 }
@@ -25,16 +32,19 @@ function populateDestinationListFromChangeEvent(event)
 	populateDestinationList(event.data);
 }
 
+function populateDepartureDateListFromChangeEvent(event)
+{
+	populateDepartureDateList(event.data);
+}
+
 function populateDestinationList(searchData)
 {
 	console.log('origin list selection changed');
 	var originSelectedValue = $("#originSelect option:selected").val();
 	destinationOptions.html(''); // remove all the previous options
-	departureDateOptions.html(''); // remove all the previous options
 	
 	var destinationArray = new Array();
-	var departureDateArray = new Array();
-	
+	destinationOptions.change(searchData, populateDepartureDateListFromChangeEvent);
 	$.each(searchData, function() {
 		if ( this.origin === originSelectedValue)
 		{
@@ -44,6 +54,21 @@ function populateDestinationList(searchData)
 				var newDestOption = $("<option />").val(this.destination).text(this.destination);
 				destinationOptions.append(newDestOption);
 			}
+		}	
+	});
+	populateDepartureDateList(searchData);
+}
+
+function populateDepartureDateList(searchData)
+{
+	console.log('destination list selection changed');
+	var departureDateArray = new Array();
+	var originSelectedValue = $("#originSelect option:selected").val();
+	var destinationSelectedValue = $("#destinationSelect option:selected").val();
+	departureDateOptions.html(''); // remove all the previous options
+	$.each(searchData, function() {
+		if ( this.origin === originSelectedValue && this.destination === destinationSelectedValue)
+		{
 			if ( $.inArray(this.departureDateAsString, departureDateArray) == -1)
 			{
 				departureDateArray.push(this.departureDateAsString);

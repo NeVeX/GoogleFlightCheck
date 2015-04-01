@@ -18,7 +18,7 @@ var options = {
 	    scaleShowVerticalLines: true,
 
 	    //Boolean - Whether the line is curved between points
-	    bezierCurve : true,
+	    bezierCurve : false,
 
 	    //Number - Tension of the bezier curve between points
 	    bezierCurveTension : 0.4,
@@ -53,7 +53,7 @@ function clearChart()
 {
 	if ( theChart != null)
 	{
-		myLineChart.destroy();
+		theChart.destroy();
 	}
 }
 
@@ -70,7 +70,7 @@ function createChartFromData(flightResult)
     	var lowestPrices = new Array();
     	var shortestPrices = new Array();
     	var i;
-    	for( i = 0; i < flightResult.length; i++)
+    	for( i = flightResult.length - 1; i > -1; i--)
 		{
     		xAxisLabels.push(flightResult[i].dateSearchedAsString);
     		lowestPrices.push(flightResult[i].lowestPrice);

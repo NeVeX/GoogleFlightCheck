@@ -2,6 +2,7 @@ package com.mark.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import com.mark.util.converter.DateConverter;
 @Service
 public class FlightServiceImpl implements IFlightService {
 
+	private static final Logger log = Logger.getLogger(FlightServiceImpl.class.getName()); 
 	@Autowired
 	private IAdminService adminService;
 	@Autowired
@@ -122,7 +124,7 @@ public class FlightServiceImpl implements IFlightService {
 			// find if we have data for today already
 			FlightSearchResult flightSearchResultToday = flightResultFAL.getFlightResultForToday(flightSavedSearch);
 			if (flightSearchResultToday != null) {
-				System.out.println("Found FlightSearchResult for today already stored, so using stored data instead of calling API");
+				log.info("Found FlightSearchResult for today already stored, so using stored data instead of calling API");
 				return flightSearchResultToday;
 			}
 		}

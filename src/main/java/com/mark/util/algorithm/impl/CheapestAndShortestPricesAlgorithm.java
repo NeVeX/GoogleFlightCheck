@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Component;
 
@@ -16,11 +17,14 @@ import com.mark.model.google.response.ResponseSlice;
 import com.mark.model.google.response.Segment;
 import com.mark.model.google.response.Trip;
 import com.mark.model.google.response.TripOption;
+import com.mark.service.impl.AdminServiceImpl;
 import com.mark.util.algorithm.IFlightAlgorithm;
 
 @Component
 public class CheapestAndShortestPricesAlgorithm implements IFlightAlgorithm {
 
+	private static final Logger log = Logger.getLogger(CheapestAndShortestPricesAlgorithm.class.getName());
+	
 	@Override
 	public AlgorithmResult execute(FlightSavedSearch flightSearch, GoogleFlightResponse googleFlightResponse) {
 		List<FlightDataHolder> parsedList = this.parseGoogleFlightResponseIntoFlightInfo(flightSearch, googleFlightResponse);
@@ -76,7 +80,7 @@ public class CheapestAndShortestPricesAlgorithm implements IFlightAlgorithm {
 				// create and add this result
 				listOfData.add(new FlightDataHolder(price, stops, tripLength));
 			} else {
-				System.out.println("Info: Did not find flight data in Trip Options.");
+				log.info("Info: Did not find flight data in Trip Options.");
 			}
 		}
 		return listOfData;

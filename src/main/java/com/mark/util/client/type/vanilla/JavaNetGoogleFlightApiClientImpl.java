@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,12 @@ import com.mark.model.google.response.GoogleFlightResponse;
 import com.mark.util.FlightProperties;
 import com.mark.util.client.IGoogleFlightApiClient;
 import com.mark.util.client.mock.GoogleFlightClientMocked;
+import com.mark.util.client.type.resteasy.RestEasyClient;
 import com.mark.util.converter.JsonConverter;
 
 @Service
 public class JavaNetGoogleFlightApiClientImpl implements IGoogleFlightApiClient {
-
+	private static final Logger log = Logger.getLogger(JavaNetGoogleFlightApiClientImpl.class.getName());
 	private static String FLIGHT_URL = FlightProperties.GOOGLE_FLIGHT_API_BASE_URL + FlightProperties.GOOGLE_FLIGHT_API_BASE_URI;
 	
 	@Override
@@ -25,10 +27,10 @@ public class JavaNetGoogleFlightApiClientImpl implements IGoogleFlightApiClient 
 	{
 		if (FlightProperties.IN_DEBUG_MODE)
 		{
-			System.out.println("In debug mode - for the rest easy client, a mocked client will be used instead of calling the real API");
+			log.info("In debug mode - for the rest easy client, a mocked client will be used instead of calling the real API");
 			return new GoogleFlightClientMocked().postForFlightInfo(FlightProperties.GOOGLE_FLIGHT_API_KEY, gRequest);
 		}
-		System.out.println("Sending 'POST' request to Google Flight URL ["+FLIGHT_URL+"]\n     with data ["+gRequest+"]");
+		log.info("Sending 'POST' request to Google Flight URL ["+FLIGHT_URL+"]\n     with data ["+gRequest+"]");
 		try
 		{
 			URL obj = new URL(FLIGHT_URL+"?key="+FlightProperties.GOOGLE_FLIGHT_API_KEY);
@@ -49,7 +51,7 @@ public class JavaNetGoogleFlightApiClientImpl implements IGoogleFlightApiClient 
 			wr.close(); // send it off
 			int responseCode = con.getResponseCode(); // wait to get the response
 			GoogleFlightResponse gfr = JsonConverter.getObjectFromJson(con.getInputStream(), GoogleFlightResponse.class); // deserialize the response
-			System.out.println("Google Flight API returned with data");
+			log.info("Google Flight API returned with data");
 			return gfr;
 		}
 		catch(Exception e)

@@ -3,6 +3,7 @@ package com.mark.dal.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
@@ -37,6 +38,7 @@ import com.mark.util.converter.DateConverter;
 @Repository
 public class FlightSearchDALImpl implements IFlightSearchDAL {
 
+	private static final Logger log = Logger.getLogger(FlightSearchDALImpl.class.getName()); 
 	
 	private DatastoreService dataStore;
 	
@@ -48,7 +50,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	
 	@Override
 	public FlightSavedSearch saveFlightSearch(FlightInputSearch fs) {
-		System.out.println("Saving flight search: "+fs.toString());
+		log.info("Saving flight search: "+fs.toString());
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Entity en = new Entity(DALConstants.TABLE_FLIGHT_SEARCH, ancestorKey);
 		en.setProperty(DALConstants.COLUMN_DEPARTURE_DATE, fs.getDepartureDate());
@@ -57,14 +59,14 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		en.setProperty(DALConstants.COLUMN_ORIGIN,fs.getOrigin());
 		en.setProperty(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, true);
 		Key key = dataStore.put(en);
-		System.out.println("Saved flight search: "+fs.toString());
+		log.info("Saved flight search: "+fs.toString());
 		return new FlightSavedSearch(key, fs);
 	}
 
 
 	@Override
 	public FlightSavedSearch getFlightSavedSearch(FlightInputSearch fis) {
-		System.out.println("Searching for Saved Flight Search ["+fis+"]");
+		log.info("Searching for Saved Flight Search ["+fis+"]");
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Filter originCompare = new FilterPredicate(DALConstants.COLUMN_ORIGIN, FilterOperator.EQUAL, fis.getOrigin());
 		Filter destinationCompare = new FilterPredicate(DALConstants.COLUMN_DESTINATION, FilterOperator.EQUAL, fis.getDestination());
@@ -72,15 +74,15 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		Filter returnDateCompare = new FilterPredicate(DALConstants.COLUMN_RETURN_DATE, FilterOperator.EQUAL, fis.getReturnDate());
 		Filter allCompares = CompositeFilterOperator.and(originCompare, destinationCompare, departureDateCompare, returnDateCompare);
 		Query q = new Query(DALConstants.TABLE_FLIGHT_SEARCH).setAncestor(ancestorKey).setFilter(allCompares);
-		System.out.println("Query: "+q.toString());
+		log.info("Query: "+q.toString());
 		Entity entity = dataStore.prepare(q).asSingleEntity();
 		if ( entity != null)
 		{
-			System.out.println("Found a match for search ["+fis+"]");	
+			log.info("Found a match for search ["+fis+"]");	
 			FlightSavedSearch fss = createFlightSavedSearchFromEntity(entity);
 			return fss;
 		}
-		System.out.println("No match found for search ["+fis+"]");	
+		log.info("No match found for search ["+fis+"]");	
 		return null;
 	}
 
@@ -104,28 +106,29 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 
 	@Override
 	public List<FlightSavedSearch> getAllFlightSavedSearches(boolean includeFutureDatesOnly) {
-		System.out.println("Getting all Flight saved searches");
+		log.info("Getting all Flight saved searches");
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(DALConstants.TABLE_FLIGHT_SEARCH).setAncestor(ancestorKey).addSort(DALConstants.COLUMN_DEPARTURE_DATE, SortDirection.DESCENDING);
-		Filter flightsThatExist = new FilterPredicate(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, FilterOperator.EQUAL, true);
+//		Filter flightsThatExist = new FilterPredicate(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, FilterOperator.EQUAL, true);
 		if ( includeFutureDatesOnly )
 		{
 			Date todaysDate = new LocalDate().toDate();
 			Filter futureFilter = new FilterPredicate(DALConstants.COLUMN_DEPARTURE_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, todaysDate);
-			q.setFilter(CompositeFilterOperator.and(flightsThatExist, futureFilter));
+			q.setFilter(futureFilter);
+//			q.setFilter(CompositeFilterOperator.and(flightsThatExist, futureFilter));
 		}
-		else
-		{
-			q.setFilter(flightsThatExist);
-		}
-		System.out.println("Query: "+q.toString());
+//		else
+//		{
+//			q.setFilter(flightsThatExist);
+//		}
+		log.info("Query: "+q.toString());
 		List<FlightSavedSearch> allFlightSavedSearchs = new ArrayList<FlightSavedSearch>();
 		for(Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null)
 			{
 				FlightSavedSearch fss = this.createFlightSavedSearchFromEntity(en);
-				System.out.println("Found Flight Saved Search: "+fss.toString());
+				log.info("Found Flight Saved Search: "+fss.toString());
 				allFlightSavedSearchs.add(fss);;
 			}
 		}
@@ -148,7 +151,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	public List<FlightSavedSearch> getFlightSearchesThatNeedsTrackingForToday(List<FlightSavedSearch> savedSearches) 
 	{
 		Date todaysDate = new LocalDate().toDate();
-		System.out.println("Getting all Flight Data that needs updating - records with no search date for today");
+		log.info("Getting all Flight Data that needs updating - records with no search date for today");
 		List<FlightSavedSearch> searchesToUpdate = new ArrayList<FlightSavedSearch>();
 		Filter searchDateCompare = new FilterPredicate(DALConstants.COLUMN_SEARCH_DATE, FilterOperator.EQUAL, todaysDate);
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
@@ -159,7 +162,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 			Query q = new Query(DALConstants.TABLE_FLIGHT_RESULT).setAncestor(ancestorKey).setFilter(allCompares);
 			if ( dataStore.prepare(q).asSingleEntity() == null )
 			{
-				System.out.println("Found Flight Data that needs updating for Search: "+fss.toString());
+				log.info("Found Flight Data that needs updating for Search: "+fss.toString());
 				searchesToUpdate.add(fss);
 			}
 		}

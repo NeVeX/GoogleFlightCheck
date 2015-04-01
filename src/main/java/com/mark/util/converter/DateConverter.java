@@ -2,6 +2,7 @@ package com.mark.util.converter;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
@@ -13,8 +14,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.util.StringUtils;
 
-public class DateConverter extends JsonSerializer<Date> {
+import com.mark.util.client.type.vanilla.JavaNetGoogleFlightApiClientImpl;
 
+public class DateConverter extends JsonSerializer<Date> {
+	private static final Logger log = Logger.getLogger(DateConverter.class.getName());
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
 	
@@ -33,7 +36,7 @@ public class DateConverter extends JsonSerializer<Date> {
 			}
 			catch(Exception e)
 			{
-				System.err.println("Could not convert LocalDate ["+dt+"] to String with Format ["+DATE_FORMAT+"]");
+				log.warning("Could not convert LocalDate ["+dt+"] to String with Format ["+DATE_FORMAT+"]");
 			}
 		}
 		return null;
@@ -68,7 +71,7 @@ public class DateConverter extends JsonSerializer<Date> {
 			}
 			catch(Exception e)
 			{
-				System.err.println("Could not convert String ["+s+"] to LocalDate with Format ["+DATE_FORMAT+"]");
+				log.warning("Could not convert String ["+s+"] to LocalDate with Format ["+DATE_FORMAT+"]");
 			}	
 		}
 		return null;
@@ -116,7 +119,7 @@ public class DateConverter extends JsonSerializer<Date> {
 	public void serialize(Date value, JsonGenerator jgen,
 			SerializerProvider provider) throws IOException,
 			JsonProcessingException {
-		System.out.println("value is "+value);
+		log.info("value is "+value);
 			
 	}
 

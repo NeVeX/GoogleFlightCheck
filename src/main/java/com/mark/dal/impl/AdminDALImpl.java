@@ -3,6 +3,7 @@ package com.mark.dal.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
@@ -24,6 +25,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.mark.constant.DALConstants;
+import com.mark.controller.api.impl.AdminAPIControllerImpl;
 import com.mark.dal.IAdminDAL;
 import com.mark.dal.IFlightResultDAL;
 import com.mark.model.ApplicationState;
@@ -32,6 +34,8 @@ import com.mark.util.converter.DateConverter;
 @Repository
 public class AdminDALImpl implements IAdminDAL {
 
+	private static final Logger log = Logger.getLogger(AdminDALImpl.class.getName()); 
+	
 	private static final String APPLICATION_STATE_TABLE = "APPLICATION_STATE";
 	private static final String DATE = "DATE";
 	private static final String FLIGHT_API_COUNT = "FLIGHT_API_COUNT";
@@ -50,7 +54,7 @@ public class AdminDALImpl implements IAdminDAL {
 		ApplicationState state = this.findApplicationState(todayDate);
 		if ( state != null)
 		{
-			System.out.println("Found application state with apiCount ["+state.getFlightApiCount()+"]");
+			log.info("Found application state with apiCount ["+state.getFlightApiCount()+"]");
 			return state;
 		}
 		return null;
@@ -58,11 +62,11 @@ public class AdminDALImpl implements IAdminDAL {
 	
 	private ApplicationState findApplicationState(Date dt)
 	{
-		System.out.println("Searching for application state for date: "+dt);
+		log.info("Searching for application state for date: "+dt);
 		Filter dateCompare = new FilterPredicate(DATE, FilterOperator.EQUAL, dt);
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).setFilter(dateCompare);
-		System.out.println("Query: "+q.toString());
+		log.info("Query: "+q.toString());
 		Entity en = dataStore.prepare(q).asSingleEntity();
 		if ( en != null )
 		{
@@ -73,7 +77,7 @@ public class AdminDALImpl implements IAdminDAL {
 	
 	@Override
 	public boolean saveApplicationState(ApplicationState newState) {
-		System.out.println("Saving Application State: "+newState.toString());
+		log.info("Saving Application State: "+newState.toString());
 		ApplicationState savedState = this.findApplicationState(newState.getDate());
 		if ( savedState == null)
 		{
@@ -112,17 +116,17 @@ public class AdminDALImpl implements IAdminDAL {
 
 	@Override
 	public List<ApplicationState> getAllApplicationStates() {
-		System.out.println("Getting all application states");
+		log.info("Getting all application states");
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(APPLICATION_STATE_TABLE).setAncestor(ancestorKey).addSort(DATE, SortDirection.DESCENDING);
-		System.out.println("Query: "+q.toString());
+		log.info("Query: "+q.toString());
 		List<ApplicationState> allApplicationStates = new ArrayList<ApplicationState>();
 		for (Entity en : dataStore.prepare(q).asIterable())
 		{
 			if( en != null )
 			{
 				ApplicationState as = this.createApplicationStateFromEntity(en);
-				System.out.println("Found Application State Search: "+as.toString());
+				log.info("Found Application State Search: "+as.toString());
 				allApplicationStates.add(as);
 			}
 		}
