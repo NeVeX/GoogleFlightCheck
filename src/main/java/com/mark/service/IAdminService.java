@@ -14,8 +14,9 @@ public interface IAdminService {
 
 	/**
 	 * Determine all the flight info that needs to be updated...and get perform those updates
+	 * Returns list of problems encountered
 	 */
-	public boolean runTracker();
+	public List<String> runTracker();
 
 	public void incrementFlightAPICount();
 

@@ -1,5 +1,6 @@
 package com.mark.controller.api.impl;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
@@ -19,7 +20,7 @@ import com.mark.util.converter.TimeConverter;
 public class AdminAPIControllerImpl implements IAdminAPIController {
 
 	private static final Logger log = Logger.getLogger(AdminAPIControllerImpl.class.getName()); 
-	
+	private static final String LINE_BREAK = "<br>";
 	@Autowired
 	private IAdminService adminService;
 	
@@ -28,11 +29,26 @@ public class AdminAPIControllerImpl implements IAdminAPIController {
 	{
 		long start = System.currentTimeMillis();
 		log.info("About to run tracker job for today's date: "+new DateTime());
-		adminService.runTracker();
+		List<String> infoList = adminService.runTracker();
 		long end = (System.currentTimeMillis() - start);
-		String msg = "Job ran for "+TimeConverter.convertMillisecondTimeToString(end);
-		log.info(msg);
-		return msg;
+		StringBuilder outputMessage = new StringBuilder(LINE_BREAK+"Job ran for "+TimeConverter.convertMillisecondTimeToString(end)+LINE_BREAK);
+		log.info(outputMessage.toString());
+		if ( infoList != null && !infoList.isEmpty())
+		{
+			outputMessage.append(LINE_BREAK+LINE_BREAK+"The Following Problems Were Encountered:"+LINE_BREAK);
+			for(String s : infoList)
+			{
+				outputMessage.append(" - "+s+LINE_BREAK);
+			}
+
+			outputMessage.append(LINE_BREAK+LINE_BREAK);
+		}
+		else
+		{
+			outputMessage.append(LINE_BREAK+LINE_BREAK+"No Problems Encountered."+LINE_BREAK);
+		}
+		
+		return outputMessage.toString();
 	}
 	
 	

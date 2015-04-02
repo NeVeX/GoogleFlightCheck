@@ -1,5 +1,6 @@
 package com.mark.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
@@ -50,8 +51,8 @@ public class AdminServiceImpl implements IAdminService {
 	}
 
 	@Override
-	public boolean runTracker() {
-		boolean encounteredProblems = false;
+	public List<String> runTracker() {
+		List<String> problemList = new ArrayList<String>();
 		log.info("Batch Job: Getting list of saved searches with departure dates in the future");
 		List < FlightSavedSearch > savedSearches = flightSearchDAL.getAllFlightSavedSearches(true);
 		if (savedSearches != null && savedSearches.size() > 0) {
@@ -66,14 +67,15 @@ public class AdminServiceImpl implements IAdminService {
 						this.flightService.getFlightSearchResult(fss);
 						log.info("Updated Flight Data for: " + fss);
 					} catch (Exception e) {
-						encounteredProblems = true;
-						System.err.println("Batch Job: Could not update flight details for [" + fss + "].\n" + e);
+						String msg = "Batch Job: Could not update flight details for [" + fss + "]";
+						log.warning(msg + e);
+						problemList.add(msg + " ---> Exception: "+e.getMessage());
 					}
 				}
 			}
 		}
-		log.info("Batch Job: Finished. Encountered Problems? ["+encounteredProblems+"]");
-		return encounteredProblems;
+		log.info("Batch Job: Finished. Encountered Problems? ["+ (problemList.size() > 0) +"]");
+		return problemList;
 	}
 
 	@Override
