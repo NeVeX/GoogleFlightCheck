@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
@@ -90,7 +91,7 @@ public class FlightResultDAL implements IFlightResultDAL {
 	@Override
 	public FlightSearchResult getFlightResultForToday(FlightSavedSearch savedSearch) {
 		Key key = savedSearch.getKey();
-		LocalDate searchDate = new LocalDate(); // get today's date
+		LocalDate searchDate = new LocalDate(DateTimeZone.UTC); // get today's date
 		Filter keyCompare = new FilterPredicate(DALConstants.COLUMN_SAVED_SEARCH_KEY_ID, FilterOperator.EQUAL, key.getId());
 		Filter searchDateCompare = new FilterPredicate(DALConstants.COLUMN_SEARCH_DATE, FilterOperator.EQUAL, searchDate.toDate());
 		Filter allCompares = CompositeFilterOperator.and(keyCompare, searchDateCompare);
@@ -155,7 +156,7 @@ public class FlightResultDAL implements IFlightResultDAL {
 
 	private Random rand = new Random();
 	private List<FlightResult> createMockedFlightData(FlightSavedSearch savedSearch) {
-		LocalDate ld = new LocalDate();
+		LocalDate ld = new LocalDate(DateTimeZone.UTC);
 		
 		List<FlightResult> list = new ArrayList<FlightResult>();
 		for (int i = 0; i < 50; i++)

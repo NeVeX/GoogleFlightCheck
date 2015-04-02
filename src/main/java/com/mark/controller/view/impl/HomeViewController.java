@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -94,7 +95,7 @@ public class HomeViewController implements IHomeViewController {
 
 	private FlightInputSearch createDefaultFlightInfo() {
 		FlightInputSearch fis = new FlightInputSearch();
-		fis.setDepartureDate(DateConverter.toDate(new LocalDate().plusMonths(6)));
+		fis.setDepartureDate(DateConverter.toDate(new LocalDate(DateTimeZone.UTC).plusMonths(6)));
 		fis.setDestination("DUB");
 		fis.setOrigin("SFO");
 		return fis;

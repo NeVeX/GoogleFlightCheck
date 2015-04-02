@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.comparator.CompositeFileComparator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
@@ -109,18 +110,13 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 		log.info("Getting all Flight saved searches");
 		Key ancestorKey = KeyFactory.createKey(DALConstants.ANCESTOR_FOR_ALL, DALConstants.ANCESTOR_ID_FOR_ALL);
 		Query q = new Query(DALConstants.TABLE_FLIGHT_SEARCH).setAncestor(ancestorKey).addSort(DALConstants.COLUMN_DEPARTURE_DATE, SortDirection.DESCENDING);
-//		Filter flightsThatExist = new FilterPredicate(DALConstants.COLUMN_FLIGHT_OPTION_EXISTS, FilterOperator.EQUAL, true);
 		if ( includeFutureDatesOnly )
 		{
-			Date todaysDate = new LocalDate().toDate();
+			Date todaysDate = new LocalDate(DateTimeZone.UTC).toDate();
 			Filter futureFilter = new FilterPredicate(DALConstants.COLUMN_DEPARTURE_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, todaysDate);
 			q.setFilter(futureFilter);
-//			q.setFilter(CompositeFilterOperator.and(flightsThatExist, futureFilter));
 		}
-//		else
-//		{
-//			q.setFilter(flightsThatExist);
-//		}
+
 		log.info("Query: "+q.toString());
 		List<FlightSavedSearch> allFlightSavedSearchs = new ArrayList<FlightSavedSearch>();
 		for(Entity en : dataStore.prepare(q).asIterable())
@@ -150,7 +146,7 @@ public class FlightSearchDALImpl implements IFlightSearchDAL {
 	@Override
 	public List<FlightSavedSearch> getFlightSearchesThatNeedsTrackingForToday(List<FlightSavedSearch> savedSearches) 
 	{
-		Date todaysDate = new LocalDate().toDate();
+		Date todaysDate = new LocalDate(DateTimeZone.UTC).toDate();
 		log.info("Getting all Flight Data that needs updating - records with no search date for today");
 		List<FlightSavedSearch> searchesToUpdate = new ArrayList<FlightSavedSearch>();
 		Filter searchDateCompare = new FilterPredicate(DALConstants.COLUMN_SEARCH_DATE, FilterOperator.EQUAL, todaysDate);

@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
@@ -50,7 +51,7 @@ public class AdminDALImpl implements IAdminDAL {
 	@Override
 	public ApplicationState getApplicationState() {
 		// get today's date
-		Date todayDate = new LocalDate().toDate();
+		Date todayDate = new LocalDate(DateTimeZone.UTC).toDate();
 		ApplicationState state = this.findApplicationState(todayDate);
 		if ( state != null)
 		{

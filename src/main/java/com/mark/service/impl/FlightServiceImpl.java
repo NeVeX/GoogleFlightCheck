@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,7 +82,7 @@ public class FlightServiceImpl implements IFlightService {
 		FlightSavedSearch fss = flightSearchDAL.getFlightSavedSearch(fis);
 		if ( fss != null)
 		{
-			FlightSearchResult flightResult = new FlightSearchResult(new FlightResult(new LocalDate().toDate()), fss);
+			FlightSearchResult flightResult = new FlightSearchResult(new FlightResult(new LocalDate(DateTimeZone.UTC).toDate()), fss);
 			return this.getFlightStoredHistory(flightResult);
 		}
 		return null; // nothing for today
@@ -135,7 +136,7 @@ public class FlightServiceImpl implements IFlightService {
 			if ( algoResult != null )
 			{
 				// we have data to use, so create FlightInfo
-				FlightResult fResult = new FlightResult(new LocalDate().toDate());
+				FlightResult fResult = new FlightResult(new LocalDate(DateTimeZone.UTC).toDate());
 				fResult.setLowestPrice(algoResult.getLowestPrice());
 				fResult.setLowestPriceTripDuration(algoResult.getLowestPriceTripDuration());
 				fResult.setShortestTimePrice(algoResult.getShortestTimePrice());

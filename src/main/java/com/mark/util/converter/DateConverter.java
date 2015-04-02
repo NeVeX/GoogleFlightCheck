@@ -9,6 +9,7 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -51,7 +52,7 @@ public class DateConverter extends JsonSerializer<Date> {
 	{
 		if ( dt != null )
 		{
-			return toString(new LocalDate(dt));
+			return toString(new LocalDate(dt, DateTimeZone.UTC));
 		}
 		return null;
 	}
@@ -104,7 +105,7 @@ public class DateConverter extends JsonSerializer<Date> {
 	public static LocalDate toLocalDate(Date dt) {
 		if ( dt != null )
 		{
-			return new LocalDate(dt);
+			return new LocalDate(dt, DateTimeZone.UTC);
 		}
 		return null;
 	}

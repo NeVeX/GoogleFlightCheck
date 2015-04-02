@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class AdminServiceImpl implements IAdminService {
 	// TODO: Make async call possible
 	private void saveFlightApplicationState() {
 		ApplicationState appState = new ApplicationState();
-		appState.setDate(new LocalDate().toDate());
+		appState.setDate(new LocalDate(DateTimeZone.UTC).toDate());
 		appState.setFlightApiCount(flightCallCurrentCount.get());
 		applicationDAL.saveApplicationState(appState);
 	}
