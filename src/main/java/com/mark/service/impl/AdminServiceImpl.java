@@ -1,6 +1,7 @@
 package com.mark.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
@@ -61,6 +62,8 @@ public class AdminServiceImpl implements IAdminService {
 			// get all the flight searches that do not have updates for today
 			List < FlightSavedSearch > needsUpdating = flightSearchDAL.getFlightSearchesThatNeedsTrackingForToday(savedSearches);
 			if (needsUpdating != null && needsUpdating.size() > 0) {
+				// Shuffle them (since we only have a limited API call, each time this is run, we should randomize updating data)
+				Collections.shuffle(needsUpdating);
 				log.info("Batch Job: Found [" + needsUpdating.size() + "] searches that will be updated now");
 				for (FlightSavedSearch fss: needsUpdating) {
 					try {
