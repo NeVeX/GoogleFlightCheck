@@ -3,6 +3,9 @@ package com.mark.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.mark.util.converter.DateConverter;
@@ -21,8 +24,16 @@ public class FlightResult implements Serializable {
 	
 	public FlightResult(Date dateSearched)
 	{
-		this.dateSearched = dateSearched;
-		this.setDateSearchedAsString(DateConverter.toString(dateSearched));
+		if ( dateSearched != null )
+		{
+			this.dateSearched = new LocalDate(dateSearched.getTime(), DateTimeZone.UTC).toDate();
+			this.dateSearchedAsString = DateConverter.toString(dateSearched);
+		}
+		else
+		{
+			this.dateSearched = null;
+			this.dateSearchedAsString = "";
+		}
 	}
 	
 	public FlightResult(FlightResult flightResult)
@@ -78,8 +89,8 @@ public class FlightResult implements Serializable {
 		return dateSearchedAsString;
 	}
 
-	public void setDateSearchedAsString(String dateSearchedAsString) {
-		this.dateSearchedAsString = dateSearchedAsString;
-	}
+//	public void setDateSearchedAsString(String dateSearchedAsString) {
+//		this.dateSearchedAsString = dateSearchedAsString;
+//	}
 
 }

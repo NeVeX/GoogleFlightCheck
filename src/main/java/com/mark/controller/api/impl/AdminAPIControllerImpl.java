@@ -32,23 +32,22 @@ public class AdminAPIControllerImpl implements IAdminAPIController {
 		List<String> infoList = adminService.runTracker();
 		long end = (System.currentTimeMillis() - start);
 		StringBuilder outputMessage = new StringBuilder(LINE_BREAK+"Job ran for "+TimeConverter.convertMillisecondTimeToString(end)+LINE_BREAK);
-		log.info(outputMessage.toString());
 		if ( infoList != null && !infoList.isEmpty())
 		{
-			outputMessage.append(LINE_BREAK+LINE_BREAK+"The Following Problems Were Encountered:"+LINE_BREAK);
+			outputMessage.append(LINE_BREAK+LINE_BREAK+"The Following ["+infoList.size()+"] Problems Were Encountered:"+LINE_BREAK);
 			for(String s : infoList)
 			{
 				outputMessage.append(" - "+s+LINE_BREAK);
 			}
-
 			outputMessage.append(LINE_BREAK+LINE_BREAK);
 		}
 		else
 		{
 			outputMessage.append(LINE_BREAK+LINE_BREAK+"No Problems Encountered."+LINE_BREAK);
 		}
-		
-		return outputMessage.toString();
+		String returnMessage = outputMessage.toString();
+		log.info(returnMessage);
+		return returnMessage;
 	}
 	
 	
